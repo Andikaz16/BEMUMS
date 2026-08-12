@@ -11,6 +11,7 @@ import Oprec from './components/Oprec.jsx';
 import LaporPres from './components/LaporPres.jsx';
 import Volunteer from './components/Volunteer.jsx';
 import AdminCMS from './components/AdminCMS.jsx';
+import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
 import { initDB, saveDB } from './db.js';
 import Lenis from 'lenis';
@@ -18,6 +19,16 @@ import Lenis from 'lenis';
 export default function App() {
   const [db, setDb] = useState(null);
   const [activePage, setActivePage] = useState('beranda');
+  
+  // Auth state for Admin CMS
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    return sessionStorage.getItem('bem_admin_auth') === 'true';
+  });
+
+  const handleLoginSuccess = () => {
+    sessionStorage.setItem('bem_admin_auth', 'true');
+    setIsAdminLoggedIn(true);
+  };
 
   // Initialize DB from Firebase
   useEffect(() => {
@@ -120,7 +131,11 @@ export default function App() {
           <Volunteer db={db} onUpdateDB={handleUpdateDB} />
         )}
         {activePage === 'admin' && (
-          <AdminCMS db={db} onUpdateDB={handleUpdateDB} />
+          isAdminLoggedIn ? (
+            <AdminCMS db={db} onUpdateDB={handleUpdateDB} />
+          ) : (
+            <AdminLogin onLoginSuccess={handleLoginSuccess} />
+          )
         )}
       </main>
 
