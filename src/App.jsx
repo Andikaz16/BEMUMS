@@ -77,6 +77,12 @@ export default function App() {
   // Automatically scroll to top on page change
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Auto-logout: if user leaves the admin page, clear the login session for security
+    if (activePage !== 'admin') {
+      sessionStorage.removeItem('bem_admin_auth');
+      setIsAdminLoggedIn(false);
+    }
   }, [activePage]);
 
   // Update Database state and save to local storage
