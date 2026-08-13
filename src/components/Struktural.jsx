@@ -126,8 +126,8 @@ export default function Struktural({ db }) {
                   <div className="relative z-10">
                     {/* Render Logo Instead of Number */}
                     {d.logo ? (
-                      <div className="w-16 h-16 mb-6 rounded-2xl bg-white/5 p-2 border border-white/10 group-hover:scale-110 group-hover:border-primary/50 transition-all duration-500 flex items-center justify-center">
-                        <img src={d.logo} alt={d.name} className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.9)] transition-all" />
+                      <div className="mb-6 flex items-start justify-start">
+                        <img src={d.logo} alt={d.name} className="w-24 h-24 object-contain filter drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.9)] group-hover:scale-110 transition-all duration-500" />
                       </div>
                     ) : (
                       <span className="font-display text-4xl block mb-6 text-white/20 group-hover:text-primary/40 transition-colors">
@@ -178,7 +178,7 @@ export default function Struktural({ db }) {
               <div className="flex justify-between items-start border-b border-white/10 pb-6 mb-8">
                 <div className="flex items-center gap-6">
                   {selectedDept.logo && (
-                    <div className="w-16 h-16 rounded-xl bg-black/50 p-2 border border-white/10 hidden sm:flex items-center justify-center shrink-0">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 hidden sm:flex items-center justify-center shrink-0">
                       <img src={selectedDept.logo} alt={selectedDept.name} className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
                     </div>
                   )}
