@@ -68,7 +68,7 @@ export default function Hero({ db, setActivePage }) {
               className="font-display text-lg sm:text-2xl md:text-3xl uppercase text-neutral-100"
               style={{ textShadow: '0 4px 15px rgba(0,0,0,0.9)' }}
             >
-              Badan Eksekutif Mahasiswa Universitas Muhammadiyah Surakarta
+              Badan Eksekutif Mahasiswa <br /> Universitas Muhammadiyah Surakarta
             </p>
             <p 
               className="font-body text-sm md:text-base text-neutral-100 leading-relaxed font-medium"
