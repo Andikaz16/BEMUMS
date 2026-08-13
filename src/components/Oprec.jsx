@@ -7,6 +7,7 @@ export default function Oprec({ db, onUpdateDB }) {
     name: '',
     nim: '',
     email: '',
+    phone: '',
     faculty: '',
     choice1: '',
     choice2: '',
@@ -24,7 +25,7 @@ export default function Oprec({ db, onUpdateDB }) {
       alert('Pendaftaran saat ini sedang ditutup.');
       return;
     }
-    if (!formData.name || !formData.nim || !formData.faculty || !formData.choice1) {
+    if (!formData.name || !formData.nim || !formData.email || !formData.phone || !formData.faculty || !formData.choice1) {
       alert('Harap isi field wajib (*).');
       return;
     }
@@ -207,6 +208,17 @@ export default function Oprec({ db, onUpdateDB }) {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-neutral-400">No. Telepon / WA *</label>
+                    <input 
+                      type="tel" 
+                      required
+                      placeholder="Contoh: 08123456789"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="px-4 py-3 bg-[#0a0a0a]/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-600 text-sm"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-neutral-400">Fakultas / Program Studi *</label>
                     <input 
                       type="text" 
@@ -214,6 +226,17 @@ export default function Oprec({ db, onUpdateDB }) {
                       placeholder="Contoh: FKI / Teknik Informatika"
                       value={formData.faculty}
                       onChange={(e) => setFormData({...formData, faculty: e.target.value})}
+                      className="px-4 py-3 bg-[#0a0a0a]/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-600 text-sm"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-neutral-400">Tautan Link CV / Berkas Pendukung *</label>
+                    <input 
+                      type="url" 
+                      required
+                      placeholder="Contoh: https://drive.google.com/drive/..."
+                      value={formData.cvLink}
+                      onChange={(e) => setFormData({...formData, cvLink: e.target.value})}
                       className="px-4 py-3 bg-[#0a0a0a]/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-600 text-sm"
                     />
                   </div>
@@ -244,17 +267,7 @@ export default function Oprec({ db, onUpdateDB }) {
                       ))}
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2 md:col-span-2">
-                    <label className="text-xs font-bold uppercase tracking-widest text-neutral-400">Tautan Link CV / Berkas Pendukung *</label>
-                    <input 
-                      type="url" 
-                      required
-                      placeholder="Contoh: https://drive.google.com/drive/..."
-                      value={formData.cvLink}
-                      onChange={(e) => setFormData({...formData, cvLink: e.target.value})}
-                      className="px-4 py-3 bg-[#0a0a0a]/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-600 text-sm"
-                    />
-                  </div>
+
                   <div className="flex flex-col gap-2 md:col-span-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-neutral-400">Alasan Mendaftar *</label>
                     <textarea 

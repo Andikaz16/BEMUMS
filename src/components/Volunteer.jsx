@@ -8,6 +8,7 @@ export default function Volunteer({ db, onUpdateDB }) {
     name: '',
     nim: '',
     email: '',
+    phone: '',
     faculty: '',
     commitment: ''
   });
@@ -18,8 +19,8 @@ export default function Volunteer({ db, onUpdateDB }) {
   const handleSignup = (e) => {
     e.preventDefault();
     if (!selectedVol) return;
-    if (!formData.name || !formData.nim || !formData.commitment) {
-      alert('Harap isi Nama, NIM, dan Komitmen Anda.');
+    if (!formData.name || !formData.nim || !formData.phone || !formData.commitment) {
+      alert('Harap isi Nama, NIM, No. HP, dan Komitmen Anda.');
       return;
     }
 
@@ -151,7 +152,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                       onClick={() => {
                         setSelectedVol(v);
                         setSubmitted(false);
-                        setFormData({ name: '', nim: '', email: '', faculty: '', commitment: '' });
+                        setFormData({ name: '', nim: '', email: '', phone: '', faculty: '', commitment: '' });
                       }}
                       className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(185,0,20,0.3)] hover:shadow-[0_0_30px_rgba(185,0,20,0.5)] transform hover:-translate-y-1"
                     >
@@ -251,7 +252,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
                           <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Fakultas/Jurusan</label>
                           <input 
@@ -270,6 +271,17 @@ export default function Volunteer({ db, onUpdateDB }) {
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             placeholder="email@student.ums.ac.id"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">No. HP / WA *</label>
+                          <input 
+                            type="tel" 
+                            required
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                            placeholder="0812xxxx"
                           />
                         </div>
                       </div>

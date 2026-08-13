@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
-  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download 
+  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar 
 } from 'lucide-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export default function AdminCMS({ db, onUpdateDB }) {
   const [activeTab, setActiveTab] = useState('struktural');
@@ -36,6 +38,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
   // Article Form
   const [articleForm, setArticleForm] = useState({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
   const [isEditingArticle, setIsEditingArticle] = useState(false);
+  const [showArticleForm, setShowArticleForm] = useState(false);
   const [newCategory, setNewCategory] = useState('');
 
   // Album Form
@@ -60,11 +63,54 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
   // Visi Misi Form
   const [visiMisiForm, setVisiMisiForm] = useState({
-    visi: db.visiMisi.visi,
-    desc: db.visiMisi.desc,
-    misi: [...db.visiMisi.misi],
-    pillars: [...db.visiMisi.pillars]
+    visi: db.visiMisi?.visi || '',
+    desc: db.visiMisi?.desc || '',
+    misi: db.visiMisi?.misi || [],
+    pillars: db.visiMisi?.pillars || []
   });
+
+  const [kegiatanList, setKegiatanList] = useState(db.kegiatan || []);
+  const [newKegiatan, setNewKegiatan] = useState({ date: '', title: '', desc: '' });
+  const [editingKegiatanId, setEditingKegiatanId] = useState(null);
+
+  const handleAddKegiatan = () => {
+    if (!newKegiatan.date || !newKegiatan.title) {
+      showCustomAlert("Lengkapi tanggal dan judul kegiatan!", "warning");
+      return;
+    }
+    
+    if (editingKegiatanId) {
+      const updated = kegiatanList.map(k => k.id === editingKegiatanId ? { ...newKegiatan, id: editingKegiatanId } : k)
+        .sort((a,b) => new Date(a.date) - new Date(b.date));
+      setKegiatanList(updated);
+      setEditingKegiatanId(null);
+      showCustomAlert("Kegiatan berhasil diperbarui. Jangan lupa Simpan Data!");
+    } else {
+      const updated = [...kegiatanList, { id: Date.now(), ...newKegiatan }].sort((a,b) => new Date(a.date) - new Date(b.date));
+      setKegiatanList(updated);
+      showCustomAlert("Kegiatan berhasil ditambahkan. Jangan lupa Simpan Data!");
+    }
+    setNewKegiatan({ date: '', title: '', desc: '' });
+  };
+
+  const handleEditKegiatan = (id) => {
+    const target = kegiatanList.find(k => k.id === id);
+    if (target) {
+      setNewKegiatan({ date: target.date, title: target.title, desc: target.desc });
+      setEditingKegiatanId(id);
+    }
+  };
+
+  const handleDeleteKegiatan = (id) => {
+    const updated = kegiatanList.filter(k => k.id !== id);
+    setKegiatanList(updated);
+    if (editingKegiatanId === id) {
+      setEditingKegiatanId(null);
+      setNewKegiatan({ date: '', title: '', desc: '' });
+    }
+    showCustomAlert("Kegiatan dihapus.");
+  };
+
   const [newMisiText, setNewMisiText] = useState('');
 
   // Save changes wrapper
@@ -173,6 +219,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     onUpdateDB({ ...db, articles: updatedList });
     setArticleForm({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
     setIsEditingArticle(false);
+    setShowArticleForm(false);
   };
 
   const handleDeleteArticle = (id) => {
@@ -255,6 +302,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       cvLink: "Link CV / Portofolio",
       reason: "Alasan Mendaftar",
       id: "Waktu Daftar",
+      phone: "No Telepon / WA",
       // untuk volunteer
       commitment: "Komitmen Waktu"
     };
@@ -324,7 +372,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
             { id: 'oprec', name: '5. Oprec (Gabung)', icon: UserCheck },
             { id: 'galeri', name: '6. Galeri Pergerakan', icon: Image },
             { id: 'volunteer', name: '7. Volunteer', icon: Layers },
-            { id: 'visimisi', name: '8. Visi & Misi', icon: Settings }
+            { id: 'visimisi', name: '8. Visi & Misi', icon: Settings },
+            { id: 'kalender', name: '9. Kalender Kegiatan', icon: Calendar }
           ].map(tab => (
             <button
               key={tab.id}
@@ -386,7 +435,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       setIsEditingMember(false);
                       setMemberForm({ id: null, name: '', role: '', photo: '', bio: '' });
                     }} 
-                    className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-3 py-1 text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
                   >
                     Tambah Pimpinan
                   </button>
@@ -469,7 +518,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       setIsEditingDept(false);
                       setDeptForm({ id: null, name: '', desc: '', members: [] });
                     }} 
-                    className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-3 py-1 text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
                   >
                     Tambah Kementerian
                   </button>
@@ -606,15 +655,16 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   <button 
                     onClick={() => {
                       setIsEditingArticle(false);
+                      setShowArticleForm(true);
                       setArticleForm({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
                     }} 
-                    className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-3 py-1 text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
                   >
                     Tulis Artikel Baru
                   </button>
                 </div>
 
-                {(articleForm.id !== null || isEditingArticle || articleForm.title !== '') && (
+                {(showArticleForm || isEditingArticle) && (
                   <div className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden bg-neutral-800/40 text-white space-y-3">
                     <h4 className="font-display text-sm uppercase">{isEditingArticle ? 'Edit Artikel' : 'Tulis Artikel Baru'}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -658,17 +708,35 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         onChange={e => setArticleForm({ ...articleForm, desc: e.target.value })}
                         className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm md:col-span-2 h-32"
                       />
-                      <textarea 
-                        placeholder="Konten artikel lengkap (Full page)..." 
-                        value={articleForm.content || ''}
-                        onChange={e => setArticleForm({ ...articleForm, content: e.target.value })}
-                        className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm md:col-span-2 h-64"
-                      />
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Konten Artikel (Lengkap)</label>
+                        <div className="bg-white text-black rounded-xl overflow-hidden [&_.ql-toolbar]:border-none [&_.ql-toolbar]:bg-neutral-100 [&_.ql-container]:border-none [&_.ql-container]:text-base [&_.ql-editor]:min-h-[300px]">
+                          <ReactQuill 
+                            theme="snow"
+                            value={articleForm.content || ''} 
+                            onChange={(val) => setArticleForm({ ...articleForm, content: val })} 
+                            placeholder="Tulis konten artikel di sini..."
+                            modules={{
+                              toolbar: [
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'header': [1, 2, 3, false] }],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                ['blockquote', 'link', 'image'],
+                                ['clean']
+                              ]
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <button onClick={handleSaveArticle} className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-4 py-3 text-xs">Simpan Artikel</button>
                       <button 
-                        onClick={() => setArticleForm({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' })} 
+                        onClick={() => {
+                          setShowArticleForm(false);
+                          setIsEditingArticle(false);
+                          setArticleForm({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
+                        }} 
                         className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-4 py-3 text-xs"
                       >
                         Batal
@@ -694,6 +762,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
                           onClick={() => {
                             setArticleForm(a);
                             setIsEditingArticle(true);
+                            setShowArticleForm(true);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
                           }} 
                           className="p-2 hover:text-primary"
                         >
@@ -722,7 +792,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                     setIsEditingAlbum(false);
                     setAlbumForm({ id: null, title: '', date: '', desc: '', driveUrl: '', photos: [] });
                   }} 
-                  className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-3 py-1 text-xs"
+                  className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
                 >
                   Buat Album Baru
                 </button>
@@ -961,7 +1031,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   </div>
                   <button 
                     onClick={() => downloadCSV(db.oprec.applicants, 'rekap_pendaftar_oprec.csv')}
-                    className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold flex items-center gap-2 px-3 py-1.5 text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold flex items-center gap-2 px-5 py-2 text-sm"
                     disabled={db.oprec.applicants.length === 0}
                   >
                     <Download size={14} /> Unduh Rekapan
@@ -1076,7 +1146,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                     setIsEditingVol(false);
                     setVolForm({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '' });
                   }} 
-                  className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-3 py-1 text-xs"
+                  className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
                 >
                   Tambah Kegiatan Volunteer
                 </button>
@@ -1296,6 +1366,85 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 Simpan Visi & Misi
               </button>
 
+            </div>
+          )}
+
+          {/* TAB 9: KALENDER KEGIATAN */}
+          {activeTab === 'kalender' && (
+            <div className="space-y-8">
+              <h2 className="text-3xl font-display uppercase border-b border-white/10 pb-2">Manajemen Kalender Kegiatan</h2>
+              
+              <div className="p-6 bg-[#0a0a0a]/40 border border-white/10 rounded-3xl backdrop-blur-md">
+                <h3 className="font-display uppercase mb-4 text-primary">
+                  {editingKegiatanId ? 'Edit Kegiatan' : 'Tambah Kegiatan Baru'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Tanggal (YYYY-MM-DD)</label>
+                    <input 
+                      type="date"
+                      value={newKegiatan.date}
+                      onClick={(e) => { try { e.target.showPicker() } catch(e) {} }}
+                      onChange={e => setNewKegiatan({...newKegiatan, date: e.target.value})}
+                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary transition-colors cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-70 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Judul Kegiatan</label>
+                    <input 
+                      type="text"
+                      placeholder="Contoh: Rapat Paripurna"
+                      value={newKegiatan.title}
+                      onChange={e => setNewKegiatan({...newKegiatan, title: e.target.value})}
+                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary transition-colors"
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Deskripsi</label>
+                  <textarea
+                    rows="3"
+                    placeholder="Deskripsi singkat kegiatan..."
+                    value={newKegiatan.desc}
+                    onChange={e => setNewKegiatan({...newKegiatan, desc: e.target.value})}
+                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary transition-colors"
+                  ></textarea>
+                </div>
+                <button onClick={handleAddKegiatan} className="bg-primary hover:bg-primary/80 text-white rounded-xl font-bold px-6 py-3 text-sm shadow-[0_0_15px_rgba(185,0,20,0.3)]">
+                  {editingKegiatanId ? 'Update Kegiatan' : 'Tambah Kegiatan'}
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-display uppercase text-lg border-b border-white/10 pb-2">Daftar Kegiatan</h3>
+                <div className="space-y-3">
+                  {kegiatanList.length === 0 && <p className="text-neutral-500 text-sm">Belum ada kegiatan.</p>}
+                  {kegiatanList.map(k => (
+                    <div key={k.id} className="bg-black/40 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row justify-between md:items-center gap-4 hover:border-primary/50 transition-colors">
+                      <div>
+                        <span className="bg-primary/20 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-widest mb-2 inline-block">{k.date}</span>
+                        <h4 className="font-display text-xl text-white">{k.title}</h4>
+                        <p className="text-sm text-neutral-400 mt-1">{k.desc}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => { handleEditKegiatan(k.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-neutral-400 hover:text-white transition-colors p-2 bg-black rounded-lg border border-white/5">
+                          <Edit3 size={20} />
+                        </button>
+                        <button onClick={() => handleDeleteKegiatan(k.id)} className="text-neutral-400 hover:text-primary transition-colors p-2 bg-black rounded-lg border border-white/5">
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button 
+                onClick={() => save({ kegiatan: kegiatanList })}
+                className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-6 py-3 text-sm mt-4 w-full md:w-auto"
+              >
+                Simpan Perubahan Kalender
+              </button>
             </div>
           )}
 

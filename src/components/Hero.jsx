@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Sparkles, AlertTriangle, Layers, UserCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import KalenderWidget from './KalenderWidget.jsx';
 
 export default function Hero({ db, setActivePage }) {
   const oprec = db.oprec || {};
@@ -56,7 +57,7 @@ export default function Hero({ db, setActivePage }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-display text-5xl sm:text-6xl md:text-8xl uppercase leading-none tracking-tight text-white"
+            className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl uppercase leading-[0.9] tracking-tight text-white mb-6"
             style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}
           >
             KABINET <span className="text-primary" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}>KOLEKTIVA</span>
@@ -66,16 +67,16 @@ export default function Hero({ db, setActivePage }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="space-y-4 max-w-3xl mx-auto"
+            className="space-y-6 max-w-3xl mx-auto"
           >
             <p 
-              className="font-display text-lg sm:text-2xl md:text-3xl uppercase text-neutral-100"
+              className="font-display text-lg sm:text-3xl md:text-4xl uppercase text-neutral-100 leading-snug"
               style={{ textShadow: '0 4px 15px rgba(0,0,0,0.9)' }}
             >
               Badan Eksekutif Mahasiswa <br /> Universitas Muhammadiyah Surakarta
             </p>
             <p 
-              className="font-body text-sm md:text-base text-neutral-100 leading-relaxed font-medium max-w-2xl mx-auto"
+              className="font-body text-sm md:text-base lg:text-lg text-neutral-100 leading-relaxed font-medium max-w-2xl mx-auto mt-4"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,1)' }}
             >
               Kabinet Kolektiva hadir sebagai wadah kolaborasi aktif dengan semangat kebersamaan, gotong royong, dan kesetaraan untuk memperjuangkan hak mahasiswa dan kemanusiaan.
@@ -107,7 +108,7 @@ export default function Hero({ db, setActivePage }) {
       {/* 2. STATS CARDS (Carousel Layout) */}
       <section className="w-full relative z-20 pt-2 pb-16 max-w-full">
         {/* Carousel Container */}
-        <div className="flex overflow-x-auto no-scrollbar gap-6 snap-x snap-mandatory py-8 px-6 md:px-12 lg:px-20 items-center">
+        <div className="flex overflow-x-auto no-scrollbar gap-4 md:gap-6 snap-x snap-mandatory py-8 px-6 md:px-12 lg:px-20 items-center scroll-pl-6 md:scroll-pl-12 lg:scroll-pl-20">
           
           {statCards.map((stat, i) => (
             <motion.div 
@@ -116,24 +117,27 @@ export default function Hero({ db, setActivePage }) {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="relative flex-none w-[280px] h-[400px] md:w-[300px] md:h-[450px] rounded-[2rem] overflow-hidden bg-black border border-white/20 group hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_-10px_rgba(220,20,20,0.6)] hover:border-primary/50 snap-center cursor-grab active:cursor-grabbing z-10 hover:z-20"
+              className="relative flex-none w-[280px] h-[400px] md:w-[300px] md:h-[450px] rounded-[2rem] overflow-hidden bg-black border border-white/20 group hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_-10px_rgba(220,20,20,0.6)] hover:border-primary/50 snap-start cursor-grab active:cursor-grabbing z-10 hover:z-20"
             >
+              {/* Glow Behind Logo (Cahaya Putih) */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-64 md:h-64 blur-3xl rounded-full bg-white/20 group-hover:bg-white/40 transition-colors duration-700 pointer-events-none z-0"></div>
+
               {/* Background Logo / Image */}
               <img 
                 src={stat.img || "/assets/logo_icon.png"} 
                 alt="Logo Background" 
-                className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 pointer-events-none"
+                className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 pointer-events-none z-10 relative"
               />
               {/* Gradient Overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none z-20"></div>
               
               {/* Top Right Stat */}
-              <div className="absolute top-6 right-6 text-white font-display text-4xl flex items-start gap-1 drop-shadow-lg pointer-events-none">
+              <div className="absolute top-6 right-6 text-white font-display text-4xl flex items-start gap-1 drop-shadow-lg pointer-events-none z-30">
                 {stat.val} <span className="text-primary text-xl">✦</span>
               </div>
 
               {/* Bottom Text */}
-              <div className="absolute bottom-0 left-0 p-8 w-full pointer-events-none">
+              <div className="absolute bottom-0 left-0 p-8 w-full pointer-events-none z-30">
                 <h3 className="text-white font-display text-3xl uppercase leading-none mb-2 drop-shadow-md">{stat.title}</h3>
                 <p className="text-neutral-400 font-body text-sm uppercase tracking-widest leading-relaxed">{stat.sub}</p>
               </div>
@@ -142,6 +146,9 @@ export default function Hero({ db, setActivePage }) {
 
         </div>
       </section>
+
+      {/* KALENDER KEGIATAN WIDGET */}
+      <KalenderWidget db={db} setActivePage={setActivePage} />
 
       {/* 3. RECENT ARTICLES PREVIEW (Bento Grid) */}
       <section className="w-full px-6 md:px-12 max-w-7xl mx-auto pt-8">

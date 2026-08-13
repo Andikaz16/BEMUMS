@@ -79,10 +79,14 @@ export default function Artikel({ db }) {
             </h2>
 
             <div className="prose prose-invert prose-p:font-body prose-p:text-neutral-300 prose-p:leading-relaxed max-w-none prose-lg">
-              {/* Fallback to desc if content is empty */}
-              <p className="whitespace-pre-wrap">
-                {activeArticle.content || activeArticle.desc}
-              </p>
+              {/* Render HTML content properly */}
+              {activeArticle.content ? (
+                <div dangerouslySetInnerHTML={{ __html: activeArticle.content }} />
+              ) : (
+                <p className="whitespace-pre-wrap">
+                  {activeArticle.desc}
+                </p>
+              )}
             </div>
           </div>
         </motion.div>

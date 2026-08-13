@@ -13,6 +13,7 @@ import Volunteer from './components/Volunteer.jsx';
 import AdminCMS from './components/AdminCMS.jsx';
 import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
+import HalamanKalender from './components/HalamanKalender.jsx';
 import { initDB, saveDB } from './db.js';
 import Lenis from 'lenis';
 
@@ -49,7 +50,7 @@ export default function App() {
       const hash = window.location.hash.substring(1);
       if (hash === 'admin') {
         setActivePage('admin');
-      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'hubungi', 'oprec', 'lapor', 'volunteer'].includes(hash)) {
+      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer'].includes(hash)) {
         setActivePage(hash);
       } else {
         // Fallback or default
@@ -123,6 +124,9 @@ export default function App() {
         )}
         {activePage === 'visimisi' && (
           <VisiMisi db={db} />
+        )}
+        {activePage === 'kalender' && (
+          <HalamanKalender db={db} />
         )}
         {activePage === 'hubungi' && (
           <HubungiKami db={db} />

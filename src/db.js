@@ -23,7 +23,7 @@ const DEFAULT_DATA = {
       { id: 'ben', name: "Bendahara Kabinet", logo: "/assets/Bendahara.png", desc: "Mengelola arus kas, transparansi finansial, dan penganggaran kegiatan BEM UMS.", members: [
         { name: "Nisa Hidayanti Putri", title: "Bendahara Kabinet" }
       ]},
-      { id: 3, name: "Kementerian Advokasi & Kesejahteraan Mahasiswa", logo: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png", desc: "Mengawal kebijakan kampus, memperjuangkan hak-hak akademik dan finansial mahasiswa UMS.", members: [
+      { id: 3, name: "Kementerian Advokasi & Kesejahteraan Mahasiswa", logo: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png", desc: "Kementerian yang menjadi representasi BEM UMS dalam hubungan eksternal, baik dengan BEM/organisasi mahasiswa kampus lain, aliansi mahasiswa, maupun mitra di luar kampus.", members: [
         { name: "Anggris Bagus Eka Saputra", title: "Menteri" },
         { name: "Pinkan Nuraini", title: "Sekretaris Menteri" },
         { name: "Abdullah Tsaqif Imtiyazi", title: "Staff Menteri" },
@@ -32,7 +32,7 @@ const DEFAULT_DATA = {
         { name: "Sherlina Devi Oktavia", title: "Staff Menteri" },
         { name: "Alya Nabila", title: "Staff Menteri" }
       ]},
-      { id: 1, name: "Kementerian Dalam Negeri", logo: "/assets/Kementerian dalam negeri.png", desc: "Mengoordinasikan hubungan internal organisasi, fakultas, dan lembaga mahasiswa di lingkungan UMS.", members: [
+      { id: 1, name: "Kementerian Dalam Negeri", logo: "/assets/Kementerian dalam negeri.png", desc: "Kementerian yang berfokus pada konsolidasi dan hubungan internal kampus, yaitu menjaga komunikasi dan sinergi antara BEM UMS dengan lembaga-lembaga kemahasiswaan internal seperti Himpunan Mahasiswa Program Studi (HMP), Unit Kegiatan Mahasiswa (UKM), dan Dewan Perwakilan Mahasiswa (DPM).", members: [
         { name: "Firda Hayyuning Nusa", title: "Menteri" },
         { name: "Shilvy Ameilina Putri", title: "Sekretaris Menteri" },
         { name: "Febriani Sekar Cikal", title: "Staff Menteri" },
@@ -41,7 +41,7 @@ const DEFAULT_DATA = {
         { name: "Ridwan Dimas Arya Rangga Pangestu", title: "Staff Menteri" },
         { name: "Astriana Dwi Yuliyanti", title: "Staff Menteri" }
       ]},
-      { id: 5, name: "Kementerian Pergerakan", logo: "/assets/Kementerian Pergerakan.png", desc: "Menjadi lokomotif pergerakan sosial-politik dan kebangsaan, merespons isu-isu strategis secara tangkas dan kritis.", members: [
+      { id: 5, name: "Kementerian Pergerakan", logo: "/assets/Kementerian Pergerakan.png", desc: "Kementerian yang menjadi motor penggerak sikap kritis mahasiswa, dengan fokus pada pengkajian isu-isu strategis serta penyikapan dan penyuaraan aspirasi mahasiswa atas isu kampus, daerah, maupun nasional.", members: [
         { name: "Riezky Prayudha Anggito Prabowo", title: "Menteri" },
         { name: "Hafidh Dzaky Hananta", title: "Sekretaris Menteri" },
         { name: "Ahmad Muwaffiqul Choir", title: "Staff Menteri" },
@@ -50,7 +50,7 @@ const DEFAULT_DATA = {
         { name: "Rafa Hanif Maulida", title: "Staff Menteri" },
         { name: "Muhammad Rifqi Amani", title: "Staff Menteri" }
       ]},
-      { id: 4, name: "Kementerian Pengembangan Organisasi & Profesionalisme", logo: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png", desc: "Menyelenggarakan pelatihan kepemimpinan, kaderisasi, dan pengembangan potensi keorganisasian mahasiswa.", members: [
+      { id: 4, name: "Kementerian Pengembangan Organisasi & Profesionalisme", logo: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png", desc: "Kementerian yang berfokus pada pengembangan kapasitas sumber daya manusia (SDM) pengurus BEM UMS serta peningkatan tata kelola organisasi yang profesional.", members: [
         { name: "Bramantyo Ikhsanul Hakim", title: "Menteri" },
         { name: "Sheila Mei Lisa", title: "Sekretaris Menteri" },
         { name: "Vivia Ayu Maharani", title: "Staff Menteri" },
@@ -60,7 +60,7 @@ const DEFAULT_DATA = {
         { name: "Burhanuddin Alhakim", title: "Staff Menteri" },
         { name: "Calista Putri Fatimaheswari", title: "Staff Menteri" }
       ]},
-      { id: 2, name: "Kementerian Luar Negeri", logo: "/assets/Menteri luar neger.png", desc: "Membangun jaringan kemitraan strategis eksternal dengan BEM universitas lain, media, dan instansi nasional.", members: [
+      { id: 2, name: "Kementerian Luar Negeri", logo: "/assets/Menteri luar neger.png", desc: "Kementerian yang menjadi representasi BEM UMS dalam hubungan eksternal, baik dengan BEM/organisasi mahasiswa kampus lain, aliansi mahasiswa, maupun mitra di luar kampus.", members: [
         { name: "Jody Julian Putra Caesar", title: "Menteri" },
         { name: "Arya Firmansyah", title: "Sekretaris Menteri" },
         { name: "Sabrina Qurrotul'ain Dakhan", title: "Staff Menteri" },
@@ -68,7 +68,7 @@ const DEFAULT_DATA = {
         { name: "Aulia Annisa Musdhalifah", title: "Staff Menteri" },
         { name: "Nisa Fadhilah Purnomo", title: "Staff Menteri" }
       ]},
-      { id: 6, name: "Kementerian Media & Informasi", logo: "/assets/medinfo.png", desc: "Membangun citra publik, mengelola media sosial, dan menyebarkan informasi pergerakan BEM UMS secara masif dan kreatif.", members: [
+      { id: 6, name: "Kementerian Media & Informasi", logo: "/assets/medinfo.png", desc: "Kementerian yang mengelola seluruh publikasi, dokumentasi, dan komunikasi informasi BEM UMS kepada mahasiswa maupun publik, sekaligus menjaga citra dan branding organisasi.", members: [
         { name: "Chandra Nur Prasetya", title: "Menteri" },
         { name: "Farida Amani", title: "Sekretaris Menteri" },
         { name: "Muhammad Afrizal Zaini", title: "Staff Menteri" },
@@ -121,8 +121,8 @@ const DEFAULT_DATA = {
 
   // 7. Jadilah Volunteer
   volunteerCatalog: [
-    { id: 1, title: "Volunteer UMS Mengajar", isOpen: true, requirements: "Mahasiswa aktif UMS minimal semester 3, memiliki minat mengajar anak-anak.", jobdesc: "Mengajar sekolah dasar di pinggiran kota selama 3 bulan.", schedule: "Agustus - Oktober 2026", applicants: [] },
-    { id: 2, title: "Panitia Aksi Peduli Lingkungan", isOpen: false, requirements: "Terbuka untuk seluruh mahasiswa aktif UMS.", jobdesc: "Mengoordinasi aksi penanaman 1000 pohon di kawasan Lereng Lawu.", schedule: "Selesai (Juli 2026)", applicants: [] }
+    { id: 1, title: "Volunteer Kepanitiaan Seleknas PTMAI 2026", isOpen: true, requirements: "Terbuka untuk seluruh mahasiswa aktif UMS.", jobdesc: "Berpartisipasi sebagai panitia untuk menyukseskan agenda Seleksi Nasional PTMAI 2026.", schedule: "Agustus - September 2026", applicants: [] },
+    { id: 2, title: "Volunteer UMS Mengajar", isOpen: true, requirements: "Mahasiswa aktif UMS minimal semester 3, memiliki minat mengajar anak-anak.", jobdesc: "Mengajar sekolah dasar di pinggiran kota selama 3 bulan.", schedule: "Agustus - Oktober 2026", applicants: [] }
   ],
 
   // 8. Visi & Misi
@@ -145,6 +145,20 @@ const DEFAULT_DATA = {
     "/assets/background.png",
     "/assets/foto_presiden.jpg",
     "/assets/foto_wakil.jpg"
+  ],
+  kegiatan: [
+    {
+      id: 1,
+      date: "2026-08-15",
+      title: "Rapat Kerja Paripurna",
+      desc: "Rapat pembahasan program kerja seluruh kementerian BEM UMS 2026."
+    },
+    {
+      id: 2,
+      date: "2026-08-17",
+      title: "Upacara Kemerdekaan",
+      desc: "Upacara bendera memperingati HUT RI di Lapangan Utama UMS."
+    }
   ]
 };
 
@@ -166,6 +180,19 @@ export const initDB = (setDb) => {
   const unsubscribe = onSnapshot(DOC_REF, (docSnap) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
+      
+      // Fix bug: Prevent Firebase from overriding local edits if save failed
+      try {
+        const localStr = localStorage.getItem("bem_ums_db");
+        if (localStr) {
+          const localData = JSON.parse(localStr);
+          if (localData.lastUpdated && (!data.lastUpdated || localData.lastUpdated > data.lastUpdated)) {
+            console.log("Local edits are newer. Ignoring old Firebase snapshot.");
+            return;
+          }
+        }
+      } catch (e) {}
+
       // Auto-patch photo, names & roles for Ketua Umum & Wakil in existing session
       if (data.pimpinan && data.pimpinan["2026"]) {
         const fadhil = data.pimpinan["2026"].find(p => p.id === 1);
@@ -202,6 +229,9 @@ export const getDB = () => {
 };
 
 export const saveDB = async (data) => {
+  // Add timestamp to prevent old Firebase snapshots from overriding local data
+  data.lastUpdated = Date.now();
+  
   // Save locally first for instant UI response
   localStorage.setItem("bem_ums_db", JSON.stringify(data));
   

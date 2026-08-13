@@ -13,7 +13,8 @@ export default function Navbar({ activePage, setActivePage }) {
   const tentangItems = [
     { id: 'visimisi', label: 'Visi & Misi' },
     { id: 'kementerian', label: 'Kementerian' },
-    { id: 'struktural', label: 'Struktural' }
+    { id: 'struktural', label: 'Struktural' },
+    { id: 'kalender', label: 'Kalender Kegiatan' }
   ];
 
   const services = [
