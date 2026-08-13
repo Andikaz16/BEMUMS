@@ -136,9 +136,9 @@ const DEFAULT_DATA = {
       "Menyelenggarakan kegiatan pengembangan minat bakat, keilmuan, dan aksi sosial masyarakat secara merata."
     ],
     pillars: [
-      { id: 1, title: "Advokasi & Solutif", desc: "Mendampingi serta memperjuangkan aspirasi dan hak mahasiswa di segala tingkat kebijakan." },
-      { id: 2, title: "Sinergi Kolaboratif", desc: "Memupuk kebersamaan dan kerja sama antar ormawa demi keselarasan gerak mahasiswa." },
-      { id: 3, title: "Aksi Sosial Nyata", desc: "Mengabdi dengan ketulusan hati untuk memecahkan problematika kemasyarakatan." }
+      { id: 1, title: "ORGANIZE", desc: "Membangun ruang-ruang konsolidasi yang inklusif, mempererat solidaritas antar-fakultas, dan menyatukan setiap potensi mahasiswa menjadi kekuatan yang terorganisir." },
+      { id: 2, title: "EDUCATE", desc: "Menghidupkan iklim akademis yang kritis melalui diskusi, wacana publik, dan literasi gerakan guna membekali mahasiswa dengan kesadaran sosial yang tajam." },
+      { id: 3, title: "AGITATE", desc: "Mendorong aksi nyata, mengawal kebijakan kampus maupun nasional, dan berani bersuara tegas menolak segala bentuk ketidakadilan." }
     ]
   },
   galeriPergerakan: [
