@@ -17,8 +17,8 @@ export default function Hero({ db, setActivePage }) {
   const statCards = [
     { id: 1, val: "", title: "Presiden", sub: "BEM UMS 2026", img: "/assets/foto_presiden.jpg" },
     { id: 2, val: "", title: "Wakil presiden", sub: "BEM UMS 2026", img: "/assets/foto_wakil.jpg" },
-    { id: 3, val: "", title: "Seketaris Kabinet", sub: "BEM UMS 2026", img: "/assets/Seketaris.png" },
-    { id: 4, val: "", title: "Bendahara Kabinet", sub: "BEM UMS 2026", img: "/assets/Bendahara.png" },
+    { id: 3, val: "2", title: "Seketaris Kabinet", sub: "BEM UMS 2026", img: "/assets/Seketaris.png" },
+    { id: 4, val: "1", title: "Bendahara Kabinet", sub: "BEM UMS 2026", img: "/assets/Bendahara.png" },
     { id: 5, val: "7", title: "Kementerian", sub: "Advokasi & Kesejahteraan Mahasiswa", img: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png" },
     { id: 6, val: "7", title: "Kementerian", sub: "Dalam Negeri", img: "/assets/Kementerian dalam negeri.png" },
     { id: 7, val: "7", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.png" },
