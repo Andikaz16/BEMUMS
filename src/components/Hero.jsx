@@ -43,7 +43,7 @@ export default function Hero({ db, setActivePage }) {
 
         <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto space-y-6 md:space-y-8">
           <div className="inline-flex items-center gap-3">
-            <span className="font-body text-xs md:text-sm font-black text-primary uppercase tracking-widest bg-black/40 border border-primary px-4 py-1.5 text-white backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.8)]">
+            <span className="font-body text-xs md:text-sm font-black text-black uppercase tracking-widest bg-white rounded-full px-5 py-1.5 shadow-[0_4px_15px_rgba(255,255,255,0.4)]">
               BEM UMS {currentPeriod}
             </span>
           </div>
