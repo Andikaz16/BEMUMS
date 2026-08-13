@@ -28,13 +28,15 @@ export default function KalenderWidget({ db, setActivePage }) {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const dayNames = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
 
   // Helper to format date as YYYY-MM-DD
   const formatDate = (y, m, d) => {
     return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
   };
+
+  const todayStr = formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
 
   // Get events for a specific day string
   const getEventsForDay = (dateStr) => {
@@ -53,13 +55,15 @@ export default function KalenderWidget({ db, setActivePage }) {
     const dayEvents = getEventsForDay(dateStr);
     const hasEvents = dayEvents.length > 0;
     const isSelected = selectedDate === dateStr;
+    const isToday = dateStr === todayStr;
 
     days.push(
       <button
         key={d}
         onClick={() => setSelectedDate(dateStr)}
-        className={`relative h-12 md:h-16 flex items-start justify-start p-2 border border-white/5 rounded-lg transition-all
+        className={`relative h-12 md:h-16 flex items-start justify-start p-2 border rounded-lg transition-all
           ${hasEvents ? 'bg-primary/20 hover:bg-primary/40' : 'bg-black/20 hover:bg-white/10'}
+          ${isToday && !isSelected ? 'border-white/50 bg-white/5 ring-1 ring-white/50' : 'border-white/5'}
           ${isSelected ? 'border-primary ring-1 ring-primary shadow-[0_0_15px_rgba(220,20,20,0.4)]' : ''}
         `}
       >

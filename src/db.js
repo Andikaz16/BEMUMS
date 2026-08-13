@@ -121,8 +121,7 @@ const DEFAULT_DATA = {
 
   // 7. Jadilah Volunteer
   volunteerCatalog: [
-    { id: 1, title: "Volunteer Kepanitiaan Seleknas PTMAI 2026", isOpen: true, requirements: "Terbuka untuk seluruh mahasiswa aktif UMS.", jobdesc: "Berpartisipasi sebagai panitia untuk menyukseskan agenda Seleksi Nasional PTMAI 2026.", schedule: "Agustus - September 2026", applicants: [] },
-    { id: 2, title: "Volunteer UMS Mengajar", isOpen: true, requirements: "Mahasiswa aktif UMS minimal semester 3, memiliki minat mengajar anak-anak.", jobdesc: "Mengajar sekolah dasar di pinggiran kota selama 3 bulan.", schedule: "Agustus - Oktober 2026", applicants: [] }
+    { id: 1, title: "Volunteer Kepanitiaan Seleknas PTMAI 2026", isOpen: true, requirements: "Terbuka untuk seluruh mahasiswa aktif UMS.", jobdesc: "Berpartisipasi sebagai panitia untuk menyukseskan agenda Seleksi Nasional PTMAI 2026.", schedule: "Agustus - September 2026", applicants: [] }
   ],
 
   // 8. Visi & Misi
@@ -170,9 +169,9 @@ export const initDB = (setDb) => {
   const localData = localStorage.getItem("bem_ums_db");
   if (localData) {
     setDb(JSON.parse(localData));
-  } else {
-    setDb(DEFAULT_DATA);
   }
+  // Jika tidak ada di lokal, biarkan null agar App.jsx memunculkan layar Loading
+  // hingga data Firebase selesai didownload.
 
   const DOC_REF = doc(firestore, "cms", "data");
 

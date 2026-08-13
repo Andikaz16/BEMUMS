@@ -35,6 +35,8 @@ export default function HalamanKalender({ db }) {
     return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
   };
 
+  const todayStr = formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
   const getEventsForDay = (dateStr) => {
     return kegiatan.filter(k => k.date === dateStr);
   };
@@ -49,13 +51,15 @@ export default function HalamanKalender({ db }) {
     const dayEvents = getEventsForDay(dateStr);
     const hasEvents = dayEvents.length > 0;
     const isSelected = selectedDate === dateStr;
+    const isToday = dateStr === todayStr;
 
     days.push(
       <button
         key={d}
         onClick={() => setSelectedDate(dateStr)}
-        className={`relative h-16 md:h-24 flex flex-col items-start justify-start p-2 md:p-3 border border-white/5 rounded-xl transition-all
+        className={`relative h-16 md:h-24 flex flex-col items-start justify-start p-2 md:p-3 border rounded-xl transition-all
           ${hasEvents ? 'bg-primary/20 hover:bg-primary/40' : 'bg-black/20 hover:bg-white/10'}
+          ${isToday && !isSelected ? 'border-white/50 bg-white/5 ring-2 ring-white/50' : 'border-white/5'}
           ${isSelected ? 'border-primary ring-2 ring-primary shadow-[0_0_20px_rgba(220,20,20,0.4)] scale-[1.02] z-10' : ''}
         `}
       >
