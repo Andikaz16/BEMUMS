@@ -127,13 +127,13 @@ const DEFAULT_DATA = {
 
   // 8. Visi & Misi
   visiMisi: {
-    visi: "MENCIPTAKAN EKOSISTEM KAMPUS YANG INKLUSIF DAN PROGRESIF",
-    desc: "Visi kami adalah menjadi motor penggerak perubahan yang inklusif, transparan, dan berorientasi pada kesejahteraan mahasiswa melalui program kerja yang nyata dan berkelanjutan.",
+    visi: "GERAKAN PROGRESIF DAN KOLEKTIF",
+    desc: "Terciptanya gerakan progresif dan kolektif mahasiswa demi terwujudnya perubahan sosial yang konstruktif dan berkeadilan.",
     misi: [
-      "Mengoptimalkan peran advokasi yang solutif bagi permasalahan akademik dan fasilitas mahasiswa.",
-      "Membangun sinergi kolaboratif antar lembaga kemahasiswaan di tingkat fakultas dan universitas.",
-      "Mendorong digitalisasi layanan informasi dan aspirasi mahasiswa yang transparan dan akuntabel.",
-      "Menyelenggarakan kegiatan pengembangan minat bakat, keilmuan, dan aksi sosial masyarakat secara merata."
+      "Mendorong gerakan progresif untuk memperbarui pola pikir dan aksi mahasiswa agar lebih responsif terhadap perubahan zaman.",
+      "Membangun gerakan kolektif melalui penguatan solidaritas, partisipasi, dan kerja kolaboratif lintas ORMAWA serta seluruh elemen mahasiswa.",
+      "Menghadirkan gerakan konstruktif dengan memposisikan BEM sebagai mitra kritis sekaligus solutif dalam merespons berbagai persoalan kampus dan sosial.",
+      "Mewujudkan gerakan berkeadilan melalui keberpihakan nyata pada perlindungan kepentingan mahasiswa dan masyarakat yang termarjinalkan."
     ],
     pillars: [
       { id: 1, title: "ORGANIZE", desc: "Membangun ruang-ruang konsolidasi yang inklusif, mempererat solidaritas antar-fakultas, dan menyatukan setiap potensi mahasiswa menjadi kekuatan yang terorganisir." },
