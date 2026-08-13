@@ -75,10 +75,10 @@ export default function Hero({ db, setActivePage }) {
               Badan Eksekutif Mahasiswa <br /> Universitas Muhammadiyah Surakarta
             </p>
             <p 
-              className="font-body text-sm md:text-base text-neutral-100 leading-relaxed font-medium"
+              className="font-body text-sm md:text-base text-neutral-100 leading-relaxed font-medium max-w-2xl mx-auto"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,1)' }}
             >
-              Bergerak dengan integritas, berinovasi dengan aksi. Wadah aspirasi mahasiswa Universitas Muhammadiyah Surakarta untuk mewujudkan kampus yang berdaya saing global.
+              Kabinet Kolektiva hadir sebagai wadah kolaborasi aktif dengan semangat kebersamaan, gotong royong, dan kesetaraan untuk memperjuangkan hak mahasiswa dan kemanusiaan.
             </p>
           </motion.div>
           
