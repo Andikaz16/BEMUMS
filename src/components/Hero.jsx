@@ -20,11 +20,11 @@ export default function Hero({ db, setActivePage }) {
     { id: 3, val: "", title: "Seketaris Kabinet", sub: "BEM UMS 2026", img: "/assets/Seketaris.png" },
     { id: 4, val: "", title: "Bendahara Kabinet", sub: "BEM UMS 2026", img: "/assets/Bendahara.png" },
     { id: 5, val: "7", title: "Kementerian", sub: "Advokasi & Kesejahteraan Mahasiswa", img: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png" },
-    { id: 6, val: "7 Staff Menteri", title: "Kementerian", sub: "Dalam Negeri", img: "/assets/Kementerian dalam negeri.png" },
-    { id: 7, val: "7 Staff Menteri", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.png" },
-    { id: 8, val: "8 Staff Menteri", title: "Kementerian", sub: "Pengembangan Organisasi & Profesionalisme", img: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png" },
-    { id: 9, val: "6 Staff Menteri", title: "Kementerian", sub: "Luar Negeri", img: "/assets/Menteri luar neger.png" },
-    { id: 10, val: "7 Staff Menteri", title: "Kementerian", sub: "Media & Informasi", img: "/assets/medinfo.png" },
+    { id: 6, val: "7", title: "Kementerian", sub: "Dalam Negeri", img: "/assets/Kementerian dalam negeri.png" },
+    { id: 7, val: "7", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.png" },
+    { id: 8, val: "8", title: "Kementerian", sub: "Pengembangan Organisasi & Profesionalisme", img: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png" },
+    { id: 9, val: "6", title: "Kementerian", sub: "Luar Negeri", img: "/assets/Menteri luar neger.png" },
+    { id: 10, val: "7", title: "Kementerian", sub: "Media & Informasi", img: "/assets/medinfo.png" },
   ];
 
   return (
