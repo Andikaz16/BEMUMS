@@ -71,7 +71,7 @@ export default function Kementerian({ db }) {
                 <div className="flex items-center gap-6 mb-8">
                   {kem.logo ? (
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-black/50 border border-neutral-800 p-4 flex items-center justify-center shrink-0 shadow-xl group-hover:scale-105 transition-transform duration-500">
-                      <img src={kem.logo} alt={kem.name} className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
+                      <img src={kem.logo} alt={kem.name} className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
                     </div>
                   ) : (
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-black/50 border border-neutral-800 flex items-center justify-center shrink-0 shadow-xl">
