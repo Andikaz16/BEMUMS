@@ -142,7 +142,7 @@ const DEFAULT_DATA = {
     ]
   },
   galeriPergerakan: [
-    "/assets/gedung.jpg",
+    "/assets/background.png",
     "/assets/foto_presiden.jpg",
     "/assets/foto_wakil.jpg"
   ]

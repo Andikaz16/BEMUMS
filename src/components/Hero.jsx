@@ -35,7 +35,7 @@ export default function Hero({ db, setActivePage }) {
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center z-0" 
-          style={{ backgroundImage: "url('/assets/gedung.jpg')" }}
+          style={{ backgroundImage: "url('/assets/background.png')" }}
         ></div>
         
         {/* Soft Radial Gradient for text readability without covering the whole image */}
