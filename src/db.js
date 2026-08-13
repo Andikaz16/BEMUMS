@@ -6,7 +6,7 @@ const DEFAULT_DATA = {
   currentPeriod: "2026",
   pimpinan: {
     "2026": [
-      { id: 1, name: "Muh. Naufal Aulia Darojat", role: "Presiden Mahasiswa", photo: "/assets/foto_presiden.jpg", bio: "Memimpin dengan visi transformasi progresif untuk kemaslahatan mahasiswa UMS." },
+      { id: 1, name: "Muh. Naufal Aulia Darojat", role: "Presiden Mahasiswa", photo: "/assets/foto_presiden.jpg", bio: "Memimpin dengan visi KOLEKTIVA untuk kemaslahatan mahasiswa UMS." },
       { id: 2, name: "Muh. Faris Abid Muwaffaq", role: "Wakil Presiden Mahasiswa", photo: "/assets/foto_wakil.jpg", bio: "Sinergi aksi dan kolaborasi nyata untuk pelayanan terbaik mahasiswa UMS." }
     ],
     "2025": [
@@ -111,7 +111,7 @@ const DEFAULT_DATA = {
   oprec: {
     isOpen: false,
     title: "OPEN RECRUITMENT BEM UMS 2026",
-    desc: "Mari bergabung menjadi bagian dari agen perubahan! Bersama Kabinet Transformasi Progresif, saatnya berdedikasi dan melangkah maju untuk UMS yang lebih berdaya saing global.",
+    desc: "Mari bergabung menjadi bagian dari agen perubahan! Bersama Kabinet KOLEKTIVA, saatnya berdedikasi dan melangkah maju untuk UMS yang lebih berdaya saing global.",
     applicants: []
   },
 

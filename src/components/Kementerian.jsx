@@ -42,7 +42,7 @@ export default function Kementerian({ db }) {
             Profil <span className="text-primary">Kementerian</span>
           </h1>
           <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
-            Mengenal lebih dekat arah gerak, tugas, dan susunan fungsionaris dari setiap kementerian Kabinet Kolektiv BEM UMS {currentPeriod}.
+            Mengenal lebih dekat arah gerak, tugas, dan susunan fungsionaris dari setiap kementerian Kabinet KOLEKTIVA BEM UMS {currentPeriod}.
           </p>
         </div>
       </motion.div>

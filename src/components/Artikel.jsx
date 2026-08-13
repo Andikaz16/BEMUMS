@@ -52,7 +52,7 @@ export default function Artikel({ db }) {
               <img src={activeArticle.thumbnail} alt={activeArticle.title} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-neutral-800 bg-[#050505]">
-                <span className="font-heading font-extrabold tracking-[0.2em] text-4xl opacity-20">KABINET KOLEKTIV</span>
+                <span className="font-heading font-extrabold tracking-[0.2em] text-4xl opacity-20">KABINET KOLEKTIVA</span>
               </div>
             )}
             
@@ -100,7 +100,7 @@ export default function Artikel({ db }) {
         >
           <div>
             <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg">
-              Kabar <span className="text-primary">Kolektiv</span>
+              Kabar <span className="text-primary">KOLEKTIVA</span>
             </h1>
             <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
               Ikuti rilis berita, opini, dan dokumentasi kegiatan resmi BEM UMS.
@@ -159,7 +159,7 @@ export default function Artikel({ db }) {
                     <img src={a.thumbnail} alt={a.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-neutral-700 bg-black/50">
-                      <span className="font-heading font-bold tracking-widest text-xl opacity-30">KOLEKTIV</span>
+                      <span className="font-heading font-bold tracking-widest text-xl opacity-30">KOLEKTIVA</span>
                     </div>
                   )}
                   

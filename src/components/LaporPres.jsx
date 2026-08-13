@@ -40,7 +40,7 @@ export default function LaporPres({ db, onUpdateDB }) {
             LAPOR PRES!
           </h1>
           <p className="text-xs sm:text-sm font-body uppercase font-bold tracking-wider text-secondary">
-            RUANG UTAMA PENYALURAN ASPIRASI — KABINET TRANSFORMASI PROGRESIF
+            RUANG UTAMA PENYALURAN ASPIRASI — KABINET KOLEKTIVA
           </p>
         </div>
 

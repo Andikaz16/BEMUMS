@@ -55,7 +55,7 @@ export default function Hero({ db, setActivePage }) {
             className="font-display text-5xl sm:text-6xl md:text-8xl uppercase leading-none tracking-tight text-white"
             style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}
           >
-            KABINET <span className="text-primary" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}>TRANSFORMASI PROGRESIF</span>
+            KABINET <span className="text-primary" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}>KOLEKTIVA</span>
           </motion.h1>
 
           <motion.div 

@@ -82,7 +82,7 @@ export default function VisiMisi({ db }) {
         >
           <div className="text-center space-y-4">
             <span className="inline-block font-display text-xs text-primary uppercase tracking-widest font-bold border border-primary/30 bg-primary/10 px-4 py-2 rounded-full shadow-[0_0_15px_rgba(220,20,20,0.2)]">
-              KABINET TRANSFORMASI PROGRESIF
+              KABINET KOLEKTIVA
             </span>
             <h2 className="text-4xl md:text-5xl font-display uppercase tracking-tight text-white drop-shadow-md">
               TIGA PILAR ORGANISASI

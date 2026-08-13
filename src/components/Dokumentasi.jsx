@@ -42,7 +42,7 @@ export default function Dokumentasi({ db }) {
         >
           <div>
             <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg">
-              Galeri <span className="text-primary">Kolektiv</span>
+              Galeri <span className="text-primary">KOLEKTIVA</span>
             </h1>
             <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
               Arsip dokumentasi kegiatan, aksi nyata, dan momen berharga BEM UMS.

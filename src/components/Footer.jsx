@@ -13,7 +13,7 @@ export default function Footer({ setActivePage }) {
         transition={{ duration: 1.5, ease: "easeOut" }}
         className="absolute top-1/2 left-1/2 text-[15rem] md:text-[25rem] font-display text-white/5 whitespace-nowrap select-none pointer-events-none z-0"
       >
-        KOLEKTIV
+        KOLEKTIVA
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
