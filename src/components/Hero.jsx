@@ -19,7 +19,7 @@ export default function Hero({ db, setActivePage }) {
     { id: 2, val: "", title: "Wakil presiden", sub: "BEM UMS 2026", img: "/assets/foto_wakil.jpg" },
     { id: 3, val: "", title: "Seketaris Kabinet", sub: "BEM UMS 2026", img: "/assets/Seketaris.png" },
     { id: 4, val: "", title: "Bendahara Kabinet", sub: "BEM UMS 2026", img: "/assets/Bendahara.png" },
-    { id: 5, val: "7 Staff Menteri", title: "Kementerian", sub: "Advokasi & Kesejahteraan Mahasiswa", img: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png" },
+    { id: 5, val: "7", title: "Kementerian", sub: "Advokasi & Kesejahteraan Mahasiswa", img: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png" },
     { id: 6, val: "7 Staff Menteri", title: "Kementerian", sub: "Dalam Negeri", img: "/assets/Kementerian dalam negeri.png" },
     { id: 7, val: "7 Staff Menteri", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.png" },
     { id: 8, val: "8 Staff Menteri", title: "Kementerian", sub: "Pengembangan Organisasi & Profesionalisme", img: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png" },
@@ -112,16 +112,16 @@ export default function Hero({ db, setActivePage }) {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="relative flex-none w-[280px] h-[400px] md:w-[300px] md:h-[450px] rounded-[2rem] overflow-hidden bg-black border border-white/10 group hover:scale-105 transition-all duration-500 shadow-xl hover:shadow-[0_0_60px_-10px_rgba(220,20,20,0.6)] hover:border-primary/30 snap-center cursor-grab active:cursor-grabbing z-10 hover:z-20"
+              className="relative flex-none w-[280px] h-[400px] md:w-[300px] md:h-[450px] rounded-[2rem] overflow-hidden bg-black border border-white/20 group hover:scale-105 transition-all duration-500 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_-10px_rgba(220,20,20,0.6)] hover:border-primary/50 snap-center cursor-grab active:cursor-grabbing z-10 hover:z-20"
             >
               {/* Background Logo / Image */}
               <img 
                 src={stat.img || "/assets/logo_icon.png"} 
                 alt="Logo Background" 
-                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 pointer-events-none"
+                className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 pointer-events-none"
               />
               {/* Gradient Overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
               
               {/* Top Right Stat */}
               <div className="absolute top-6 right-6 text-white font-display text-4xl flex items-start gap-1 drop-shadow-lg pointer-events-none">
