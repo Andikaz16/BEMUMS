@@ -40,6 +40,9 @@ export default function Hero({ db, setActivePage }) {
         
         {/* Soft Radial Gradient for text readability without covering the whole image */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.6)_0%,_rgba(0,0,0,0)_60%)] z-0"></div>
+        
+        {/* Bottom fade to blend with the #3B0505 background below */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#3B0505] to-transparent z-0"></div>
 
         <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto space-y-6 md:space-y-8">
           <div className="inline-flex items-center gap-3">
