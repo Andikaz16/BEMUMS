@@ -165,13 +165,9 @@ import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
 export const initDB = (setDb) => {
-  // Optimistic initial load from localStorage
-  const localData = localStorage.getItem("bem_ums_db");
-  if (localData) {
-    setDb(JSON.parse(localData));
-  }
-  // Jika tidak ada di lokal, biarkan null agar App.jsx memunculkan layar Loading
-  // hingga data Firebase selesai didownload.
+  // Tidak ada lagi loading lokal (localStorage).
+  // Biarkan db state null agar App.jsx menampilkan layar Loading
+  // hingga data Firebase benar-benar selesai didownload.
 
   const DOC_REF = doc(firestore, "cms", "data");
 
@@ -180,17 +176,7 @@ export const initDB = (setDb) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
       
-      // Fix bug: Prevent Firebase from overriding local edits if save failed
-      try {
-        const localStr = localStorage.getItem("bem_ums_db");
-        if (localStr) {
-          const localData = JSON.parse(localStr);
-          if (localData.lastUpdated && (!data.lastUpdated || localData.lastUpdated > data.lastUpdated)) {
-            console.log("Local edits are newer. Ignoring old Firebase snapshot.");
-            return;
-          }
-        }
-      } catch (e) {}
+      // Hapus sistem caching lokal. Semua data murni dari Firebase.
 
       // Auto-patch photo, names & roles for Ketua Umum & Wakil in existing session
       if (data.pimpinan && data.pimpinan["2026"]) {
@@ -208,7 +194,6 @@ export const initDB = (setDb) => {
         }
       }
       
-      localStorage.setItem("bem_ums_db", JSON.stringify(data));
       setDb(data);
     } else {
       // Initialize if empty
@@ -221,20 +206,16 @@ export const initDB = (setDb) => {
   return unsubscribe;
 };
 
-// Deprecated synchronous getDB, only used for initial state fallback
+// Deprecated
 export const getDB = () => {
-  const localData = localStorage.getItem("bem_ums_db");
-  return localData ? JSON.parse(localData) : DEFAULT_DATA;
+  return DEFAULT_DATA;
 };
 
 export const saveDB = async (data) => {
   // Add timestamp to prevent old Firebase snapshots from overriding local data
   data.lastUpdated = Date.now();
   
-  // Save locally first for instant UI response
-  localStorage.setItem("bem_ums_db", JSON.stringify(data));
-  
-  // Then upload to Firebase
+  // Langsung ke Firebase
   try {
     const DOC_REF = doc(firestore, "cms", "data");
     await setDoc(DOC_REF, data);
