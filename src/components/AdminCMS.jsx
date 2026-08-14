@@ -74,7 +74,25 @@ export default function AdminCMS({ db, onUpdateDB }) {
     pillars: db.visiMisi?.pillars || []
   });
 
-  const [kegiatanList, setKegiatanList] = useState(db.kegiatan || []);
+  // Sync forms when database receives an update from Firebase
+  useEffect(() => {
+    if (db.contact) setContactForm(db.contact);
+    if (db.oprec) {
+      setOprecTitle(db.oprec.title);
+      setOprecDesc(db.oprec.desc);
+      setOprecIsOpen(db.oprec.isOpen);
+    }
+    if (db.visiMisi) {
+      setVisiMisiForm({
+        visi: db.visiMisi.visi || '',
+        desc: db.visiMisi.desc || '',
+        misi: db.visiMisi.misi || [],
+        pillars: db.visiMisi.pillars || []
+      });
+    }
+  }, [db.lastUpdated]);
+
+  const kegiatanList = db.kegiatan || [];
   const [newKegiatan, setNewKegiatan] = useState({ date: '', title: '', desc: '' });
   const [editingKegiatanId, setEditingKegiatanId] = useState(null);
 
@@ -87,12 +105,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (editingKegiatanId) {
       const updated = kegiatanList.map(k => k.id === editingKegiatanId ? { ...newKegiatan, id: editingKegiatanId } : k)
         .sort((a,b) => new Date(a.date) - new Date(b.date));
-      setKegiatanList(updated);
       save({ kegiatan: updated });
       setEditingKegiatanId(null);
     } else {
       const updated = [...kegiatanList, { id: Date.now(), ...newKegiatan }].sort((a,b) => new Date(a.date) - new Date(b.date));
-      setKegiatanList(updated);
       save({ kegiatan: updated });
     }
     setNewKegiatan({ date: '', title: '', desc: '' });
@@ -109,7 +125,6 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const handleDeleteKegiatan = (id) => {
     confirmAction("Hapus kegiatan kalender ini?", () => {
       const updated = kegiatanList.filter(k => k.id !== id);
-      setKegiatanList(updated);
       save({ kegiatan: updated });
       if (editingKegiatanId === id) {
         setEditingKegiatanId(null);
