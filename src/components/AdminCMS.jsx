@@ -122,7 +122,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       await onUpdateDB(newData);
       showCustomAlert("Perubahan berhasil dikonfirmasi oleh server Firebase!", "success");
     } catch (error) {
-      showCustomAlert("Gagal terhubung ke Firebase! Periksa koneksi atau izin database.", "error");
+      showCustomAlert("Gagal: " + (error.message || "Unknown error"), "error");
     }
   };
 
