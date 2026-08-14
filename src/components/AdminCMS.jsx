@@ -152,7 +152,32 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        callback(reader.result);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Max width/height for compression
+          const MAX_SIZE = 800;
+          if (width > height && width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          } else if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.7 quality
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          callback(compressedDataUrl);
+        };
+        img.src = reader.result;
       };
       reader.readAsDataURL(file);
     }
@@ -1130,7 +1155,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 <button 
                   onClick={() => {
                     if(!newGaleriImg) return;
-                    onUpdateDB({ ...db, galeriPergerakan: [newGaleriImg, ...(db.galeriPergerakan || [])] });
+                    save({ galeriPergerakan: [newGaleriImg, ...(db.galeriPergerakan || [])] });
                     setNewGaleriImg('');
                   }} 
                   className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-6 py-3 text-sm"
@@ -1152,7 +1177,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             confirmAction('Hapus foto ini?', () => {
                               const newGaleri = [...db.galeriPergerakan];
                               newGaleri.splice(i, 1);
-                              onUpdateDB({ ...db, galeriPergerakan: newGaleri });
+                              save({ galeriPergerakan: newGaleri });
                             });
                           }}
                           className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors"
