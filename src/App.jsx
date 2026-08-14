@@ -87,9 +87,9 @@ export default function App() {
   }, [activePage]);
 
   // Update Database state and save to local storage
-  const handleUpdateDB = (newDB) => {
+  const handleUpdateDB = async (newDB) => {
     setDb(newDB);
-    saveDB(newDB);
+    return saveDB(newDB);
   };
 
   if (!db) {

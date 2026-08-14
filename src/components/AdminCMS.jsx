@@ -116,9 +116,14 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [newMisiText, setNewMisiText] = useState('');
 
   // Save changes wrapper
-  const save = (updatedData) => {
-    onUpdateDB({ ...db, ...updatedData });
-    showCustomAlert('Perubahan berhasil disimpan!', 'success');
+  const save = async (partialData) => {
+    const newData = { ...db, ...partialData };
+    try {
+      await onUpdateDB(newData);
+      showCustomAlert("Perubahan berhasil dikonfirmasi oleh server Firebase!", "success");
+    } catch (error) {
+      showCustomAlert("Gagal terhubung ke Firebase! Periksa koneksi atau izin database.", "error");
+    }
   };
 
   // --- Handler Functions ---

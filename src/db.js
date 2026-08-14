@@ -229,7 +229,7 @@ export const saveDB = async (data) => {
     await setDoc(DOC_REF, data);
   } catch (error) {
     console.error("Error saving to Firebase: ", error);
-    alert("Gagal menyimpan ke server: " + error.message);
+    throw error;
   }
 };
 
