@@ -165,9 +165,13 @@ import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
 export const initDB = (setDb) => {
-  // Tidak ada lagi loading lokal (localStorage).
-  // Biarkan db state null agar App.jsx menampilkan layar Loading
-  // hingga data Firebase benar-benar selesai didownload.
+  // Optimistic initial load agar tidak ada layar hitam "Loading" yang lama
+  const localData = localStorage.getItem("bem_ums_db");
+  if (localData) {
+    setDb(JSON.parse(localData));
+  } else {
+    setDb(DEFAULT_DATA);
+  }
 
   const DOC_REF = doc(firestore, "cms", "data");
 
@@ -176,7 +180,8 @@ export const initDB = (setDb) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
       
-      // Hapus sistem caching lokal. Semua data murni dari Firebase.
+      // Simpan data terbaru dari Firebase ke memori lokal untuk loading cepat berikutnya
+      localStorage.setItem("bem_ums_db", JSON.stringify(data));
 
       // Auto-patch photo, names & roles for Ketua Umum & Wakil in existing session
       if (data.pimpinan && data.pimpinan["2026"]) {
@@ -215,7 +220,10 @@ export const saveDB = async (data) => {
   // Add timestamp to prevent old Firebase snapshots from overriding local data
   data.lastUpdated = Date.now();
   
-  // Langsung ke Firebase
+  // Save locally first for instant UI response (agar tidak ada delay saat admin klik simpan)
+  localStorage.setItem("bem_ums_db", JSON.stringify(data));
+  
+  // Then upload to Firebase
   try {
     const DOC_REF = doc(firestore, "cms", "data");
     await setDoc(DOC_REF, data);
