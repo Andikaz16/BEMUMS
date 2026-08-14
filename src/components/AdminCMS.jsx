@@ -12,12 +12,17 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
   // --- Custom Alert State ---
   const [alertState, setAlertState] = useState({ isOpen: false, message: '', type: 'success' });
+  const [confirmState, setConfirmState] = useState({ isOpen: false, message: '', onConfirm: null });
   
   const showCustomAlert = (message, type = 'success') => {
     setAlertState({ isOpen: true, message, type });
     setTimeout(() => {
       setAlertState(prev => ({ ...prev, isOpen: false }));
     }, 4000);
+  };
+
+  const confirmAction = (message, callback) => {
+    setConfirmState({ isOpen: true, message, onConfirm: callback });
   };
 
   // --- State for Forms ---
@@ -102,7 +107,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteKegiatan = (id) => {
-    if(window.confirm("Hapus kegiatan kalender ini?")) {
+    confirmAction("Hapus kegiatan kalender ini?", () => {
       const updated = kegiatanList.filter(k => k.id !== id);
       setKegiatanList(updated);
       save({ kegiatan: updated });
@@ -110,7 +115,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
         setEditingKegiatanId(null);
         setNewKegiatan({ date: '', title: '', desc: '' });
       }
-    }
+    });
   };
 
   const [newMisiText, setNewMisiText] = useState('');
@@ -120,7 +125,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     const newData = { ...db, ...partialData };
     try {
       await onUpdateDB(newData);
-      showCustomAlert("Perubahan berhasil dikonfirmasi oleh server Firebase!", "success");
+      showCustomAlert("Perubahan berhasil dikonfirmasi dan disimpan ke server!", "success");
     } catch (error) {
       showCustomAlert("Gagal: " + (error.message || "Unknown error"), "error");
     }
@@ -174,10 +179,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteMember = (id) => {
-    if(!confirm('Hapus profil pimpinan ini?')) return;
-    const list = db.pimpinan[selectedPeriod] || [];
-    const updatedPimpinan = { ...db.pimpinan, [selectedPeriod]: list.filter(m => m.id !== id) };
-    onUpdateDB({ ...db, pimpinan: updatedPimpinan });
+    confirmAction('Hapus profil pimpinan ini?', () => {
+      const list = db.pimpinan[selectedPeriod] || [];
+      const updatedPimpinan = { ...db.pimpinan, [selectedPeriod]: list.filter(m => m.id !== id) };
+      onUpdateDB({ ...db, pimpinan: updatedPimpinan });
+    });
   };
 
   // Department Handlers
@@ -209,10 +215,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteDept = (id) => {
-    if(!confirm('Hapus kementerian ini beserta anggotanya?')) return;
-    const list = db.kementerian[selectedPeriod] || [];
-    const updatedKementerian = { ...db.kementerian, [selectedPeriod]: list.filter(d => d.id !== id) };
-    onUpdateDB({ ...db, kementerian: updatedKementerian });
+    confirmAction('Hapus kementerian ini beserta anggotanya?', () => {
+      const list = db.kementerian[selectedPeriod] || [];
+      const updatedKementerian = { ...db.kementerian, [selectedPeriod]: list.filter(d => d.id !== id) };
+      onUpdateDB({ ...db, kementerian: updatedKementerian });
+    });
   };
 
   // Article Handlers
@@ -230,8 +237,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteArticle = (id) => {
-    if(!confirm('Hapus artikel ini?')) return;
-    onUpdateDB({ ...db, articles: db.articles.filter(a => a.id !== id) });
+    confirmAction('Hapus artikel ini?', () => {
+      onUpdateDB({ ...db, articles: db.articles.filter(a => a.id !== id) });
+    });
   };
 
   const handleAddCategory = () => {
@@ -261,8 +269,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteAlbum = (id) => {
-    if(!confirm('Hapus album ini?')) return;
-    onUpdateDB({ ...db, albums: db.albums.filter(a => a.id !== id) });
+    confirmAction('Hapus album ini?', () => {
+      onUpdateDB({ ...db, albums: db.albums.filter(a => a.id !== id) });
+    });
   };
 
   // Volunteer Handlers
@@ -279,8 +288,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteVol = (id) => {
-    if(!confirm('Hapus katalog volunteer ini?')) return;
-    onUpdateDB({ ...db, volunteerCatalog: db.volunteerCatalog.filter(v => v.id !== id) });
+    confirmAction('Hapus katalog volunteer ini?', () => {
+      onUpdateDB({ ...db, volunteerCatalog: db.volunteerCatalog.filter(v => v.id !== id) });
+    });
   };
 
   // Export JSON (for backup/rekap)
@@ -1124,10 +1134,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button 
                           onClick={() => {
-                            if(!confirm('Hapus foto ini?')) return;
-                            const newGaleri = [...db.galeriPergerakan];
-                            newGaleri.splice(i, 1);
-                            onUpdateDB({ ...db, galeriPergerakan: newGaleri });
+                            confirmAction('Hapus foto ini?', () => {
+                              const newGaleri = [...db.galeriPergerakan];
+                              newGaleri.splice(i, 1);
+                              onUpdateDB({ ...db, galeriPergerakan: newGaleri });
+                            });
                           }}
                           className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors"
                         >
@@ -1481,13 +1492,13 @@ export default function AdminCMS({ db, onUpdateDB }) {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent blur-sm"></div>
               
               <div className="relative z-10 flex flex-col items-center gap-5">
-                {/* Logo with gentle pulse */}
+                {/* Logo with White Glow */}
                 <motion.div 
-                  animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px rgba(185,0,20,0)", "0 0 30px rgba(185,0,20,0.3)", "0 0 0px rgba(185,0,20,0)"] }}
+                  animate={{ scale: [1, 1.05, 1], filter: ["drop-shadow(0 0 10px rgba(255,255,255,0.2))", "drop-shadow(0 0 25px rgba(255,255,255,0.6))", "drop-shadow(0 0 10px rgba(255,255,255,0.2))"] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-20 h-20 bg-black/50 border border-white/5 p-3 rounded-2xl flex items-center justify-center mb-2"
+                  className="w-24 h-24 flex items-center justify-center mb-2"
                 >
-                  <img src="/assets/logo-bem.png" alt="BEM UMS" className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
+                  <img src="/assets/logo-bem.png" alt="BEM UMS" className="w-full h-full object-contain" />
                 </motion.div>
                 
                 <div className="space-y-2">
@@ -1505,6 +1516,67 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 >
                   Tutup
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modern Center Modal Confirm */}
+      <AnimatePresence>
+        {confirmState.isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
+          >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-sm bg-neutral-900/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
+            >
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent blur-sm"></div>
+              
+              <div className="relative z-10 flex flex-col items-center gap-5">
+                <motion.div 
+                  animate={{ scale: [1, 1.05, 1], filter: ["drop-shadow(0 0 10px rgba(255,255,255,0.2))", "drop-shadow(0 0 25px rgba(255,255,255,0.6))", "drop-shadow(0 0 10px rgba(255,255,255,0.2))"] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-24 h-24 flex items-center justify-center mb-2"
+                >
+                  <img src="/assets/logo-bem.png" alt="BEM UMS" className="w-full h-full object-contain" />
+                </motion.div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-display uppercase tracking-widest text-sm font-bold text-white">
+                    Konfirmasi
+                  </h4>
+                  <p className="font-body text-neutral-400 text-sm leading-relaxed">
+                    {confirmState.message}
+                  </p>
+                </div>
+                
+                <div className="flex gap-3 w-full mt-4">
+                  <button 
+                    onClick={() => setConfirmState({ isOpen: false, message: '', onConfirm: null })}
+                    className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white border border-white/10 transition-colors py-3 rounded-xl font-display text-xs uppercase tracking-widest font-bold"
+                  >
+                    Batal
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (confirmState.onConfirm) confirmState.onConfirm();
+                      setConfirmState({ isOpen: false, message: '', onConfirm: null });
+                    }}
+                    className="flex-1 bg-primary/20 hover:bg-primary/40 text-primary border border-primary/30 hover:border-primary/60 transition-colors py-3 rounded-xl font-display text-xs uppercase tracking-widest font-bold"
+                  >
+                    Lanjutkan
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
