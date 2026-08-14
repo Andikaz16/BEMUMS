@@ -83,12 +83,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
       const updated = kegiatanList.map(k => k.id === editingKegiatanId ? { ...newKegiatan, id: editingKegiatanId } : k)
         .sort((a,b) => new Date(a.date) - new Date(b.date));
       setKegiatanList(updated);
+      save({ kegiatan: updated });
       setEditingKegiatanId(null);
-      showCustomAlert("Kegiatan berhasil diperbarui. Jangan lupa Simpan Data!");
     } else {
       const updated = [...kegiatanList, { id: Date.now(), ...newKegiatan }].sort((a,b) => new Date(a.date) - new Date(b.date));
       setKegiatanList(updated);
-      showCustomAlert("Kegiatan berhasil ditambahkan. Jangan lupa Simpan Data!");
+      save({ kegiatan: updated });
     }
     setNewKegiatan({ date: '', title: '', desc: '' });
   };
@@ -102,13 +102,15 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeleteKegiatan = (id) => {
-    const updated = kegiatanList.filter(k => k.id !== id);
-    setKegiatanList(updated);
-    if (editingKegiatanId === id) {
-      setEditingKegiatanId(null);
-      setNewKegiatan({ date: '', title: '', desc: '' });
+    if(window.confirm("Hapus kegiatan kalender ini?")) {
+      const updated = kegiatanList.filter(k => k.id !== id);
+      setKegiatanList(updated);
+      save({ kegiatan: updated });
+      if (editingKegiatanId === id) {
+        setEditingKegiatanId(null);
+        setNewKegiatan({ date: '', title: '', desc: '' });
+      }
     }
-    showCustomAlert("Kegiatan dihapus.");
   };
 
   const [newMisiText, setNewMisiText] = useState('');
