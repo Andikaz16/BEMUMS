@@ -18,31 +18,7 @@ export default function Footer({ setActivePage }) {
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
-        {/* Top Section: CTA & Newsletter */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col lg:flex-row justify-between items-center lg:items-end gap-10 mb-20 border-b border-white/10 pb-16"
-        >
-          <div className="max-w-xl text-center lg:text-left">
-            <h2 className="font-display text-4xl sm:text-5xl uppercase mb-4 drop-shadow-md">GABUNG DALAM <span className="text-primary">PERGERAKAN</span></h2>
-            <p className="text-neutral-400 font-body text-sm leading-relaxed">
-              Dapatkan pembaruan langsung tentang isu kampus, kajian strategis, dan kegiatan sosial BEM UMS langsung di kotak masuk Anda.
-            </p>
-          </div>
-          <div className="w-full max-w-md flex bg-white/5 border border-white/10 rounded-full p-2 backdrop-blur-sm">
-            <input 
-              type="email" 
-              placeholder="Masukkan email kampus Anda..." 
-              className="bg-transparent border-none outline-none text-white px-6 w-full font-body text-sm placeholder:text-neutral-600"
-            />
-            <button className="bg-primary hover:bg-white hover:text-black transition-colors rounded-full px-6 py-3 font-display text-xs uppercase shadow-lg whitespace-nowrap">
-              Berlangganan
-            </button>
-          </div>
-        </motion.div>
+
 
         {/* Middle Section: Links & Info */}
         <motion.div 
@@ -94,19 +70,19 @@ export default function Footer({ setActivePage }) {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="font-display text-lg uppercase mb-6 text-white/80">Ikuti Kami</h4>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
+              <a href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" title="Threads">
+              <a href="https://www.threads.com/@bem.ums" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" title="Threads">
                 <AtSign size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" title="Facebook">
+              <a href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" title="Facebook">
                 <Facebook size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
+              <a href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
                 <Youtube size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
+              <a href="mailto:bem@ums.ac.id" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
                 <Mail size={18} />
               </a>
             </div>

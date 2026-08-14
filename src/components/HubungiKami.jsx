@@ -110,7 +110,7 @@ export default function HubungiKami({ db }) {
 
                 <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-48 shrink-0">
                   <a 
-                    href={contact.instagram} 
+                    href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
                     target="_blank" 
                     rel="noreferrer" 
                     className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600 hover:to-pink-600 text-pink-400 hover:text-white border border-pink-500/30 hover:border-transparent font-bold uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all duration-300"
@@ -118,12 +118,12 @@ export default function HubungiKami({ db }) {
                     Instagram <ExternalLink size={14} />
                   </a>
                   <a 
-                    href={contact.tiktok} 
+                    href="https://www.threads.com/@bem.ums" 
                     target="_blank" 
                     rel="noreferrer" 
                     className="flex items-center justify-center gap-2 w-full bg-neutral-800/50 hover:bg-neutral-100 text-neutral-300 hover:text-black border border-neutral-700 hover:border-transparent font-bold uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all duration-300"
                   >
-                    TikTok <ExternalLink size={14} />
+                    Threads <ExternalLink size={14} />
                   </a>
                 </div>
               </div>
