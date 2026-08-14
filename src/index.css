@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #b90014;
-  --color-primary-container: #e31b23;
+  --color-primary: #ff0000;
+  --color-primary-container: #ff1a1a;
   --color-on-primary: #ffffff;
   --color-on-primary-container: #fff9f8;
   --color-surface: #3B0505;
@@ -51,7 +51,7 @@
 }
 
 .neo-btn {
-  background-color: #b90014;
+  background-color: #ff0000;
   color: #ffffff;
   border: 3px solid #1a1c1c;
   box-shadow: 4px 4px 0px 0px #1a1c1c;
@@ -66,7 +66,7 @@
 .neo-btn:hover {
   transform: translate(-1px, -1px);
   box-shadow: 5px 5px 0px 0px #1a1c1c;
-  background-color: #e31b23;
+  background-color: #ff1a1a;
 }
 
 .neo-btn:active {
@@ -109,8 +109,8 @@
 }
 
 .neo-input:focus {
-  box-shadow: 4px 4px 0px 0px #b90014;
-  border-color: #b90014;
+  box-shadow: 4px 4px 0px 0px #ff0000;
+  border-color: #ff0000;
 }
 
 .heading-koran {
@@ -171,4 +171,5 @@ html.lenis, html.lenis body { height: auto; }
 
 .no-scrollbar::-webkit-scrollbar { display: none !important; }
 .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
 
