@@ -58,9 +58,8 @@ export default function Hero({ db, setActivePage }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl uppercase leading-[0.9] tracking-tight text-white mb-6"
-            style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}
           >
-            KABINET <span className="text-primary" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.9), 0 2px 5px rgba(0,0,0,0.8)' }}>KOLEKTIVA</span>
+            KABINET <span className="text-primary">KOLEKTIVA</span>
           </motion.h1>
 
           <motion.div 
@@ -71,13 +70,11 @@ export default function Hero({ db, setActivePage }) {
           >
             <p 
               className="font-display text-lg sm:text-3xl md:text-4xl uppercase text-neutral-100 leading-snug"
-              style={{ textShadow: '0 4px 15px rgba(0,0,0,0.9)' }}
             >
               Badan Eksekutif Mahasiswa <br /> Universitas Muhammadiyah Surakarta
             </p>
             <p 
               className="font-body text-sm md:text-base lg:text-lg text-neutral-100 leading-relaxed font-medium max-w-2xl mx-auto mt-4"
-              style={{ textShadow: '0 2px 10px rgba(0,0,0,1)' }}
             >
               Kabinet Kolektiva hadir sebagai wadah kolaborasi aktif dengan semangat kebersamaan, gotong royong, dan kesetaraan untuk memperjuangkan hak mahasiswa dan kemanusiaan.
             </p>
