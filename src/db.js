@@ -164,7 +164,7 @@ const DEFAULT_DATA = {
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
-export const initDB = (setDb) => {
+export const initDB = (setDb, setIsFirebaseLoaded) => {
   // Optimistic initial load agar tidak ada layar hitam "Loading" yang lama
   const localData = localStorage.getItem("bem_ums_db");
   if (localData) {
@@ -200,12 +200,15 @@ export const initDB = (setDb) => {
       }
       
       setDb(data);
+      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     } else {
       // Initialize if empty
       setDoc(DOC_REF, DEFAULT_DATA);
+      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     }
   }, (error) => {
     console.error("Firebase sync error: ", error);
+    if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
   });
 
   return unsubscribe;

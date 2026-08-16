@@ -19,6 +19,7 @@ import Lenis from 'lenis';
 
 export default function App() {
   const [db, setDb] = useState(null);
+  const [isFirebaseLoaded, setIsFirebaseLoaded] = useState(false);
   const [activePage, setActivePage] = useState('beranda');
   
   // Auth state for Admin CMS
@@ -33,7 +34,7 @@ export default function App() {
 
   // Initialize DB from Firebase
   useEffect(() => {
-    const unsubscribe = initDB(setDb);
+    const unsubscribe = initDB(setDb, setIsFirebaseLoaded);
     return () => unsubscribe && unsubscribe();
   }, []);
 
@@ -142,7 +143,14 @@ export default function App() {
         )}
         {activePage === 'admin' && (
           isAdminLoggedIn ? (
-            <AdminCMS db={db} onUpdateDB={handleUpdateDB} />
+            isFirebaseLoaded ? (
+              <AdminCMS db={db} onUpdateDB={handleUpdateDB} />
+            ) : (
+              <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center flex-col gap-4">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <div className="text-white font-display uppercase tracking-widest text-sm">Sinkronisasi Server...</div>
+              </div>
+            )
           ) : (
             <AdminLogin onLoginSuccess={handleLoginSuccess} />
           )
