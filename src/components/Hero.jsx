@@ -252,10 +252,10 @@ export default function Hero({ db, setActivePage }) {
             {/* Lapor Pres Widget */}
             <div 
               onClick={() => window.open('https://portal-layanan-bem-ums.vercel.app/', '_blank')}
-              className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px]"
+              className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px] isolate"
             >
               {/* Decorative Background Glow */}
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 blur-3xl rounded-full group-hover:bg-primary/40 transition-colors duration-500"></div>
+              <div className="absolute -top-32 -right-32 w-64 h-64 bg-[radial-gradient(circle_at_center,rgba(220,20,20,0.15)_0%,transparent_70%)] group-hover:bg-[radial-gradient(circle_at_center,rgba(220,20,20,0.3)_0%,transparent_70%)] transition-colors duration-500"></div>
 
               <div className="relative z-10">
                 <div className="w-16 h-16 rounded-3xl flex items-center justify-center bg-white/5 border border-white/10 text-white mb-8 group-hover:bg-primary group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(220,20,20,0.8)] transition-all duration-500">
@@ -274,10 +274,10 @@ export default function Hero({ db, setActivePage }) {
             {/* Volunteer Widget */}
             <div 
               onClick={() => setActivePage('volunteer')}
-              className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px]"
+              className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px] isolate"
             >
               {/* Decorative Background Glow */}
-              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-primary/20 blur-3xl rounded-full group-hover:bg-primary/40 transition-colors duration-500"></div>
+              <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[radial-gradient(circle_at_center,rgba(220,20,20,0.15)_0%,transparent_70%)] group-hover:bg-[radial-gradient(circle_at_center,rgba(220,20,20,0.3)_0%,transparent_70%)] transition-colors duration-500"></div>
 
               <div className="relative z-10">
                 <div className="w-16 h-16 rounded-3xl flex items-center justify-center bg-white/5 border border-white/10 text-white mb-8 group-hover:bg-primary group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(220,20,20,0.8)] transition-all duration-500">
