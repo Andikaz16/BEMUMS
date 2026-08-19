@@ -228,6 +228,29 @@ export default function Volunteer({ db, onUpdateDB }) {
                     </motion.div>
                   ) : (
                     <form onSubmit={handleSignup} className="space-y-6">
+                      {/* Tips Panduan Pendaftaran */}
+                      <div className="bg-amber-950/20 border border-amber-800/30 rounded-2xl p-5 space-y-3">
+                        <h4 className="text-sm font-bold uppercase tracking-widest text-amber-400 flex items-center gap-2">
+                          💡 Panduan Pendaftaran
+                        </h4>
+                        {selectedVol.templateUrl ? (
+                          <ol className="text-xs font-body text-amber-200/70 leading-relaxed space-y-1.5 list-decimal list-inside">
+                            <li>Isi <strong className="text-white">Nama, NIM, Fakultas, Email, dan No. HP</strong> pada kolom di bawah.</li>
+                            <li>Download <strong className="text-white">Template Formulir Komitmen</strong> yang tersedia, lalu isi dengan lengkap.</li>
+                            <li>Upload formulir yang sudah diisi ke <strong className="text-white">Google Drive</strong> pribadi Anda.</li>
+                            <li>Atur akses file menjadi <strong className="text-white">"Anyone with the link"</strong>, lalu copy link-nya.</li>
+                            <li>Paste link tersebut di kolom <strong className="text-white">"Link Google Drive Formulir Komitmen"</strong>.</li>
+                            <li>Tuliskan <strong className="text-white">motivasi & komitmen</strong> Anda, lalu klik <strong className="text-white">Kirim Pendaftaran</strong>.</li>
+                          </ol>
+                        ) : (
+                          <ol className="text-xs font-body text-amber-200/70 leading-relaxed space-y-1.5 list-decimal list-inside">
+                            <li>Isi <strong className="text-white">Nama, NIM, Fakultas, Email, dan No. HP</strong> pada kolom di bawah.</li>
+                            <li>Tuliskan <strong className="text-white">motivasi & komitmen</strong> Anda untuk mengikuti program ini.</li>
+                            <li>Klik <strong className="text-white">Kirim Pendaftaran</strong> untuk menyelesaikan proses.</li>
+                          </ol>
+                        )}
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Nama Lengkap *</label>
