@@ -59,7 +59,7 @@ export default function Footer({ setActivePage }) {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="font-display text-lg uppercase mb-6 text-white/80">Layanan Mahasiswa</h4>
             <div className="flex flex-col gap-3 font-body text-sm text-neutral-400 text-center md:text-left">
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('https://portal-layanan-bem-ums.vercel.app/')}>Lapor Pres!</span>
+              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => window.open('https://portal-layanan-bem-ums.vercel.app/', '_blank')}>Lapor Pres!</span>
               <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('volunteer')}>Pendaftaran Volunteer</span>
               <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('oprec')}>Open Recruitment</span>
               <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('hubungi')}>Hubungi Kami</span>
