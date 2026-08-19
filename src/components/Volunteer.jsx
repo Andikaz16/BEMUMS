@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, CheckCircle, X, Users, ClipboardList } from 'lucide-react';
+import { Calendar, CheckCircle, X, Users, ClipboardList, Download, ExternalLink } from 'lucide-react';
 
 export default function Volunteer({ db, onUpdateDB }) {
   const [selectedVol, setSelectedVol] = useState(null);
@@ -10,7 +10,8 @@ export default function Volunteer({ db, onUpdateDB }) {
     email: '',
     phone: '',
     faculty: '',
-    commitment: ''
+    commitment: '',
+    commitmentLink: ''
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -152,7 +153,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                       onClick={() => {
                         setSelectedVol(v);
                         setSubmitted(false);
-                        setFormData({ name: '', nim: '', email: '', phone: '', faculty: '', commitment: '' });
+                        setFormData({ name: '', nim: '', email: '', phone: '', faculty: '', commitment: '', commitmentLink: '' });
                       }}
                       className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(185,0,20,0.3)] hover:shadow-[0_0_30px_rgba(185,0,20,0.5)] transform hover:-translate-y-1"
                     >
@@ -285,6 +286,42 @@ export default function Volunteer({ db, onUpdateDB }) {
                           />
                         </div>
                       </div>
+
+                      {/* Download Template Komitmen */}
+                      {selectedVol.templateUrl && (
+                        <div className="space-y-2 bg-primary/5 border border-primary/20 rounded-xl p-5">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-primary">📄 Download Template Formulir Komitmen</label>
+                          <p className="text-xs font-body text-neutral-400 leading-relaxed mb-3">
+                            Silakan unduh template formulir komitmen di bawah ini, isi dengan lengkap, lalu upload kembali pada kolom di bawahnya.
+                          </p>
+                          <a 
+                            href={selectedVol.templateUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-widest text-xs px-5 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)]"
+                          >
+                            <Download className="w-4 h-4" /> Download Template
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Link Upload Formulir Komitmen */}
+                      {selectedVol.templateUrl && (
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Link Google Drive Formulir Komitmen *</label>
+                          <p className="text-[11px] font-body text-neutral-500 leading-relaxed -mt-1">
+                            Upload formulir yang sudah diisi ke Google Drive Anda, lalu paste link-nya di bawah ini. Pastikan akses file diatur ke "Anyone with the link".
+                          </p>
+                          <input 
+                            type="url" 
+                            required
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body"
+                            value={formData.commitmentLink}
+                            onChange={(e) => setFormData({...formData, commitmentLink: e.target.value})}
+                            placeholder="https://drive.google.com/file/d/..."
+                          />
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Komitmen & Alasan Mengikuti *</label>
