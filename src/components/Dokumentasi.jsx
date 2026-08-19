@@ -108,7 +108,7 @@ export default function Dokumentasi({ db }) {
                   <h3 className="text-xl md:text-2xl font-heading font-extrabold uppercase leading-tight text-white mb-3 group-hover:text-primary transition-colors duration-300">
                     {a.title}
                   </h3>
-                  <p className="text-sm font-body text-neutral-400 line-clamp-2 leading-relaxed mb-4">
+                  <p className="text-sm font-body text-neutral-300 leading-relaxed mb-4">
                     {a.desc}
                   </p>
                   {a.driveUrl && (
