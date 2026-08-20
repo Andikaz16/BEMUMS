@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, CheckCircle, X, Users, ClipboardList, Download, ExternalLink } from 'lucide-react';
+import { addVolunteerApplicant } from '../db';
 
 export default function Volunteer({ db, onUpdateDB }) {
   const [selectedVol, setSelectedVol] = useState(null);
@@ -17,27 +18,20 @@ export default function Volunteer({ db, onUpdateDB }) {
 
   const catalog = db.volunteerCatalog || [];
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     if (!selectedVol) return;
-    if (!formData.name || !formData.nim || !formData.phone || !formData.commitment) {
-      alert('Harap isi Nama, NIM, No. HP, dan Komitmen Anda.');
-      return;
+
+    try {
+      // Use transaction to append safely without overwriting whole DB
+      const applicantData = { ...formData, submittedAt: new Date().toISOString() };
+      await addVolunteerApplicant(selectedVol.id, applicantData);
+      
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengirim pendaftaran, pastikan koneksi internet stabil lalu coba lagi.");
     }
-
-    const updatedCatalog = catalog.map(v => {
-      if (v.id === selectedVol.id) {
-        const applicants = v.applicants || [];
-        return {
-          ...v,
-          applicants: [...applicants, { ...formData, id: Date.now() }]
-        };
-      }
-      return v;
-    });
-
-    onUpdateDB({ ...db, volunteerCatalog: updatedCatalog });
-    setSubmitted(true);
   };
 
   const containerVariants = {

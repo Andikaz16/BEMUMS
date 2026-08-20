@@ -161,7 +161,7 @@ const DEFAULT_DATA = {
   ]
 };
 
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
 export const initDB = (setDb, setIsFirebaseLoaded) => {
@@ -232,8 +232,48 @@ export const saveDB = async (data) => {
     await setDoc(DOC_REF, data);
   } catch (error) {
     console.error("Error saving to Firebase: ", error);
+    alert("GAGAL MENYIMPAN KE SERVER!\n\nUkuran file/foto yang Anda masukkan terlalu besar (batas maksimal server adalah 1MB per kali simpan). \n\nMohon hapus beberapa foto terakhir atau kompres foto menjadi lebih kecil, lalu coba simpan lagi.");
     throw error;
   }
+};
+
+// --- SAFE TRANSACTION FUNCTIONS FOR PUBLIC FORMS ---
+// These prevent a user with stale local cache from wiping the whole database when submitting a form
+
+export const addOprecApplicant = async (applicantData) => {
+  const DOC_REF = doc(firestore, "cms", "data");
+  await runTransaction(firestore, async (transaction) => {
+    const docSnap = await transaction.get(DOC_REF);
+    if (!docSnap.exists()) throw new Error("Database kosong!");
+    const data = docSnap.data();
+    transaction.update(DOC_REF, {
+      oprec: {
+        ...data.oprec,
+        applicants: [...(data.oprec.applicants || []), applicantData]
+      }
+    });
+  });
+};
+
+export const addVolunteerApplicant = async (volId, applicantData) => {
+  const DOC_REF = doc(firestore, "cms", "data");
+  await runTransaction(firestore, async (transaction) => {
+    const docSnap = await transaction.get(DOC_REF);
+    if (!docSnap.exists()) throw new Error("Database kosong!");
+    const data = docSnap.data();
+    
+    const updatedCatalog = (data.volunteerCatalog || []).map(v => {
+      if (v.id === volId) {
+        return {
+          ...v,
+          applicants: [...(v.applicants || []), applicantData]
+        };
+      }
+      return v;
+    });
+    
+    transaction.update(DOC_REF, { volunteerCatalog: updatedCatalog });
+  });
 };
 
 

@@ -8,7 +8,6 @@ import Dokumentasi from './components/Dokumentasi.jsx';
 import VisiMisi from './components/VisiMisi.jsx';
 import HubungiKami from './components/HubungiKami.jsx';
 import Oprec from './components/Oprec.jsx';
-import LaporPres from './components/LaporPres.jsx';
 import Volunteer from './components/Volunteer.jsx';
 import AdminCMS from './components/AdminCMS.jsx';
 import AdminLogin from './components/AdminLogin.jsx';
@@ -134,9 +133,6 @@ export default function App() {
         )}
         {activePage === 'oprec' && (
           <Oprec db={db} onUpdateDB={handleUpdateDB} />
-        )}
-        {activePage === 'lapor' && (
-          <LaporPres db={db} onUpdateDB={handleUpdateDB} />
         )}
         {activePage === 'volunteer' && (
           <Volunteer db={db} onUpdateDB={handleUpdateDB} />

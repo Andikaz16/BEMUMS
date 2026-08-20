@@ -159,7 +159,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
           let height = img.height;
           
           // Max width/height for compression
-          const MAX_SIZE = 800;
+          const MAX_SIZE = 600;
           if (width > height && width > MAX_SIZE) {
             height *= MAX_SIZE / width;
             width = MAX_SIZE;
@@ -173,8 +173,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          // Compress to JPEG with 0.7 quality
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          // Compress to JPEG with 0.6 quality
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
           callback(compressedDataUrl);
         };
         img.src = reader.result;

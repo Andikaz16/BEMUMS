@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { addOprecApplicant } from '../db';
 
 export default function Oprec({ db, onUpdateDB }) {
-  const oprec = db.oprec || {};
+  const oprec = db.oprec || { isOpen: false, title: "", desc: "", applicants: [] };
   const [formData, setFormData] = useState({
     name: '',
     nim: '',
@@ -19,7 +20,7 @@ export default function Oprec({ db, onUpdateDB }) {
   // Available Ministries
   const kementerians = db.kementerian[db.currentPeriod] || [];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!oprec.isOpen) {
       alert('Pendaftaran saat ini sedang ditutup.');
@@ -30,11 +31,14 @@ export default function Oprec({ db, onUpdateDB }) {
       return;
     }
 
-    const updatedApplicants = [...(oprec.applicants || []), { ...formData, id: Date.now() }];
-    const updatedOprec = { ...oprec, applicants: updatedApplicants };
-    
-    onUpdateDB({ ...db, oprec: updatedOprec });
-    setSubmitted(true);
+    const applicantData = { ...formData, id: Date.now() };
+    try {
+      await addOprecApplicant(applicantData);
+      setSubmitted(true);
+    } catch(err) {
+      console.error(err);
+      alert("Gagal mengirim pendaftaran, coba lagi nanti.");
+    }
   };
 
   return (
