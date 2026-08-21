@@ -38,7 +38,12 @@ export default function HalamanKalender({ db }) {
   const todayStr = formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
 
   const getEventsForDay = (dateStr) => {
-    return kegiatan.filter(k => k.date === dateStr);
+    return kegiatan.filter(k => {
+      if (k.endDate) {
+        return dateStr >= k.date && dateStr <= k.endDate;
+      }
+      return k.date === dateStr;
+    });
   };
 
   const days = [];

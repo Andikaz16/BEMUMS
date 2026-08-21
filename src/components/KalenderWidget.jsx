@@ -40,7 +40,12 @@ export default function KalenderWidget({ db, setActivePage }) {
 
   // Get events for a specific day string
   const getEventsForDay = (dateStr) => {
-    return kegiatan.filter(k => k.date === dateStr);
+    return kegiatan.filter(k => {
+      if (k.endDate) {
+        return dateStr >= k.date && dateStr <= k.endDate;
+      }
+      return k.date === dateStr;
+    });
   };
 
   const days = [];
