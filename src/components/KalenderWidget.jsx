@@ -133,7 +133,7 @@ export default function KalenderWidget({ db, setActivePage }) {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="flex flex-col items-center text-center space-y-4"
               >
-                <img src="/assets/logo-bem.png" alt="BEM Mascot" className="w-56 h-56 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]" />
+                <img src="/assets/maskot_bem.png" alt="BEM Mascot" className="w-72 h-72 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] -mt-4" />
                 <div>
                   <h4 className="font-display text-xl text-white">Pilih Tanggal</h4>
                   <p className="font-body text-xs text-neutral-400 mt-2 max-w-[200px] leading-relaxed mx-auto">
