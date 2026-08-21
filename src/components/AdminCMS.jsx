@@ -65,10 +65,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
   // Volunteer Catalog Form
   const [volForm, setVolForm] = useState({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '', templateUrl: '' });
   const [isEditingVol, setIsEditingVol] = useState(false);
+  const [isAddingVol, setIsAddingVol] = useState(false);
 
   // Silatnas Catalog Form
   const [silatnasForm, setSilatnasForm] = useState({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
   const [isEditingSilatnas, setIsEditingSilatnas] = useState(false);
+  const [isAddingSilatnas, setIsAddingSilatnas] = useState(false);
   const [newFieldLabel, setNewFieldLabel] = useState('');
 
   // Visi Misi Form
@@ -330,6 +332,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     onUpdateDB({ ...db, volunteerCatalog: updatedList });
     setVolForm({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '', templateUrl: '' });
     setIsEditingVol(false);
+    setIsAddingVol(false);
   };
 
   const handleDeleteVol = (id) => {
@@ -349,6 +352,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     onUpdateDB({ ...db, silatnasCatalog: updatedList });
     setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
     setIsEditingSilatnas(false);
+    setIsAddingSilatnas(false);
   };
 
   const handleDeleteSilatnas = (id) => {
@@ -1239,6 +1243,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 <button 
                   onClick={() => {
                     setIsEditingVol(false);
+                    setIsAddingVol(true);
                     setVolForm({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '', templateUrl: '' });
                   }} 
                   className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
@@ -1248,7 +1253,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
               </div>
 
               {/* Form Volunteer */}
-              {(volForm.id !== null || isEditingVol || volForm.title !== '') && (
+              {(isAddingVol || isEditingVol) && (
                 <div className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden bg-neutral-800/40 text-white space-y-3">
                   <h4 className="font-display text-sm uppercase">{isEditingVol ? 'Edit Kegiatan Volunteer' : 'Tambah Kegiatan Volunteer Baru'}</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1297,7 +1302,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   <div className="flex gap-2">
                     <button onClick={handleSaveVol} className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-4 py-3 text-xs">Simpan Kegiatan</button>
                     <button 
-                      onClick={() => setVolForm({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '', templateUrl: '' })} 
+                      onClick={() => {
+                        setVolForm({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '', templateUrl: '' });
+                        setIsAddingVol(false);
+                        setIsEditingVol(false);
+                      }} 
                       className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-4 py-3 text-xs"
                     >
                       Batal
@@ -1382,6 +1391,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 <button 
                   onClick={() => {
                     setIsEditingSilatnas(false);
+                    setIsAddingSilatnas(true);
                     setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
                   }} 
                   className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
@@ -1391,7 +1401,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
               </div>
 
               {/* Form Silatnas */}
-              {(silatnasForm.id !== null || isEditingSilatnas || silatnasForm.title !== '') && (
+              {(isAddingSilatnas || isEditingSilatnas) && (
                 <div className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden space-y-3">
                   <h4 className="font-display text-sm uppercase">{isEditingSilatnas ? 'Edit Agenda Silatnas' : 'Tambah Agenda Silatnas Baru'}</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1494,7 +1504,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   <div className="flex gap-2">
                     <button onClick={handleSaveSilatnas} className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-4 py-3 text-xs">Simpan Agenda</button>
                     <button 
-                      onClick={() => setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] })} 
+                      onClick={() => {
+                        setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
+                        setIsAddingSilatnas(false);
+                        setIsEditingSilatnas(false);
+                      }} 
                       className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-4 py-3 text-xs"
                     >
                       Batal
