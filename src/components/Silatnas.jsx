@@ -43,7 +43,7 @@ export default function Silatnas({ db }) {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#0EA5E9] via-[#7DD3FC] to-[#E0F2FE]">
+    <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#082F49] via-[#0369A1] to-[#0EA5E9]">
       
       {/* Background Decorators */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-white/20 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
