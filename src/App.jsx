@@ -9,6 +9,7 @@ import VisiMisi from './components/VisiMisi.jsx';
 import HubungiKami from './components/HubungiKami.jsx';
 import Oprec from './components/Oprec.jsx';
 import Volunteer from './components/Volunteer.jsx';
+import Silatnas from './components/Silatnas.jsx';
 import AdminCMS from './components/AdminCMS.jsx';
 import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
@@ -133,6 +134,9 @@ export default function App() {
         )}
         {activePage === 'oprec' && (
           <Oprec db={db} onUpdateDB={handleUpdateDB} />
+        )}
+        {activePage === 'silatnas' && (
+          <Silatnas db={db} />
         )}
         {activePage === 'volunteer' && (
           <Volunteer db={db} onUpdateDB={handleUpdateDB} />

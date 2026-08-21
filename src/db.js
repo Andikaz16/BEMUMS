@@ -145,6 +145,7 @@ const DEFAULT_DATA = {
     "/assets/foto_presiden.jpg",
     "/assets/foto_wakil.jpg"
   ],
+  silatnasCatalog: [],
   kegiatan: [
     {
       id: 1,
@@ -296,8 +297,25 @@ export const addVolunteerApplicant = async (volId, applicantData) => {
   });
 };
 
-
-
-
+export const addSilatnasApplicant = async (eventId, applicantData) => {
+  const DOC_REF = doc(firestore, "cms", "data");
+  await runTransaction(firestore, async (transaction) => {
+    const docSnap = await transaction.get(DOC_REF);
+    if (!docSnap.exists()) throw new Error("Database kosong!");
+    const data = docSnap.data();
+    
+    const updatedCatalog = (data.silatnasCatalog || []).map(v => {
+      if (v.id === eventId) {
+        return {
+          ...v,
+          applicants: [...(v.applicants || []), applicantData]
+        };
+      }
+      return v;
+    });
+    
+    transaction.update(DOC_REF, { silatnasCatalog: updatedCatalog });
+  });
+};
 
 

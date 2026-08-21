@@ -66,6 +66,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [volForm, setVolForm] = useState({ id: null, title: '', isOpen: true, requirements: '', jobdesc: '', schedule: '', templateUrl: '' });
   const [isEditingVol, setIsEditingVol] = useState(false);
 
+  // Silatnas Catalog Form
+  const [silatnasForm, setSilatnasForm] = useState({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
+  const [isEditingSilatnas, setIsEditingSilatnas] = useState(false);
+  const [newFieldLabel, setNewFieldLabel] = useState('');
+
   // Visi Misi Form
   const [visiMisiForm, setVisiMisiForm] = useState({
     visi: db.visiMisi?.visi || '',
@@ -333,6 +338,37 @@ export default function AdminCMS({ db, onUpdateDB }) {
     });
   };
 
+  // Silatnas Handlers
+  const handleSaveSilatnas = () => {
+    let updatedList;
+    if (isEditingSilatnas) {
+      updatedList = (db.silatnasCatalog || []).map(v => v.id === silatnasForm.id ? { ...silatnasForm } : v);
+    } else {
+      updatedList = [...(db.silatnasCatalog || []), { ...silatnasForm, id: Date.now(), applicants: [] }];
+    }
+    onUpdateDB({ ...db, silatnasCatalog: updatedList });
+    setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
+    setIsEditingSilatnas(false);
+  };
+
+  const handleDeleteSilatnas = (id) => {
+    confirmAction('Hapus agenda Silatnas ini?', () => {
+      onUpdateDB({ ...db, silatnasCatalog: (db.silatnasCatalog || []).filter(v => v.id !== id) });
+    });
+  };
+
+  const handleAddExtraField = () => {
+    if (!newFieldLabel.trim()) return;
+    const key = newFieldLabel.trim().toLowerCase().replace(/\s+/g, '_');
+    const newField = { key, label: newFieldLabel.trim(), type: 'text', required: false, placeholder: '' };
+    setSilatnasForm({ ...silatnasForm, extraFields: [...(silatnasForm.extraFields || []), newField] });
+    setNewFieldLabel('');
+  };
+
+  const handleRemoveExtraField = (idx) => {
+    setSilatnasForm({ ...silatnasForm, extraFields: silatnasForm.extraFields.filter((_, i) => i !== idx) });
+  };
+
   // Export JSON (for backup/rekap)
   const downloadJSON = (data, filename) => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -429,8 +465,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
             { id: 'oprec', name: '5. Oprec (Gabung)', icon: UserCheck },
             { id: 'galeri', name: '6. Galeri Pergerakan', icon: Image },
             { id: 'volunteer', name: '7. Volunteer', icon: Layers },
-            { id: 'visimisi', name: '8. Visi & Misi', icon: Settings },
-            { id: 'kalender', name: '9. Kalender Kegiatan', icon: Calendar }
+            { id: 'silatnas', name: '8. Silatnas', icon: Users },
+            { id: 'visimisi', name: '9. Visi & Misi', icon: Settings },
+            { id: 'kalender', name: '10. Kalender Kegiatan', icon: Calendar }
           ].map(tab => (
             <button
               key={tab.id}
@@ -1335,7 +1372,205 @@ export default function AdminCMS({ db, onUpdateDB }) {
             </div>
           )}
 
-          {/* TAB 8: VISI MISI */}
+          {/* TAB 8: SILATNAS */}
+          {activeTab === 'silatnas' && (
+            <div className="space-y-8">
+              <h2 className="text-3xl font-display uppercase border-b border-white/10 pb-2">Manajemen Silatnas</h2>
+              
+              <div className="flex justify-between items-center">
+                <h3 className="font-display text-xl uppercase">Agenda Silatnas</h3>
+                <button 
+                  onClick={() => {
+                    setIsEditingSilatnas(false);
+                    setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] });
+                  }} 
+                  className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.4)] hover:shadow-[0_0_25px_rgba(185,0,20,0.6)] border border-primary/50 font-bold px-5 py-2 text-sm"
+                >
+                  Tambah Agenda Silatnas
+                </button>
+              </div>
+
+              {/* Form Silatnas */}
+              {(silatnasForm.id !== null || isEditingSilatnas || silatnasForm.title !== '') && (
+                <div className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden space-y-3">
+                  <h4 className="font-display text-sm uppercase">{isEditingSilatnas ? 'Edit Agenda Silatnas' : 'Tambah Agenda Silatnas Baru'}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="Nama Agenda Silatnas" 
+                      value={silatnasForm.title}
+                      onChange={e => setSilatnasForm({ ...silatnasForm, title: e.target.value })}
+                      className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm md:col-span-2"
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Jadwal Pelaksanaan" 
+                      value={silatnasForm.schedule}
+                      onChange={e => setSilatnasForm({ ...silatnasForm, schedule: e.target.value })}
+                      className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm"
+                    />
+                    <select 
+                      value={silatnasForm.isOpen ? 'open' : 'closed'}
+                      onChange={e => setSilatnasForm({ ...silatnasForm, isOpen: e.target.value === 'open' })}
+                      className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm"
+                    >
+                      <option value="open">DIBUKA</option>
+                      <option value="closed">DITUTUP</option>
+                    </select>
+                    <input 
+                      type="text" 
+                      placeholder="Lokasi (opsional)" 
+                      value={silatnasForm.location}
+                      onChange={e => setSilatnasForm({ ...silatnasForm, location: e.target.value })}
+                      className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm md:col-span-2"
+                    />
+                    <textarea 
+                      placeholder="Deskripsi Kegiatan" 
+                      value={silatnasForm.description}
+                      onChange={e => setSilatnasForm({ ...silatnasForm, description: e.target.value })}
+                      className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-sm md:col-span-2 h-32"
+                    />
+                  </div>
+
+                  {/* Dynamic Extra Fields Builder */}
+                  <div className="border border-white/10 rounded-xl p-4 bg-black/30 space-y-3">
+                    <h5 className="font-display text-xs uppercase text-primary">Kolom Form Tambahan (selain Nama & Kampus)</h5>
+                    <p className="text-[10px] text-neutral-500 font-body">Tambahkan kolom isian form tambahan yang akan muncul di formulir pendaftaran publik.</p>
+                    
+                    {/* List existing extra fields */}
+                    {(silatnasForm.extraFields || []).map((field, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-neutral-800/60 px-3 py-2 rounded-lg">
+                        <span className="text-sm font-body text-white flex-1">{field.label}</span>
+                        <select 
+                          value={field.type}
+                          onChange={e => {
+                            const updated = [...silatnasForm.extraFields];
+                            updated[idx] = { ...updated[idx], type: e.target.value };
+                            setSilatnasForm({ ...silatnasForm, extraFields: updated });
+                          }}
+                          className="text-[10px] bg-black/50 border border-white/10 rounded-lg px-2 py-1 text-white"
+                        >
+                          <option value="text">Teks</option>
+                          <option value="email">Email</option>
+                          <option value="tel">Telepon</option>
+                          <option value="url">URL/Link</option>
+                          <option value="textarea">Teks Panjang</option>
+                        </select>
+                        <label className="flex items-center gap-1 text-[10px] text-neutral-400">
+                          <input 
+                            type="checkbox" 
+                            checked={field.required}
+                            onChange={e => {
+                              const updated = [...silatnasForm.extraFields];
+                              updated[idx] = { ...updated[idx], required: e.target.checked };
+                              setSilatnasForm({ ...silatnasForm, extraFields: updated });
+                            }}
+                          />
+                          Wajib
+                        </label>
+                        <button onClick={() => handleRemoveExtraField(idx)} className="text-red-400 hover:text-red-300 text-xs">✕</button>
+                      </div>
+                    ))}
+
+                    {/* Add new field */}
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Nama kolom baru (cth: NIM, No. HP, Fakultas)" 
+                        value={newFieldLabel}
+                        onChange={e => setNewFieldLabel(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddExtraField())}
+                        className="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none focus:border-primary/50 placeholder-neutral-600 text-xs"
+                      />
+                      <button 
+                        onClick={handleAddExtraField}
+                        className="bg-primary/20 hover:bg-primary/40 text-primary font-bold text-xs px-4 py-2 rounded-lg border border-primary/30 transition-colors"
+                      >
+                        + Tambah
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button onClick={handleSaveSilatnas} className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-4 py-3 text-xs">Simpan Agenda</button>
+                    <button 
+                      onClick={() => setSilatnasForm({ id: null, title: '', isOpen: true, description: '', location: '', schedule: '', extraFields: [] })} 
+                      className="bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/10 shadow-sm font-bold px-4 py-3 text-xs"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* List Silatnas */}
+              <div className="space-y-4">
+                {(db.silatnasCatalog || []).map(v => (
+                  <div key={v.id} className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`px-2 py-0.5 text-[10px] border border-white/10 rounded-xl bg-neutral-800/40 overflow-hidden font-bold uppercase ${
+                          v.isOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {v.isOpen ? 'DIBUKA' : 'DITUTUP'}
+                        </span>
+                        <span className="text-xs text-neutral-400">{v.schedule}</span>
+                      </div>
+                      <h4 className="font-display text-lg uppercase">{v.title}</h4>
+                      {v.location && <p className="text-xs text-neutral-500 mt-0.5">📍 {v.location}</p>}
+                      {v.extraFields && v.extraFields.length > 0 && (
+                        <p className="text-[10px] text-primary mt-1">+ {v.extraFields.length} kolom tambahan: {v.extraFields.map(f => f.label).join(', ')}</p>
+                      )}
+                      
+                      {/* Rekap Pendaftar */}
+                      <div className="mt-3 bg-neutral-800/40 text-white p-2.5 border border-white/10 rounded-xl overflow-hidden max-w-lg">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-display text-[10px] uppercase">Pendaftar ({v.applicants?.length || 0}):</span>
+                          <button 
+                            onClick={() => downloadCSV(v.applicants || [], `rekap_silatnas_${v.title.toLowerCase().replace(/\s+/g, '_')}.csv`)}
+                            className="text-[9px] font-bold uppercase underline hover:text-primary"
+                            disabled={!v.applicants || v.applicants.length === 0}
+                          >
+                            Download Rekap
+                          </button>
+                        </div>
+                        <div className="max-h-24 overflow-y-auto text-[10px]">
+                          {!v.applicants || v.applicants.length === 0 ? (
+                            <span className="text-neutral-400">Belum ada peserta mendaftar.</span>
+                          ) : (
+                            v.applicants.map((app, i) => (
+                              <div key={i} className="border-b border-neutral-300 py-1 last:border-0">
+                                {app.name} — {app.campus}
+                                {Object.keys(app).filter(k => !['name', 'campus', 'submittedAt'].includes(k)).map(k => (
+                                  <span key={k} className="text-neutral-500 ml-2">| {k}: {app[k]}</span>
+                                ))}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 ml-4">
+                      <button 
+                        onClick={() => {
+                          setSilatnasForm(v);
+                          setIsEditingSilatnas(true);
+                        }} 
+                        className="p-2 hover:text-primary"
+                      >
+                        <Edit3 size={16} />
+                      </button>
+                      <button onClick={() => handleDeleteSilatnas(v.id)} className="p-2 hover:text-primary">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 9: VISI MISI */}
           {activeTab === 'visimisi' && (
             <div className="space-y-8">
               <h2 className="text-3xl font-display uppercase border-b border-white/10 pb-2">Manajemen Konten Visi & Misi</h2>
