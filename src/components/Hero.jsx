@@ -121,8 +121,8 @@ export default function Hero({ db, setActivePage }) {
 
               {/* Background Logo / Image */}
               <img 
-                src={stat.img || "/assets/logo_icon.png"} 
-                alt="Logo Background" 
+                src={stat.img || "/assets/maskot_bem.png"} 
+                alt="Maskot Background" 
                 className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 pointer-events-none z-10 relative"
               />
               {/* Gradient Overlay for text readability */}
