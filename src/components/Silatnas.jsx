@@ -166,11 +166,11 @@ export default function Silatnas({ db }) {
               </motion.div>
                 ))}
               </div>
-              <motion.div variants={itemVariants} className="flex items-center justify-center p-8 bg-neutral-900/30 backdrop-blur-md rounded-3xl border border-white/5">
+              <motion.div variants={itemVariants} className="flex items-center justify-center p-4">
                 <img 
-                  src="/assets/logo_silatnas.jpg" 
+                  src="/assets/logo_silatnas.png" 
                   alt="Logo Silatnas" 
-                  className="w-full max-w-sm h-auto object-contain mix-blend-screen opacity-90 drop-shadow-[0_0_25px_rgba(14,165,233,0.3)]"
+                  className="w-full h-full object-contain max-h-[500px] drop-shadow-[0_0_25px_rgba(14,165,233,0.5)]"
                 />
               </motion.div>
             </>
