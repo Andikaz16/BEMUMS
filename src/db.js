@@ -207,7 +207,6 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
       // Auto-patch Kalender Kegiatan
       if (data.kegiatan) {
         const eventsToAdd = [
-          { id: 'masta-2026', title: "Rangkaian Masta Mahasiswa Baru", desc: "Universitaria, Fakultaria, Ekspo UKM, Tes Baca Al-Qur'an, dan Pretest TOEP.", date: "2026-08-31", endDate: "2026-09-05" },
           { id: 'kuliah-1-2026', title: "Masa Kuliah Hari Pertama", desc: "Awal perkuliahan Semester Ganjil TA 2026/2027.", date: "2026-09-07" },
           { id: 'uts-2026', title: "Ujian Tengah Semester (UTS)", desc: "UTS Semester Ganjil TA 2026/2027.", date: "2026-11-02", endDate: "2026-11-14" },
           { id: 'uas-2027', title: "Ujian Akhir Semester (UAS)", desc: "UAS Semester Ganjil TA 2026/2027.", date: "2027-01-04", endDate: "2027-01-16" },
