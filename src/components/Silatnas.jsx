@@ -167,10 +167,23 @@ export default function Silatnas({ db }) {
                 ))}
               </div>
               <motion.div variants={itemVariants} className="flex items-center justify-center p-4">
-                <img 
+                <motion.img 
                   src="/assets/logo_silatnas.png" 
                   alt="Logo Silatnas" 
-                  className="w-full h-full object-contain max-h-[500px] drop-shadow-[0_0_25px_rgba(14,165,233,0.5)]"
+                  className="w-full h-full object-contain max-h-[700px]"
+                  animate={{ 
+                    y: [0, -15, 0],
+                    filter: [
+                      "drop-shadow(0 0 15px rgba(255,255,255,0.3))",
+                      "drop-shadow(0 0 40px rgba(255,255,255,0.6))",
+                      "drop-shadow(0 0 15px rgba(255,255,255,0.3))"
+                    ]
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
                 />
               </motion.div>
             </>
