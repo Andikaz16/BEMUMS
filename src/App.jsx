@@ -51,7 +51,7 @@ export default function App() {
       const hash = window.location.hash.substring(1);
       if (hash === 'admin') {
         setActivePage('admin');
-      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer'].includes(hash)) {
+      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas'].includes(hash)) {
         setActivePage(hash);
       } else {
         // Fallback or default
