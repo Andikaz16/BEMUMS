@@ -159,7 +159,7 @@ export default function HalamanKalender({ db }) {
                     className="flex flex-col items-center justify-center text-center h-full my-auto space-y-6"
                   >
                     <div className="w-56 h-56 bg-white/5 rounded-full flex items-center justify-center border border-white/10 p-6 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                      <img src="/assets/logo-bem.png" alt="BEM" className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]" />
+                      <img src="/assets/maskot_bem.png" alt="Maskot BEM" className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]" />
                     </div>
                     <div>
                       <h3 className="font-display text-2xl text-white mb-2">Pilih Tanggal</h3>
