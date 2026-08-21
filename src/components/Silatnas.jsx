@@ -5,7 +5,7 @@ import { addSilatnasApplicant } from '../db';
 
 export default function Silatnas({ db }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [formData, setFormData] = useState({ name: '', campus: '', jabatan: '', motivasi: '' });
+  const [formData, setFormData] = useState({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -145,7 +145,7 @@ export default function Silatnas({ db }) {
                       onClick={() => {
                         setSelectedEvent(v);
                         setSubmitted(false);
-                        setFormData({ name: '', campus: '', jabatan: '', motivasi: '' });
+                        setFormData({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
                         setExtraFields({});
                       }}
                       className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(185,0,20,0.3)] hover:shadow-[0_0_30px_rgba(185,0,20,0.5)] transform hover:-translate-y-1"
@@ -247,27 +247,50 @@ export default function Silatnas({ db }) {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Jabatan *</label>
-                        <input 
-                          type="text" 
-                          required
-                          className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body"
-                          value={formData.jabatan}
-                          onChange={(e) => setFormData({...formData, jabatan: e.target.value})}
-                          placeholder="Presiden BEM / Menteri / Staff / dll"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Jabatan *</label>
+                          <input 
+                            type="text" 
+                            required
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body"
+                            value={formData.jabatan}
+                            onChange={(e) => setFormData({...formData, jabatan: e.target.value})}
+                            placeholder="Presiden BEM / Menteri / Staff / dll"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">No. WhatsApp Aktif *</label>
+                          <input 
+                            type="tel" 
+                            required
+                            minLength="10"
+                            maxLength="15"
+                            pattern="[0-9]+"
+                            title="Hanya angka, minimal 10 digit, maksimal 15 digit"
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body"
+                            value={formData.nowa}
+                            onChange={(e) => setFormData({...formData, nowa: e.target.value})}
+                            placeholder="08123456789"
+                          />
+                        </div>
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Motivasi & Pesan Kesan *</label>
+                        <div className="flex justify-between items-end">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Motivasi & Pesan Kesan *</label>
+                          <span className={`text-[10px] ${formData.motivasi.length < 30 ? 'text-red-400' : 'text-emerald-400'}`}>
+                            {formData.motivasi.length}/30 karakter
+                          </span>
+                        </div>
                         <textarea 
                           required
+                          minLength="30"
                           rows="4"
                           className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body resize-none"
                           value={formData.motivasi}
                           onChange={(e) => setFormData({...formData, motivasi: e.target.value})}
-                          placeholder="Tuliskan motivasi mengikuti Silatnas dan pesan kesan Anda..."
+                          placeholder="Tuliskan motivasi mengikuti Silatnas dan pesan kesan Anda (minimal 30 karakter)..."
                         ></textarea>
                       </div>
 
