@@ -400,11 +400,23 @@ export default function AdminCMS({ db, onUpdateDB }) {
       reason: "Alasan Mendaftar",
       id: "Waktu Daftar",
       phone: "No Telepon / WA",
-      // untuk volunteer
-      commitment: "Komitmen Waktu"
+      commitment: "Komitmen Waktu",
+      nowa: "No. WhatsApp",
+      campus: "Asal Kampus",
+      jabatan: "Jabatan",
+      motivasi: "Motivasi & Pesan Kesan",
+      submittedAt: "Waktu Daftar"
     };
     
-    const rawKeys = Object.keys(data[0]);
+    let rawKeys = Object.keys(data[0]);
+
+    // Urutkan kolom jika ini adalah rekap silatnas
+    if (filename.includes('silatnas')) {
+      const preferredOrder = ['name', 'nowa', 'campus', 'jabatan', 'motivasi', 'submittedAt'];
+      const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
+      // Hanya gabungkan key yang benar-benar ada di data
+      rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
+    }
     
     // Create CSV rows
     const csvRows = [];
@@ -423,6 +435,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
         if (key === 'id' && typeof val === 'number') {
           const date = new Date(val);
           val = date.toLocaleString('id-ID'); // Format tanggal Indonesia
+        }
+        if (key === 'submittedAt' && typeof val === 'string') {
+          const date = new Date(val);
+          if (!isNaN(date.getTime())) {
+            val = date.toLocaleString('id-ID');
+          }
         }
         
         // Escape quotes and wrap in quotes to prevent issue with semicolon/commas inside text
