@@ -43,7 +43,7 @@ export default function Silatnas({ db }) {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#0EA5E9] to-[#E0F2FE]">
+    <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#0EA5E9] via-[#7DD3FC] to-[#E0F2FE]">
       
       {/* Background Decorators */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-white/20 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
@@ -66,7 +66,7 @@ export default function Silatnas({ db }) {
             <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg">
               <span className="text-white drop-shadow-md">SILATNAS</span>
             </h1>
-            <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
+            <p className="font-body text-white font-bold mt-4 max-w-2xl text-lg md:text-xl">
               Silaturahmi Nasional — wadah konsolidasi & mempererat ukhuwah antar BEM se-Indonesia.
             </p>
           </div>
@@ -77,7 +77,7 @@ export default function Silatnas({ db }) {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch"
         >
           {catalog.length === 0 ? (
              <motion.div variants={itemVariants} className="col-span-full py-20 text-center">
@@ -86,12 +86,14 @@ export default function Silatnas({ db }) {
               </div>
             </motion.div>
           ) : (
-            catalog.map(v => (
-              <motion.div 
-                variants={itemVariants}
-                key={v.id} 
-                className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 flex flex-col justify-between overflow-hidden hover:border-[#0EA5E9]/50 transition-colors duration-500 shadow-2xl"
-              >
+            <>
+              <div className="space-y-8 flex flex-col h-full">
+                {catalog.map(v => (
+                  <motion.div 
+                    variants={itemVariants}
+                    key={v.id} 
+                    className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 flex flex-col justify-between overflow-hidden hover:border-[#0EA5E9]/50 transition-colors duration-500 shadow-2xl flex-1"
+                  >
                 {/* Glow Effect */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#0369A1]/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-[#0369A1]/20 transition-colors duration-700"></div>
                 
@@ -162,7 +164,16 @@ export default function Silatnas({ db }) {
                   )}
                 </div>
               </motion.div>
-            ))
+                ))}
+              </div>
+              <motion.div variants={itemVariants} className="flex items-center justify-center p-8 bg-neutral-900/30 backdrop-blur-md rounded-3xl border border-white/5">
+                <img 
+                  src="/assets/logo_silatnas.jpg" 
+                  alt="Logo Silatnas" 
+                  className="w-full max-w-sm h-auto object-contain mix-blend-screen opacity-90 drop-shadow-[0_0_25px_rgba(14,165,233,0.3)]"
+                />
+              </motion.div>
+            </>
           )}
         </motion.div>
 
