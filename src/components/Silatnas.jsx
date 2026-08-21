@@ -43,11 +43,11 @@ export default function Silatnas({ db }) {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden">
+    <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#0EA5E9] to-[#E0F2FE]">
       
       {/* Background Decorators */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#3A5A40]/40 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#3A5A40]/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-white/20 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#0369A1]/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
@@ -59,12 +59,12 @@ export default function Silatnas({ db }) {
         >
           <div>
             <div className="inline-flex items-center gap-2 mb-4">
-              <span className="flex items-center gap-2 text-xs font-bold font-body text-[#A3B18A] uppercase tracking-widest bg-[#3A5A40]/20 border border-[#588157]/30 px-4 py-2 rounded-full">
+              <span className="flex items-center gap-2 text-xs font-bold font-body text-white drop-shadow-md uppercase tracking-widest bg-[#0369A1]/20 border border-[#0EA5E9]/30 px-4 py-2 rounded-full">
                 <Globe className="w-4 h-4" /> Silaturahmi Nasional
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg">
-              <span className="text-[#A3B18A]">SILATNAS</span>
+              <span className="text-white drop-shadow-md">SILATNAS</span>
             </h1>
             <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
               Silaturahmi Nasional — wadah konsolidasi & mempererat ukhuwah antar BEM se-Indonesia.
@@ -90,10 +90,10 @@ export default function Silatnas({ db }) {
               <motion.div 
                 variants={itemVariants}
                 key={v.id} 
-                className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 flex flex-col justify-between overflow-hidden hover:border-[#588157]/50 transition-colors duration-500 shadow-2xl"
+                className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 flex flex-col justify-between overflow-hidden hover:border-[#0EA5E9]/50 transition-colors duration-500 shadow-2xl"
               >
                 {/* Glow Effect */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#3A5A40]/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-[#3A5A40]/20 transition-colors duration-700"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#0369A1]/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-[#0369A1]/20 transition-colors duration-700"></div>
                 
                 <div className="relative z-10">
                   {/* Status Badge */}
@@ -111,14 +111,14 @@ export default function Silatnas({ db }) {
                     </span>
                   </div>
 
-                  <h3 className="text-3xl font-heading font-extrabold uppercase tracking-tight text-white mb-6 group-hover:text-[#A3B18A] transition-colors">
+                  <h3 className="text-3xl font-heading font-extrabold uppercase tracking-tight text-white mb-6 group-hover:text-white transition-colors">
                     {v.title}
                   </h3>
                   
                   <div className="space-y-5 mb-8">
                     {v.location && (
                       <div>
-                        <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#A3B18A] mb-2">
+                        <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white drop-shadow-md mb-2">
                           <MapPin className="w-4 h-4" />
                           Lokasi
                         </h4>
@@ -128,7 +128,7 @@ export default function Silatnas({ db }) {
                       </div>
                     )}
                     <div>
-                      <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#A3B18A] mb-2">
+                      <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white drop-shadow-md mb-2">
                         <Users className="w-4 h-4" />
                         Deskripsi Kegiatan
                       </h4>
@@ -148,7 +148,7 @@ export default function Silatnas({ db }) {
                         setFormData({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
                         setExtraFields({});
                       }}
-                      className="w-full bg-[#588157] hover:bg-[#3A5A40] text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(58,90,64,0.3)] hover:shadow-[0_0_30px_rgba(58,90,64,0.5)] transform hover:-translate-y-1"
+                      className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] transform hover:-translate-y-1"
                     >
                       Daftar Silatnas
                     </button>
@@ -186,12 +186,12 @@ export default function Silatnas({ db }) {
                 {/* Modal Header */}
                 <div className="sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-neutral-800 p-6 md:px-10 flex items-center justify-between z-20">
                   <div>
-                    <span className="text-[#A3B18A] text-xs font-bold uppercase tracking-widest block mb-1">Formulir Pendaftaran</span>
+                    <span className="text-white drop-shadow-md text-xs font-bold uppercase tracking-widest block mb-1">Formulir Pendaftaran</span>
                     <h2 className="text-xl md:text-2xl font-heading font-extrabold uppercase tracking-tight text-white">{selectedEvent.title}</h2>
                   </div>
                   <button 
                     onClick={() => setSelectedEvent(null)}
-                    className="w-10 h-10 bg-black/50 hover:bg-[#588157] text-white rounded-full flex items-center justify-center transition-colors border border-neutral-700 hover:border-transparent"
+                    className="w-10 h-10 bg-black/50 hover:bg-[#0EA5E9] text-white rounded-full flex items-center justify-center transition-colors border border-neutral-700 hover:border-transparent"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -228,7 +228,7 @@ export default function Silatnas({ db }) {
                           <input 
                             type="text" 
                             required
-                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body"
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body"
                             value={formData.name}
                             onChange={(e) => setFormData({...formData, name: e.target.value})}
                             placeholder="John Doe"
@@ -239,7 +239,7 @@ export default function Silatnas({ db }) {
                           <input 
                             type="text" 
                             required
-                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body"
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body"
                             value={formData.campus}
                             onChange={(e) => setFormData({...formData, campus: e.target.value})}
                             placeholder="Universitas Muhammadiyah Surakarta"
@@ -253,7 +253,7 @@ export default function Silatnas({ db }) {
                           <input 
                             type="text" 
                             required
-                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body"
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body"
                             value={formData.jabatan}
                             onChange={(e) => setFormData({...formData, jabatan: e.target.value})}
                             placeholder="Presiden BEM / Menteri / Staff / dll"
@@ -268,7 +268,7 @@ export default function Silatnas({ db }) {
                             maxLength="15"
                             pattern="[0-9]+"
                             title="Hanya angka, minimal 10 digit, maksimal 15 digit"
-                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body"
+                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body"
                             value={formData.nowa}
                             onChange={(e) => setFormData({...formData, nowa: e.target.value})}
                             placeholder="08123456789"
@@ -287,7 +287,7 @@ export default function Silatnas({ db }) {
                           required
                           minLength="30"
                           rows="4"
-                          className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body resize-none"
+                          className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body resize-none"
                           value={formData.motivasi}
                           onChange={(e) => setFormData({...formData, motivasi: e.target.value})}
                           placeholder="Tuliskan motivasi mengikuti Silatnas dan pesan kesan Anda (minimal 30 karakter)..."
@@ -306,7 +306,7 @@ export default function Silatnas({ db }) {
                                 <textarea
                                   required={field.required}
                                   rows="3"
-                                  className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body resize-none md:col-span-2"
+                                  className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body resize-none md:col-span-2"
                                   value={extraFields[field.key] || ''}
                                   onChange={(e) => setExtraFields({...extraFields, [field.key]: e.target.value})}
                                   placeholder={field.placeholder || ''}
@@ -315,7 +315,7 @@ export default function Silatnas({ db }) {
                                 <input 
                                   type={field.type || 'text'}
                                   required={field.required}
-                                  className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#588157] focus:ring-1 focus:ring-[#A3B18A] transition-colors font-body"
+                                  className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body"
                                   value={extraFields[field.key] || ''}
                                   onChange={(e) => setExtraFields({...extraFields, [field.key]: e.target.value})}
                                   placeholder={field.placeholder || ''}
@@ -329,7 +329,7 @@ export default function Silatnas({ db }) {
                       <div className="pt-4 border-t border-neutral-800 flex justify-end">
                         <button 
                           type="submit"
-                          className="bg-[#588157] hover:bg-[#3A5A40] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(58,90,64,0.3)] hover:shadow-[0_0_30px_rgba(58,90,64,0.5)] transform hover:-translate-y-1"
+                          className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_30px_rgba(14,165,233,0.5)] transform hover:-translate-y-1"
                         >
                           Kirim Pendaftaran
                         </button>
