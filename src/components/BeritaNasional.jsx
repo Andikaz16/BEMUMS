@@ -18,12 +18,14 @@ const itemVariants = {
 };
 
 const SOURCES = [
-  { id: 'kompas', name: 'Kompas', color: '#0062CC' },
   { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000' },
-  { id: 'detik', name: 'Detik', color: '#00A529' },
   { id: 'antara', name: 'Antara', color: '#E8B500' },
   { id: 'tempo', name: 'Tempo', color: '#1A56DB' },
   { id: 'cnbc', name: 'CNBC Indonesia', color: '#005596' },
+  { id: 'republika', name: 'Republika', color: '#2E7D32' },
+  { id: 'liputan6', name: 'Liputan6', color: '#E65100' },
+  { id: 'tribun', name: 'Tribunnews', color: '#D32F2F' },
+  { id: 'sindo', name: 'SindoNews', color: '#7B1FA2' },
 ];
 
 export default function BeritaNasional() {
