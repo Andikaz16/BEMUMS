@@ -9,6 +9,54 @@ const RSS_SOURCES = [
   { id: 'antara', name: 'Antara', color: '#E8B500', url: 'https://www.antaranews.com/rss/terkini' },
 ];
 
+function parseRSSXml(xmlText, source) {
+  try {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlText, 'text/xml');
+    const items = xml.querySelectorAll('item');
+    const results = [];
+
+    items.forEach((item, i) => {
+      if (i >= 5) return;
+
+      const title = item.querySelector('title')?.textContent || 'Tanpa Judul';
+      const link = item.querySelector('link')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent;
+      const descRaw = item.querySelector('description')?.textContent || '';
+
+      let thumbnail = null;
+      const enclosure = item.querySelector('enclosure');
+      if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
+        thumbnail = enclosure.getAttribute('url');
+      }
+      const mediaThumbnail = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'thumbnail')[0];
+      if (!thumbnail && mediaThumbnail) {
+        thumbnail = mediaThumbnail.getAttribute('url');
+      }
+      const mediaContent = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
+      if (!thumbnail && mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
+        thumbnail = mediaContent.getAttribute('url');
+      }
+      if (!thumbnail) {
+        const imgMatch = descRaw.match(/<img[^>]+src=["']([^"']+)["']/);
+        if (imgMatch) thumbnail = imgMatch[1];
+      }
+
+      results.push({
+        id: `${source.id}-${i}-${link}`,
+        sourceName: source.name,
+        sourceColor: source.color,
+        title,
+        link,
+        thumbnail,
+        pubDate: pubDate ? new Date(pubDate) : new Date(),
+      });
+    });
+
+    return results;
+  } catch { return []; }
+}
+
 export default function BeritaWidget({ setActivePage }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,21 +67,11 @@ export default function BeritaWidget({ setActivePage }) {
         const allArticles = [];
         const fetchPromises = RSS_SOURCES.map(async (source) => {
           try {
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}&count=5`);
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}`;
+            const res = await fetch(proxyUrl);
             if (!res.ok) return [];
-            const data = await res.json();
-            if (data.status === 'ok' && data.items) {
-              return data.items.map(item => ({
-                id: `${source.id}-${item.guid || item.link}`,
-                sourceName: source.name,
-                sourceColor: source.color,
-                title: item.title || 'Tanpa Judul',
-                link: item.link,
-                thumbnail: item.thumbnail || item.enclosure?.link || null,
-                pubDate: new Date(item.pubDate),
-              }));
-            }
-            return [];
+            const xmlText = await res.text();
+            return parseRSSXml(xmlText, source);
           } catch { return []; }
         });
 
@@ -79,6 +117,10 @@ export default function BeritaWidget({ setActivePage }) {
         <div className="flex items-center justify-center py-16 gap-3">
           <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
           <span className="text-neutral-500 text-sm font-body">Memuat berita...</span>
+        </div>
+      ) : articles.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-neutral-500 font-body text-sm">Berita tidak tersedia saat ini.</p>
         </div>
       ) : (
         <motion.div

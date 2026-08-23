@@ -28,6 +28,63 @@ const RSS_SOURCES = [
   },
 ];
 
+function parseRSSXml(xmlText, source) {
+  try {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlText, 'text/xml');
+    const items = xml.querySelectorAll('item');
+    const results = [];
+
+    items.forEach((item, i) => {
+      if (i >= 15) return;
+
+      const title = item.querySelector('title')?.textContent || 'Tanpa Judul';
+      const link = item.querySelector('link')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent;
+      const descRaw = item.querySelector('description')?.textContent || '';
+
+      // Extract thumbnail from various possible locations
+      let thumbnail = null;
+      const enclosure = item.querySelector('enclosure');
+      if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
+        thumbnail = enclosure.getAttribute('url');
+      }
+      const mediaThumbnail = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'thumbnail')[0];
+      if (!thumbnail && mediaThumbnail) {
+        thumbnail = mediaThumbnail.getAttribute('url');
+      }
+      const mediaContent = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
+      if (!thumbnail && mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
+        thumbnail = mediaContent.getAttribute('url');
+      }
+      // Try to extract image from description HTML
+      if (!thumbnail) {
+        const imgMatch = descRaw.match(/<img[^>]+src=["']([^"']+)["']/);
+        if (imgMatch) thumbnail = imgMatch[1];
+      }
+
+      const description = descRaw.replace(/<[^>]*>/g, '').substring(0, 200);
+
+      results.push({
+        id: `${source.id}-${i}-${link}`,
+        source: source.id,
+        sourceName: source.name,
+        sourceColor: source.color,
+        title,
+        description: description ? description + '...' : '',
+        link,
+        thumbnail,
+        pubDate: pubDate ? new Date(pubDate) : new Date(),
+      });
+    });
+
+    return results;
+  } catch (err) {
+    console.warn(`Gagal parse RSS ${source.name}:`, err);
+    return [];
+  }
+}
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -60,27 +117,14 @@ export default function BeritaNasional() {
 
       const fetchPromises = RSS_SOURCES.map(async (source) => {
         try {
-          const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}&count=15`;
+          // Use allorigins as CORS proxy
+          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}`;
           const response = await fetch(proxyUrl);
           
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           
-          const data = await response.json();
-
-          if (data.status === 'ok' && data.items) {
-            return data.items.map(item => ({
-              id: `${source.id}-${item.guid || item.link}`,
-              source: source.id,
-              sourceName: source.name,
-              sourceColor: source.color,
-              title: item.title || 'Tanpa Judul',
-              description: (item.description || '').replace(/<[^>]*>/g, '').substring(0, 200) + '...',
-              link: item.link,
-              thumbnail: item.thumbnail || item.enclosure?.link || null,
-              pubDate: new Date(item.pubDate),
-            }));
-          }
-          return [];
+          const xmlText = await response.text();
+          return parseRSSXml(xmlText, source);
         } catch (err) {
           console.warn(`Gagal memuat berita dari ${source.name}:`, err.message);
           return [];
@@ -159,7 +203,7 @@ export default function BeritaNasional() {
         >
           <div>
             <span className="flex items-center gap-2 text-xs font-bold font-body text-primary uppercase tracking-widest bg-primary/10 border border-primary/20 px-4 py-2 rounded-full w-fit mb-6">
-              📰 Berita Nasional Indonesia
+              Berita Nasional Indonesia
             </span>
             <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter">
               <span className="text-white">BERITA</span>{' '}
@@ -218,7 +262,7 @@ export default function BeritaNasional() {
             disabled={loading}
             className="ml-auto px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all border border-neutral-700 hover:border-primary hover:text-primary text-neutral-400 disabled:opacity-50"
           >
-            {loading ? '⏳ Memuat...' : '🔄 Refresh'}
+            {loading ? 'Memuat...' : 'Refresh'}
           </button>
         </motion.div>
 
