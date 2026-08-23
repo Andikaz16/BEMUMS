@@ -2,61 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
-const RSS_SOURCES = [
-  { id: 'kompas', name: 'Kompas', color: '#0062CC', url: 'https://rss.kompas.com/nasional' },
-  { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000', url: 'https://www.cnnindonesia.com/nasional/rss' },
-  { id: 'detik', name: 'Detik', color: '#00A529', url: 'https://rss.detik.com/index.php/detikcom' },
-  { id: 'antara', name: 'Antara', color: '#E8B500', url: 'https://www.antaranews.com/rss/terkini' },
-];
-
-function parseRSSXml(xmlText, source) {
-  try {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(xmlText, 'text/xml');
-    const items = xml.querySelectorAll('item');
-    const results = [];
-
-    items.forEach((item, i) => {
-      if (i >= 5) return;
-
-      const title = item.querySelector('title')?.textContent || 'Tanpa Judul';
-      const link = item.querySelector('link')?.textContent || '';
-      const pubDate = item.querySelector('pubDate')?.textContent;
-      const descRaw = item.querySelector('description')?.textContent || '';
-
-      let thumbnail = null;
-      const enclosure = item.querySelector('enclosure');
-      if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
-        thumbnail = enclosure.getAttribute('url');
-      }
-      const mediaThumbnail = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'thumbnail')[0];
-      if (!thumbnail && mediaThumbnail) {
-        thumbnail = mediaThumbnail.getAttribute('url');
-      }
-      const mediaContent = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
-      if (!thumbnail && mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
-        thumbnail = mediaContent.getAttribute('url');
-      }
-      if (!thumbnail) {
-        const imgMatch = descRaw.match(/<img[^>]+src=["']([^"']+)["']/);
-        if (imgMatch) thumbnail = imgMatch[1];
-      }
-
-      results.push({
-        id: `${source.id}-${i}-${link}`,
-        sourceName: source.name,
-        sourceColor: source.color,
-        title,
-        link,
-        thumbnail,
-        pubDate: pubDate ? new Date(pubDate) : new Date(),
-      });
-    });
-
-    return results;
-  } catch { return []; }
-}
-
 export default function BeritaWidget({ setActivePage }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,24 +9,12 @@ export default function BeritaWidget({ setActivePage }) {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const allArticles = [];
-        const fetchPromises = RSS_SOURCES.map(async (source) => {
-          try {
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}`;
-            const res = await fetch(proxyUrl);
-            if (!res.ok) return [];
-            const xmlText = await res.text();
-            return parseRSSXml(xmlText, source);
-          } catch { return []; }
-        });
+        const res = await fetch('/api/news');
+        const data = await res.json();
 
-        const results = await Promise.allSettled(fetchPromises);
-        results.forEach(r => {
-          if (r.status === 'fulfilled') allArticles.push(...r.value);
-        });
-
-        allArticles.sort((a, b) => b.pubDate - a.pubDate);
-        setArticles(allArticles.slice(0, 6));
+        if (data.status === 'ok' && data.articles) {
+          setArticles(data.articles.slice(0, 6));
+        }
       } catch { /* silent */ }
       finally { setLoading(false); }
     };
@@ -89,7 +22,8 @@ export default function BeritaWidget({ setActivePage }) {
     fetchNews();
   }, []);
 
-  const formatDate = (date) => {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
     const diffMins = Math.floor((new Date() - date) / 60000);
     if (diffMins < 1) return 'Baru saja';
     if (diffMins < 60) return `${diffMins} menit lalu`;
@@ -142,21 +76,19 @@ export default function BeritaWidget({ setActivePage }) {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="group relative bg-neutral-900/60 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl flex flex-col"
             >
-              {/* Thumbnail */}
               {article.thumbnail && (
                 <div className="relative w-full h-40 overflow-hidden">
                   <img 
                     src={article.thumbnail} 
                     alt=""
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    onError={(e) => { e.target.style.display = 'none'; }}
+                    onError={(e) => { e.target.parentElement.style.display = 'none'; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent opacity-60"></div>
                 </div>
               )}
 
               <div className="p-4 flex flex-col flex-1">
-                {/* Source + Date */}
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span 
                     className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
@@ -169,12 +101,10 @@ export default function BeritaWidget({ setActivePage }) {
                   </span>
                 </div>
 
-                {/* Title */}
                 <h3 className="font-heading font-bold text-white text-sm leading-snug group-hover:text-primary transition-colors line-clamp-3 flex-1">
                   {article.title}
                 </h3>
 
-                {/* Read more */}
                 <div className="mt-3 flex items-center gap-1 text-[10px] text-neutral-600 group-hover:text-primary transition-colors">
                   <span className="font-bold uppercase tracking-wider">Baca Selengkapnya</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>

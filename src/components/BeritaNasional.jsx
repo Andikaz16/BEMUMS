@@ -1,90 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const RSS_SOURCES = [
-  { 
-    id: 'kompas', 
-    name: 'Kompas', 
-    color: '#0062CC',
-    url: 'https://rss.kompas.com/nasional' 
-  },
-  { 
-    id: 'cnn', 
-    name: 'CNN Indonesia', 
-    color: '#CC0000',
-    url: 'https://www.cnnindonesia.com/nasional/rss' 
-  },
-  { 
-    id: 'detik', 
-    name: 'Detik', 
-    color: '#00A529',
-    url: 'https://rss.detik.com/index.php/detikcom' 
-  },
-  { 
-    id: 'antara', 
-    name: 'Antara', 
-    color: '#E8B500',
-    url: 'https://www.antaranews.com/rss/terkini' 
-  },
-];
-
-function parseRSSXml(xmlText, source) {
-  try {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(xmlText, 'text/xml');
-    const items = xml.querySelectorAll('item');
-    const results = [];
-
-    items.forEach((item, i) => {
-      if (i >= 15) return;
-
-      const title = item.querySelector('title')?.textContent || 'Tanpa Judul';
-      const link = item.querySelector('link')?.textContent || '';
-      const pubDate = item.querySelector('pubDate')?.textContent;
-      const descRaw = item.querySelector('description')?.textContent || '';
-
-      // Extract thumbnail from various possible locations
-      let thumbnail = null;
-      const enclosure = item.querySelector('enclosure');
-      if (enclosure && enclosure.getAttribute('type')?.startsWith('image')) {
-        thumbnail = enclosure.getAttribute('url');
-      }
-      const mediaThumbnail = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'thumbnail')[0];
-      if (!thumbnail && mediaThumbnail) {
-        thumbnail = mediaThumbnail.getAttribute('url');
-      }
-      const mediaContent = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
-      if (!thumbnail && mediaContent && mediaContent.getAttribute('type')?.startsWith('image')) {
-        thumbnail = mediaContent.getAttribute('url');
-      }
-      // Try to extract image from description HTML
-      if (!thumbnail) {
-        const imgMatch = descRaw.match(/<img[^>]+src=["']([^"']+)["']/);
-        if (imgMatch) thumbnail = imgMatch[1];
-      }
-
-      const description = descRaw.replace(/<[^>]*>/g, '').substring(0, 200);
-
-      results.push({
-        id: `${source.id}-${i}-${link}`,
-        source: source.id,
-        sourceName: source.name,
-        sourceColor: source.color,
-        title,
-        description: description ? description + '...' : '',
-        link,
-        thumbnail,
-        pubDate: pubDate ? new Date(pubDate) : new Date(),
-      });
-    });
-
-    return results;
-  } catch (err) {
-    console.warn(`Gagal parse RSS ${source.name}:`, err);
-    return [];
-  }
-}
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -101,6 +17,13 @@ const itemVariants = {
   }
 };
 
+const SOURCES = [
+  { id: 'kompas', name: 'Kompas', color: '#0062CC' },
+  { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000' },
+  { id: 'detik', name: 'Detik', color: '#00A529' },
+  { id: 'antara', name: 'Antara', color: '#E8B500' },
+];
+
 export default function BeritaNasional() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,41 +36,15 @@ export default function BeritaNasional() {
     setError(null);
 
     try {
-      const allArticles = [];
+      const response = await fetch('/api/news');
+      const data = await response.json();
 
-      const fetchPromises = RSS_SOURCES.map(async (source) => {
-        try {
-          // Use allorigins as CORS proxy
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.url)}`;
-          const response = await fetch(proxyUrl);
-          
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          
-          const xmlText = await response.text();
-          return parseRSSXml(xmlText, source);
-        } catch (err) {
-          console.warn(`Gagal memuat berita dari ${source.name}:`, err.message);
-          return [];
-        }
-      });
-
-      const results = await Promise.allSettled(fetchPromises);
-      
-      results.forEach(result => {
-        if (result.status === 'fulfilled' && result.value) {
-          allArticles.push(...result.value);
-        }
-      });
-
-      // Sort all articles by date (newest first)
-      allArticles.sort((a, b) => b.pubDate - a.pubDate);
-
-      if (allArticles.length === 0) {
+      if (data.status === 'ok' && data.articles.length > 0) {
+        setArticles(data.articles);
+        setLastUpdated(new Date());
+      } else {
         setError('Tidak dapat memuat berita saat ini. Silakan coba lagi nanti.');
       }
-
-      setArticles(allArticles);
-      setLastUpdated(new Date());
     } catch (err) {
       setError('Terjadi kesalahan saat memuat berita. Silakan coba lagi.');
     } finally {
@@ -157,8 +54,6 @@ export default function BeritaNasional() {
 
   useEffect(() => {
     fetchNews();
-
-    // Auto-refresh setiap 5 menit
     const interval = setInterval(fetchNews, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchNews]);
@@ -167,7 +62,8 @@ export default function BeritaNasional() {
     ? articles 
     : articles.filter(a => a.source === activeSource);
 
-  const formatDate = (date) => {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
     const now = new Date();
     const diffMs = now - date;
     const diffMins = Math.floor(diffMs / 60000);
@@ -189,7 +85,6 @@ export default function BeritaNasional() {
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden">
       
-      {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#1a0505] -z-10"></div>
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/10 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
@@ -237,7 +132,7 @@ export default function BeritaNasional() {
           >
             Semua Sumber ({sourceCount('semua')})
           </button>
-          {RSS_SOURCES.map(source => (
+          {SOURCES.map(source => (
             <button
               key={source.id}
               onClick={() => setActiveSource(source.id)}
@@ -256,7 +151,6 @@ export default function BeritaNasional() {
             </button>
           ))}
 
-          {/* Refresh Button */}
           <button
             onClick={fetchNews}
             disabled={loading}
@@ -307,21 +201,19 @@ export default function BeritaNasional() {
                 rel="noopener noreferrer"
                 className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-1 flex flex-col"
               >
-                {/* Thumbnail */}
                 {article.thumbnail && (
                   <div className="relative w-full h-48 overflow-hidden">
                     <img 
                       src={article.thumbnail} 
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      onError={(e) => { e.target.style.display = 'none'; }}
+                      onError={(e) => { e.target.parentElement.style.display = 'none'; }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent opacity-60"></div>
                   </div>
                 )}
 
                 <div className="p-5 flex flex-col flex-1">
-                  {/* Source Badge + Date */}
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span 
                       className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full text-white"
@@ -334,17 +226,14 @@ export default function BeritaNasional() {
                     </span>
                   </div>
 
-                  {/* Title */}
                   <h3 className="font-heading font-bold text-white text-sm leading-snug mb-3 group-hover:text-primary transition-colors line-clamp-3">
                     {article.title}
                   </h3>
 
-                  {/* Description */}
                   <p className="text-neutral-500 text-xs font-body leading-relaxed line-clamp-3 flex-1">
                     {article.description}
                   </p>
 
-                  {/* Read More */}
                   <div className="mt-4 flex items-center gap-1 text-xs text-neutral-600 group-hover:text-primary transition-colors">
                     <span className="font-bold uppercase tracking-wider">Baca Selengkapnya</span>
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -355,7 +244,6 @@ export default function BeritaNasional() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Empty State for filtered */}
         {!loading && filteredArticles.length === 0 && articles.length > 0 && (
           <div className="text-center py-16">
             <p className="text-neutral-500 font-body">Tidak ada berita dari sumber ini saat ini.</p>
