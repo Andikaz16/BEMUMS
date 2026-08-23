@@ -5,10 +5,12 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
 
   const RSS_SOURCES = [
-    { id: 'kompas', name: 'Kompas', color: '#0062CC', url: 'https://rss.kompas.com/nasional' },
+    { id: 'kompas', name: 'Kompas', color: '#0062CC', url: 'https://feeds.kompas.com/kompas-terpopuler' },
     { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000', url: 'https://www.cnnindonesia.com/nasional/rss' },
-    { id: 'detik', name: 'Detik', color: '#00A529', url: 'https://rss.detik.com/index.php/detikcom' },
+    { id: 'detik', name: 'Detik', color: '#00A529', url: 'https://rss.detik.com/index.php/detiknews' },
     { id: 'antara', name: 'Antara', color: '#E8B500', url: 'https://www.antaranews.com/rss/terkini' },
+    { id: 'tempo', name: 'Tempo', color: '#1A56DB', url: 'https://rss.tempo.co/nasional' },
+    { id: 'cnbc', name: 'CNBC Indonesia', color: '#005596', url: 'https://www.cnbcindonesia.com/news/rss' },
   ];
 
   try {

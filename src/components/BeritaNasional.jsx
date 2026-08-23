@@ -22,6 +22,8 @@ const SOURCES = [
   { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000' },
   { id: 'detik', name: 'Detik', color: '#00A529' },
   { id: 'antara', name: 'Antara', color: '#E8B500' },
+  { id: 'tempo', name: 'Tempo', color: '#1A56DB' },
+  { id: 'cnbc', name: 'CNBC Indonesia', color: '#005596' },
 ];
 
 export default function BeritaNasional() {
