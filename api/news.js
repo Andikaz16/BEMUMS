@@ -9,9 +9,9 @@ export default async function handler(req, res) {
     { id: 'antara', name: 'Antara', color: '#E8B500', url: 'https://www.antaranews.com/rss/terkini' },
     { id: 'tempo', name: 'Tempo', color: '#1A56DB', url: 'https://rss.tempo.co/nasional' },
     { id: 'cnbc', name: 'CNBC Indonesia', color: '#005596', url: 'https://www.cnbcindonesia.com/news/rss' },
-    { id: 'republika', name: 'Republika', color: '#2E7D32', url: 'https://www.republika.co.id/rss/nasional' },
+    { id: 'kumparan', name: 'Kumparan', color: '#00BFA5', url: 'https://lapi.kumparan.com/v2.0/rss' },
     { id: 'liputan6', name: 'Liputan6', color: '#E65100', url: 'https://feed.liputan6.com/rss/news' },
-    { id: 'tribun', name: 'Tribunnews', color: '#D32F2F', url: 'https://www.tribunnews.com/rss' },
+    { id: 'okezone', name: 'Okezone', color: '#1565C0', url: 'https://sindikasi.okezone.com/index.php/rss/0/RSS2.0' },
     { id: 'sindo', name: 'SindoNews', color: '#7B1FA2', url: 'https://sindonews.com/feed' },
   ];
 

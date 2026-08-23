@@ -22,9 +22,9 @@ const SOURCES = [
   { id: 'antara', name: 'Antara', color: '#E8B500' },
   { id: 'tempo', name: 'Tempo', color: '#1A56DB' },
   { id: 'cnbc', name: 'CNBC Indonesia', color: '#005596' },
-  { id: 'republika', name: 'Republika', color: '#2E7D32' },
+  { id: 'kumparan', name: 'Kumparan', color: '#00BFA5' },
   { id: 'liputan6', name: 'Liputan6', color: '#E65100' },
-  { id: 'tribun', name: 'Tribunnews', color: '#D32F2F' },
+  { id: 'okezone', name: 'Okezone', color: '#1565C0' },
   { id: 'sindo', name: 'SindoNews', color: '#7B1FA2' },
 ];
 
