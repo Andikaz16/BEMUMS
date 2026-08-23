@@ -107,7 +107,7 @@ export default function Artikel({ db }) {
               Kabar <span className="text-primary">KOLEKTIVA</span>
             </h1>
             <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
-              Ikuti rilis berita, opini, dan dokumentasi kegiatan resmi BEM UMS.
+              Kumpulan wawasan, kajian, opini mahasiswa, dan rilis gerakan resmi BEM UMS.
             </p>
           </div>
         </motion.div>

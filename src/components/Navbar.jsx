@@ -19,6 +19,7 @@ export default function Navbar({ activePage, setActivePage }) {
 
   const services = [
     { id: 'lapor', label: 'Lapor Pres!', href: 'https://portal-layanan-bem-ums.vercel.app/' },
+    { id: 'berita', label: 'Berita Nasional' },
     { id: 'artikel', label: 'Artikel' },
     { id: 'silatnas', label: 'Silatnas' },
     { id: 'volunteer', label: 'Volunteer' },

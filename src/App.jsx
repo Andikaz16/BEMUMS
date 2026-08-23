@@ -10,6 +10,7 @@ import HubungiKami from './components/HubungiKami.jsx';
 import Oprec from './components/Oprec.jsx';
 import Volunteer from './components/Volunteer.jsx';
 import Silatnas from './components/Silatnas.jsx';
+import BeritaNasional from './components/BeritaNasional.jsx';
 import AdminCMS from './components/AdminCMS.jsx';
 import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
@@ -51,7 +52,7 @@ export default function App() {
       const hash = window.location.hash.substring(1);
       if (hash === 'admin') {
         setActivePage('admin');
-      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas'].includes(hash)) {
+      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(hash)) {
         setActivePage(hash);
       } else {
         // Fallback or default
@@ -140,6 +141,9 @@ export default function App() {
         )}
         {activePage === 'volunteer' && (
           <Volunteer db={db} onUpdateDB={handleUpdateDB} />
+        )}
+        {activePage === 'berita' && (
+          <BeritaNasional />
         )}
         {activePage === 'admin' && (
           isAdminLoggedIn ? (

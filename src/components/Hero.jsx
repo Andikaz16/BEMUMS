@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Sparkles, AlertTriangle, Layers, UserCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import KalenderWidget from './KalenderWidget.jsx';
+import BeritaWidget from './BeritaWidget.jsx';
 
 export default function Hero({ db, setActivePage }) {
   const oprec = db.oprec || {};
@@ -147,12 +148,15 @@ export default function Hero({ db, setActivePage }) {
       {/* KALENDER KEGIATAN WIDGET */}
       <KalenderWidget db={db} setActivePage={setActivePage} />
 
+      {/* BERITA NASIONAL WIDGET */}
+      <BeritaWidget setActivePage={setActivePage} />
+
       {/* 3. RECENT ARTICLES PREVIEW (Bento Grid) */}
       <section className="w-full px-6 md:px-12 max-w-7xl mx-auto pt-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10 border-b border-white/20 pb-4">
           <div>
             <h2 className="font-display text-4xl uppercase tracking-tight text-white drop-shadow-lg">ARTIKEL TERBARU</h2>
-            <p className="text-xs text-neutral-400 font-body uppercase mt-1 tracking-wider">Rilis Berita, Rilis Gerakan, dan Opini Mahasiswa</p>
+            <p className="text-xs text-neutral-400 font-body uppercase mt-1 tracking-wider">Kajian, Opini Mahasiswa, dan Rilis Gerakan</p>
           </div>
           <button 
             onClick={() => setActivePage('artikel')}
