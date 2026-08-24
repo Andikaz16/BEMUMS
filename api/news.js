@@ -66,6 +66,7 @@ function parseRSS(xmlText, source) {
     const link = extractTag(itemXml, 'link');
     const pubDate = extractTag(itemXml, 'pubDate');
     const descRaw = extractTag(itemXml, 'description');
+    const contentRaw = extractTag(itemXml, 'content:encoded');
     const description = descRaw.replace(/<[^>]*>/g, '').replace(/&[a-z]+;/gi, ' ').substring(0, 200);
 
     // Extract thumbnail
@@ -90,6 +91,12 @@ function parseRSS(xmlText, source) {
     // Try img in description
     if (!thumbnail) {
       const imgMatch = descRaw.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (imgMatch) thumbnail = imgMatch[1];
+    }
+    
+    // Try img in content:encoded
+    if (!thumbnail && contentRaw) {
+      const imgMatch = contentRaw.match(/<img[^>]+src=["']([^"']+)["']/i);
       if (imgMatch) thumbnail = imgMatch[1];
     }
 
