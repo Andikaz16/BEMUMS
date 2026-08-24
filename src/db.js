@@ -1,6 +1,10 @@
 // Database Mock using LocalStorage for Dynamic CMS Architecture
+import { ormawaList } from './data/ormawaData.js'; // Temporary import for migration
 
 const DEFAULT_DATA = {
+  // 0. Ormawa Hub
+  ormawa: ormawaList,
+  
   // 1. Struktural
   periods: ["2026", "2025"],
   currentPeriod: "2026",
@@ -166,7 +170,7 @@ const DEFAULT_DATA = {
   ]
 };
 
-import { doc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, runTransaction, increment, collection, getDocs } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
 export const initDB = (setDb, setIsFirebaseLoaded) => {
@@ -318,3 +322,36 @@ export const addSilatnasApplicant = async (eventId, applicantData) => {
 };
 
 
+
+
+// --- WEB ANALYTICS ---
+export const incrementPageView = async (pageName) => {
+  if (pageName === 'admin' || !pageName) return;
+  try {
+    const today = new Date();
+    today.setHours(today.getHours() + 7); // Force WIB
+    const dateStr = today.toISOString().split('T')[0];
+    const DOC_REF = doc(firestore, 'analytics', dateStr);
+    await setDoc(DOC_REF, {
+      date: dateStr,
+      total: increment(1),
+      paths: {
+        [pageName]: increment(1)
+      }
+    }, { merge: true });
+  } catch (err) {
+    console.warn('Analytics disabled/error');
+  }
+};
+
+export const getAnalytics = async () => {
+  try {
+    const snapshot = await getDocs(collection(firestore, 'analytics'));
+    const data = [];
+    snapshot.forEach(doc => data.push(doc.data()));
+    return data.sort((a, b) => b.date.localeCompare(a.date));
+  } catch (err) {
+    console.error('Failed to get analytics', err);
+    return [];
+  }
+};

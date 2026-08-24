@@ -15,7 +15,7 @@ import AdminCMS from './components/AdminCMS.jsx';
 import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
 import HalamanKalender from './components/HalamanKalender.jsx';
-import { initDB, saveDB } from './db.js';
+import { initDB, saveDB, incrementPageView } from './db.js';
 import Lenis from 'lenis';
 
 export default function App() {
@@ -86,6 +86,11 @@ export default function App() {
       sessionStorage.removeItem('bem_admin_auth');
       setIsAdminLoggedIn(false);
     }
+    
+    // Track page view
+    if (activePage && activePage !== 'admin') {
+      incrementPageView(activePage);
+    }
   }, [activePage]);
 
   // Update Database state and save to local storage
@@ -105,7 +110,7 @@ export default function App() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#3B0505] to-black text-[#1a1c1c] overflow-x-hidden font-body">
       {/* Dynamic Navigation Header */}
-      <Navbar activePage={activePage} setActivePage={handlePageChange} />
+      <Navbar db={db} activePage={activePage} setActivePage={handlePageChange} />
 
       {/* Main Pages Content Switcher */}
       <main className="flex-grow">

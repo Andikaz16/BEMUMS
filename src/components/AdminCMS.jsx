@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
-  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar 
+  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3 
 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import StatistikAdmin from './StatistikAdmin.jsx';
 
 export default function AdminCMS({ db, onUpdateDB }) {
   const [activeTab, setActiveTab] = useState('struktural');
@@ -586,7 +587,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
             { id: 'silatnas', name: '8. Silatnas', icon: Users },
             { id: 'ormawahub', name: '9. Ormawa Hub', icon: Users },
             { id: 'visimisi', name: '10. Visi & Misi', icon: Settings },
-            { id: 'kalender', name: '11. Kalender Kegiatan', icon: Calendar }
+            { id: 'kalender', name: '11. Kalender Kegiatan', icon: Calendar },
+            { id: 'statistik', name: '12. Statistik Web', icon: BarChart3 }
           ].map(tab => (
             <button
               key={tab.id}
@@ -2062,8 +2064,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
             </div>
           )}
 
+            {activeTab === 'statistik' && (
+              <StatistikAdmin />
+            )}
+
+          </div>
         </div>
-      </div>
 
       {/* Modern Center Modal Alert */}
       <AnimatePresence>
