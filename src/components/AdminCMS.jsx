@@ -160,50 +160,26 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (file) {
       showCustomAlert("Sedang mengupload gambar ke Cloud... Mohon tunggu.", "warning");
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const img = new window.Image();
-        img.onload = async () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+      reader.onloadend = async () => {
+        const base64Data = reader.result.split(',')[1];
+        
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64Data })
+          });
+          const data = await res.json();
           
-          const MAX_SIZE = 1920; // Full HD
-          if (width > height && width > MAX_SIZE) {
-            height *= MAX_SIZE / width;
-            width = MAX_SIZE;
-          } else if (height > MAX_SIZE) {
-            width *= MAX_SIZE / height;
-            height = MAX_SIZE;
+          if (data.success) {
+            showCustomAlert("Upload gambar ke Cloud berhasil!", "success");
+            callback(data.url);
+          } else {
+            showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
           }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Kualitas 95% untuk ketajaman HD
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-          const base64Data = compressedDataUrl.split(',')[1];
-          
-          try {
-            const res = await fetch('/api/upload', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image: base64Data })
-            });
-            const data = await res.json();
-            
-            if (data.success) {
-              showCustomAlert("Upload gambar ke Cloud berhasil!", "success");
-              callback(data.url);
-            } else {
-              showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
-            }
-          } catch (err) {
-            showCustomAlert("Upload error: Jaringan bermasalah.", "error");
-          }
-        };
-        img.src = reader.result;
+        } catch (err) {
+          showCustomAlert("Upload error: Jaringan bermasalah.", "error");
+        }
       };
       reader.readAsDataURL(file);
     }
