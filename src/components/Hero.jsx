@@ -26,7 +26,7 @@ export default function Hero({ db, setActivePage }) {
     { id: 7, val: "7", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.png" },
     { id: 8, val: "8", title: "Kementerian", sub: "Pengembangan Organisasi & Profesionalisme", img: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png" },
     { id: 9, val: "6", title: "Kementerian", sub: "Luar Negeri", img: "/assets/Menteri luar neger.png" },
-    { id: 10, val: "7", title: "Kementerian", sub: "Media & Informasi", img: "/assets/medinfo.png" },
+    { id: 10, val: "6", title: "Kementerian", sub: "Media & Informasi", img: "/assets/medinfo.png" },
   ];
 
   return (

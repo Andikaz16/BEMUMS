@@ -585,7 +585,6 @@ export default function AdminCMS({ db, onUpdateDB }) {
             { id: 'galeri', name: '6. Galeri Pergerakan', icon: Image },
             { id: 'volunteer', name: '7. Volunteer', icon: Layers },
             { id: 'silatnas', name: '8. Silatnas', icon: Users },
-            { id: 'ormawahub', name: '9. Ormawa Hub', icon: Users },
             { id: 'visimisi', name: '10. Visi & Misi', icon: Settings },
             { id: 'kalender', name: '11. Kalender Kegiatan', icon: Calendar },
             { id: 'statistik', name: '12. Statistik Web', icon: BarChart3 }

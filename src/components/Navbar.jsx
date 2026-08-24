@@ -1,10 +1,31 @@
 import React, { useState } from 'react';
-import { Menu, X, ShieldAlert } from 'lucide-react';
+import { Menu, X, ShieldAlert, ChevronRight, GraduationCap, Trophy, Palette, BookOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Navbar({ activePage, setActivePage }) {
+export const ormawaCategories = {
+  universitas: { title: 'Ormawa Universitas', iconName: 'GraduationCap' },
+  olahraga: { title: 'UKM Olahraga & Beladiri', iconName: 'Trophy' },
+  seni: { title: 'UKM Kesenian & Penerbitan', iconName: 'Palette' },
+  penalaran: { title: 'UKM Penalaran & Khusus', iconName: 'BookOpen' }
+};
+
+export default function Navbar({ db, activePage, setActivePage }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [tentangDropdownOpen, setTentangDropdownOpen] = useState(false);
+  const [ormawaDropdownOpen, setOrmawaDropdownOpen] = useState(false);
+  const [activeOrmawaTab, setActiveOrmawaTab] = useState('universitas');
+  
+  // Icon mapping Helper
+  const getIcon = (iconName) => {
+    switch(iconName) {
+      case 'GraduationCap': return <GraduationCap className="w-5 h-5" />;
+      case 'Trophy': return <Trophy className="w-5 h-5" />;
+      case 'Palette': return <Palette className="w-5 h-5" />;
+      case 'BookOpen': return <BookOpen className="w-5 h-5" />;
+      default: return <GraduationCap className="w-5 h-5" />;
+    }
+  };
 
   const menuItems = [
     { id: 'beranda', label: 'Beranda' }
@@ -129,6 +150,8 @@ export default function Navbar({ activePage, setActivePage }) {
               </div>
             )}
           </div>
+
+          
 
           <button
             onClick={() => setActivePage('hubungi')}

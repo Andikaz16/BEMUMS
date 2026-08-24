@@ -1,10 +1,6 @@
 // Database Mock using LocalStorage for Dynamic CMS Architecture
-import { ormawaList } from './data/ormawaData.js'; // Temporary import for migration
 
 const DEFAULT_DATA = {
-  // 0. Ormawa Hub
-  ormawa: ormawaList,
-  
   // 1. Struktural
   periods: ["2026", "2025"],
   currentPeriod: "2026",
