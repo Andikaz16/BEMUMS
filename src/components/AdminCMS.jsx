@@ -174,34 +174,43 @@ export default function AdminCMS({ db, onUpdateDB }) {
     const file = e.target.files[0];
     if (!file) return;
     
+    // Cek ukuran file (Max 15MB untuk mencegah browser nge-freeze)
+    if (file.size > 15 * 1024 * 1024) {
+      showCustomAlert("Ukuran file terlalu besar (Maksimal 15 MB).", "error");
+      if (e.target) e.target.value = null;
+      return;
+    }
+    
     // Alert loading tanpa timeout (persistent)
     showCustomAlert("Mengompres & Mengupload foto HD ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
     const reader = new FileReader();
     reader.onloadend = () => {
       const img = new Image();
       img.onload = async () => {
-        const MAX_WIDTH = 1280; // Standar web HD (sangat cepat diproses & diupload)
-        let width = img.width;
-        let height = img.height;
-
-        if (width > MAX_WIDTH) {
-          height = Math.round((height * MAX_WIDTH) / width);
-          width = MAX_WIDTH;
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // Selalu gunakan JPEG kecuali ukurannya sangat kecil (logo), untuk mencegah Vercel 4.5MB limit payload
-        const format = (file.type === 'image/png' && file.size < 1024 * 1024) ? 'image/png' : 'image/jpeg';
-        const quality = format === 'image/jpeg' ? 0.80 : undefined;
-        
-        const base64Data = canvas.toDataURL(format, quality).split(',')[1];
-        
         try {
+          const MAX_WIDTH = 1280; // Standar web HD (sangat cepat diproses & diupload)
+          let width = img.width;
+          let height = img.height;
+
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Selalu gunakan JPEG kecuali ukurannya sangat kecil (logo), untuk mencegah Vercel 4.5MB limit payload
+          const format = (file.type === 'image/png' && file.size < 1024 * 1024) ? 'image/png' : 'image/jpeg';
+          const quality = format === 'image/jpeg' ? 0.80 : undefined;
+          
+          const base64Data = canvas.toDataURL(format, quality).split(',')[1];
+          
+          if (!base64Data) throw new Error("Gagal mengompres gambar (Canvas Error)");
+
           const formData = new FormData();
           formData.append('image', base64Data);
 
@@ -212,16 +221,18 @@ export default function AdminCMS({ db, onUpdateDB }) {
             },
             body: formData
           });
+          
           const data = await res.json();
           
           if (data.success) {
             showCustomAlert("Upload HD berhasil!", "success");
             callback(data.data.link);
           } else {
-            showCustomAlert("Gagal upload gambar: " + (data.data?.error || "Coba lagi."), "error");
+            showCustomAlert("Gagal upload gambar: " + (data.data?.error || "Ditolak oleh Imgur."), "error");
           }
         } catch (err) {
-          showCustomAlert("Upload error: Jaringan bermasalah.", "error");
+          console.error("Upload Error:", err);
+          showCustomAlert("Error Sistem: " + err.message, "error");
         }
       };
       
