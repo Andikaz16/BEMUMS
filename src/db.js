@@ -331,6 +331,7 @@ export const incrementPageView = async (pageName) => {
     // --- SISTEM ANTI-CHEAT (Berdasarkan Device/Browser) ---
     // Mencegah spam klik / refresh halaman berkali-kali
     const viewedKey = `visited_${dateStr}_${pageName}`;
+    const uniqueVisitorKey = `visited_${dateStr}_unique_web`;
     
     // Bersihkan kunci localStorage hari-hari sebelumnya agar tidak menumpuk
     const allKeys = Object.keys(localStorage);
@@ -340,22 +341,34 @@ export const incrementPageView = async (pageName) => {
       }
     });
 
+    let isNewUniqueVisitor = false;
+    if (!localStorage.getItem(uniqueVisitorKey)) {
+      localStorage.setItem(uniqueVisitorKey, 'true');
+      isNewUniqueVisitor = true;
+    }
+
     if (localStorage.getItem(viewedKey)) {
       // Jika device ini sudah pernah mengunjungi halaman ini pada hari yang sama, abaikan!
       return; 
     }
     
-    // Tandai bahwa device ini SAH sudah berkunjung hari ini
+    // Tandai bahwa device ini SAH sudah berkunjung halaman ini hari ini
     localStorage.setItem(viewedKey, 'true');
 
     const DOC_REF = doc(firestore, 'analytics', dateStr);
-    await setDoc(DOC_REF, {
+    const updatePayload = {
       date: dateStr,
-      total: increment(1),
+      total: increment(1), // Total page views
       paths: {
         [pageName]: increment(1)
       }
-    }, { merge: true });
+    };
+    
+    if (isNewUniqueVisitor) {
+      updatePayload.uniqueVisitors = increment(1); // Total unique visitors
+    }
+
+    await setDoc(DOC_REF, updatePayload, { merge: true });
   } catch (err) {
     console.warn('Analytics disabled/error');
   }
