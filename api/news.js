@@ -5,6 +5,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
 
   const RSS_SOURCES = [
+    { id: 'ums', name: 'UMS News', color: '#002660', url: 'https://news.ums.ac.id/id/feed/' },
     { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000', url: 'https://www.cnnindonesia.com/nasional/rss' },
     { id: 'antara', name: 'Antara', color: '#E8B500', url: 'https://www.antaranews.com/rss/terkini' },
     { id: 'tempo', name: 'Tempo', color: '#1A56DB', url: 'https://rss.tempo.co/nasional' },

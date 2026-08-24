@@ -18,6 +18,7 @@ const itemVariants = {
 };
 
 const SOURCES = [
+  { id: 'ums', name: 'UMS News', color: '#002660' },
   { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000' },
   { id: 'antara', name: 'Antara', color: '#E8B500' },
   { id: 'tempo', name: 'Tempo', color: '#1A56DB' },
