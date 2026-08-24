@@ -17,35 +17,30 @@ export default async function handler(req, res) {
     if (!image) {
       return res.status(400).json({ error: 'No image data provided' });
     }
-
-    // Convert base64 to Blob
-    const buffer = Buffer.from(image, 'base64');
-    const blob = new Blob([buffer], { type: 'image/jpeg' });
     
     // Construct FormData for Catbox
     const formData = new FormData();
-    formData.append('reqtype', 'fileupload');
-    formData.append('fileToUpload', blob, 'upload_' + Date.now() + '.jpg');
+    formData.append('image', image); // Imgur accepts base64 directly
 
-    const response = await fetch('https://catbox.moe/user/api.php', {
+    const response = await fetch('https://api.imgur.com/3/image', {
       method: 'POST',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        'Authorization': 'Client-ID 546c25a59c58ad7'
       },
       body: formData
     });
 
-    const resultText = await response.text();
+    const data = await response.json();
 
-    if (resultText.startsWith('https://')) {
+    if (data.success) {
       return res.status(200).json({
         success: true,
-        url: resultText
+        url: data.data.link
       });
     } else {
       return res.status(400).json({
         success: false,
-        error: resultText || 'Catbox upload failed'
+        error: data.data?.error || 'Imgur upload failed'
       });
     }
   } catch (error) {

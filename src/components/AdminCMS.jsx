@@ -171,7 +171,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     
     showCustomAlert("Sedang mengupload gambar mentahan ke Cloud... Mohon tunggu.", "warning");
     
-    showCustomAlert("Mengompres & Mengupload foto HD ke Catbox Cloud...", "warning");
+    showCustomAlert("Mengompres & Mengupload foto HD ke Imgur Cloud...", "warning");
     const reader = new FileReader();
     reader.onloadend = () => {
       const img = new Image();
