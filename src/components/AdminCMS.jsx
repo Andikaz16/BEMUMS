@@ -195,9 +195,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Pertahankan format asli (PNG untuk logo transparan, JPEG untuk foto)
-        const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        const quality = format === 'image/jpeg' ? 0.80 : undefined; // Kualitas 80% tidak beda jauh dengan 100% tapi ukuran file turun drastis
+        // Selalu gunakan JPEG kecuali ukurannya sangat kecil (logo), untuk mencegah Vercel 4.5MB limit payload
+        const format = (file.type === 'image/png' && file.size < 1024 * 1024) ? 'image/png' : 'image/jpeg';
+        const quality = format === 'image/jpeg' ? 0.80 : undefined;
         
         const base64Data = canvas.toDataURL(format, quality).split(',')[1];
         
@@ -219,6 +219,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
           showCustomAlert("Upload error: Jaringan bermasalah.", "error");
         }
       };
+      
+      img.onerror = () => {
+        showCustomAlert("Format gambar tidak didukung (contoh: HEIC/iPhone). Gunakan JPG/PNG.", "error");
+      };
+      
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
