@@ -218,6 +218,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
+    
+    // Clear input value so selecting the same file again triggers onChange
+    e.target.value = null;
   };
 
   const quillImageHandler = React.useCallback(() => {
