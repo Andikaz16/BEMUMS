@@ -212,59 +212,72 @@ export default function StatistikAdmin() {
                 
                 const width = 1000;
                 const height = 300;
-                const padding = 20;
+                const padding = 40; // Increased padding for labels
                 const safeMax = max || 1;
+                const chartMax = safeMax * 1.15; // Give 15% headroom for wicks and labels
                 
-                const points = trend.map((d, i) => {
-                  const x = (i / (trend.length - 1)) * width;
-                  const y = height - ((d.total / safeMax) * (height - padding * 2)) - padding;
-                  return `${x},${y}`;
+                // Calculate OHLC for Candlesticks
+                const step = width / trend.length;
+                const candleWidth = 40;
+                
+                const candles = trend.map((d, i) => {
+                  // Fake Open: Yesterday's Close. (If day 0, fake an open)
+                  const O = i === 0 ? (trend[0].total > 0 ? trend[0].total * 0.5 : 0) : trend[i-1].total;
+                  const C = d.total;
+                  const isUp = C >= O;
+                  const color = isUp ? '#0ecb81' : '#f6465d';
+                  const glow = isUp ? 'rgba(14,203,129,0.3)' : 'rgba(246,70,93,0.3)';
+                  
+                  // Fake Wicks (High/Low)
+                  const wickVariance = safeMax * 0.05;
+                  const H = Math.max(O, C) + wickVariance;
+                  const L = Math.max(0, Math.min(O, C) - wickVariance);
+                  
+                  // Map to Y coordinates (inverted Y-axis)
+                  const yO = height - ((O / chartMax) * (height - padding * 2)) - padding;
+                  const yC = height - ((C / chartMax) * (height - padding * 2)) - padding;
+                  const yH = height - ((H / chartMax) * (height - padding * 2)) - padding;
+                  const yL = height - ((L / chartMax) * (height - padding * 2)) - padding;
+                  
+                  const x = (step * i) + (step / 2);
+                  
+                  let bodyY = Math.min(yO, yC);
+                  let bodyHeight = Math.abs(yO - yC);
+                  if (bodyHeight < 2) bodyHeight = 2; // Doji (flat line) minimum height
+                  
+                  return { x, yO, yC, yH, yL, bodyY, bodyHeight, isUp, color, glow, total: d.total };
                 });
-                
-                const polylinePoints = points.join(' ');
-                const areaPoints = `${points.join(' ')} ${width},${height} 0,${height}`;
                 
                 return (
                   <div className="w-full overflow-x-auto pb-4">
                     <div className="min-w-[600px] relative">
-                      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-[0_0_15px_rgba(14,203,129,0.3)]" preserveAspectRatio="none">
-                        <defs>
-                          <linearGradient id="tradingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#0ecb81" stopOpacity="0.4" />
-                            <stop offset="100%" stopColor="#0b0e11" stopOpacity="0" />
-                          </linearGradient>
-                        </defs>
+                      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" preserveAspectRatio="none">
                         
                         {/* Trading Grid Lines */}
                         <line x1="0" y1={padding} x2={width} y2={padding} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5,5" />
                         <line x1="0" y1={height/2} x2={width} y2={height/2} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5,5" />
                         <line x1="0" y1={height - padding} x2={width} y2={height - padding} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
                         
-                        {/* Fake Volume Bars (Trading Style) */}
-                        {points.map((p, i) => {
-                          const [x] = p.split(',');
-                          const volHeight = (trend[i].total / safeMax) * 80 + 10; 
+                        {/* Candlesticks & Fake Volume */}
+                        {candles.map((c, i) => {
+                          const volHeight = (c.total / safeMax) * 80 + 10; 
+                          const volColor = c.isUp ? 'rgba(14,203,129,0.15)' : 'rgba(246,70,93,0.15)';
+                          
                           return (
-                            <rect key={`vol-${i}`} x={Number(x) - (width/(trend.length-1)/4)} y={height - volHeight} width={width/(trend.length-1)/2} height={volHeight} fill="rgba(14,203,129,0.08)" rx="2" />
-                          );
-                        })}
-
-                        {/* Gradient Area */}
-                        <polygon points={areaPoints} fill="url(#tradingGradient)" />
-                        
-                        {/* Line */}
-                        <polyline points={polylinePoints} fill="none" stroke="#0ecb81" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-                        
-                        {/* Points & Tooltips */}
-                        {points.map((p, i) => {
-                          const [x, y] = p.split(',');
-                          return (
-                            <g key={i} className="transition-transform hover:scale-150 origin-center cursor-crosshair">
-                              <circle cx={x} cy={y} r="6" fill="#0b0e11" stroke="#0ecb81" strokeWidth="3" />
-                              {/* Price Label (Trading Style) */}
-                              <rect x={Number(x) - 20} y={Number(y) - 35} width="40" height="20" fill="#0ecb81" rx="4" />
-                              <text x={x} y={Number(y) - 21} fill="#0b0e11" fontSize="12" fontWeight="bold" textAnchor="middle">
-                                {trend[i].total}
+                            <g key={i} className="transition-transform hover:scale-[1.02] origin-bottom cursor-crosshair">
+                              {/* Volume Bar */}
+                              <rect x={c.x - candleWidth/1.5} y={height - volHeight} width={candleWidth * 1.3} height={volHeight} fill={volColor} rx="2" />
+                              
+                              {/* Wick */}
+                              <line x1={c.x} y1={c.yH} x2={c.x} y2={c.yL} stroke={c.color} strokeWidth="2" style={{ filter: `drop-shadow(0 0 5px ${c.glow})` }} />
+                              
+                              {/* Body */}
+                              <rect x={c.x - candleWidth/2} y={c.bodyY} width={candleWidth} height={c.bodyHeight} fill={c.color} rx="1" style={{ filter: `drop-shadow(0 0 8px ${c.glow})` }} />
+                              
+                              {/* Price Label (Total Kunjungan) */}
+                              <rect x={c.x - 20} y={c.yH - 25} width="40" height="20" fill={c.color} rx="4" />
+                              <text x={c.x} y={c.yH - 11} fill="#0b0e11" fontSize="12" fontWeight="bold" textAnchor="middle">
+                                {c.total}
                               </text>
                             </g>
                           );
@@ -273,13 +286,18 @@ export default function StatistikAdmin() {
                       
                       {/* X-Axis Labels */}
                       <div className="flex justify-between mt-4 px-2">
-                        {trend.map((d, i) => (
-                          <div key={i} className="text-center text-xs text-neutral-500 font-bold uppercase w-12">
-                            <div className="mb-1 text-[#0ecb81]">{d.label}</div>
-                            <div className="text-[9px] opacity-50">{d.date.slice(5, 10)}</div>
-                          </div>
-                        ))}
+                        {trend.map((d, i) => {
+                          const isUp = candles[i].isUp;
+                          return (
+                            <div key={i} className="text-center text-xs font-bold uppercase w-16" style={{ marginLeft: `${(candles[i].x / width) * 100}%`, transform: 'translateX(-50%)', position: 'absolute' }}>
+                              <div className="mb-1" style={{ color: isUp ? '#0ecb81' : '#f6465d' }}>{d.label}</div>
+                              <div className="text-[9px] text-neutral-500 opacity-50">{d.date.slice(5, 10)}</div>
+                            </div>
+                          );
+                        })}
                       </div>
+                      {/* Empty spacer for absolute labels */}
+                      <div className="h-10"></div>
                     </div>
                   </div>
                 );
