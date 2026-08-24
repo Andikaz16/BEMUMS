@@ -185,7 +185,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     showCustomAlert("Mengompres & Mengupload foto HD ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
     const reader = new FileReader();
     reader.onloadend = () => {
-      const img = new Image();
+      const img = new window.Image();
       img.onload = async () => {
         try {
           const MAX_WIDTH = 1280; // Standar web HD (sangat cepat diproses & diupload)
