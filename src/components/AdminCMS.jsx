@@ -14,13 +14,18 @@ export default function AdminCMS({ db, onUpdateDB }) {
   // --- Custom Alert State ---
   const [alertState, setAlertState] = useState({ isOpen: false, message: '', type: 'success' });
   const [confirmState, setConfirmState] = useState({ isOpen: false, message: '', onConfirm: null });
+  const alertTimeoutRef = React.useRef(null);
   
-  const showCustomAlert = (message, type = 'success') => {
+  const showCustomAlert = React.useCallback((message, type = 'success', duration = 4000) => {
+    if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
     setAlertState({ isOpen: true, message, type });
-    setTimeout(() => {
-      setAlertState(prev => ({ ...prev, isOpen: false }));
-    }, 4000);
-  };
+    
+    if (duration > 0) {
+      alertTimeoutRef.current = setTimeout(() => {
+        setAlertState(prev => ({ ...prev, isOpen: false }));
+      }, duration);
+    }
+  }, []);
 
   const confirmAction = (message, callback) => {
     setConfirmState({ isOpen: true, message, onConfirm: callback });
@@ -169,9 +174,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
     const file = e.target.files[0];
     if (!file) return;
     
-    showCustomAlert("Sedang mengupload gambar mentahan ke Cloud... Mohon tunggu.", "warning");
-    
-    showCustomAlert("Mengompres & Mengupload foto HD ke Imgur Cloud...", "warning");
+    // Alert loading tanpa timeout (persistent)
+    showCustomAlert("Mengompres & Mengupload foto HD ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
     const reader = new FileReader();
     reader.onloadend = () => {
       const img = new Image();
