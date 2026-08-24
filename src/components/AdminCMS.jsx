@@ -9,6 +9,7 @@ import 'react-quill/dist/quill.snow.css';
 
 export default function AdminCMS({ db, onUpdateDB }) {
   const [activeTab, setActiveTab] = useState('struktural');
+  const quillRef = React.useRef(null);
 
   // --- Custom Alert State ---
   const [alertState, setAlertState] = useState({ isOpen: false, message: '', type: 'success' });
@@ -51,6 +52,15 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [isEditingAlbum, setIsEditingAlbum] = useState(false);
   const [isAddingAlbum, setIsAddingAlbum] = useState(false);
   const [tempPhotoUrl, setTempPhotoUrl] = useState('');
+
+  // Ormawa Hub Form
+  const [ormawaForm, setOrmawaForm] = useState({ id: null, name: '', category: '', desc: '', fullDesc: '', logoUrl: '', bannerUrl: '', websiteUrl: '', proker: [], strukpimp: [] });
+  const [isEditingOrmawa, setIsEditingOrmawa] = useState(false);
+  const [isAddingOrmawa, setIsAddingOrmawa] = useState(false);
+  const [newProkerTitle, setNewProkerTitle] = useState('');
+  const [newProkerDesc, setNewProkerDesc] = useState('');
+  const [newPimpName, setNewPimpName] = useState('');
+  const [newPimpRole, setNewPimpRole] = useState('');
 
   // Contact Form
   const [contactForm, setContactForm] = useState({ ...db.contact });
@@ -157,33 +167,72 @@ export default function AdminCMS({ db, onUpdateDB }) {
   // --- Handler Functions ---
   const handleImageUpload = async (e, callback) => {
     const file = e.target.files[0];
-    if (file) {
-      showCustomAlert("Sedang mengupload gambar mentahan ke Cloud... Mohon tunggu.", "warning");
+    if (!file) return;
+    
+    showCustomAlert("Sedang mengupload gambar mentahan ke Cloud... Mohon tunggu.", "warning");
+    
+    showCustomAlert("Mengupload foto HD Mentahan ke Catbox Cloud...", "warning");
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Data = reader.result.split(',')[1];
       
-      const formData = new FormData();
-      formData.append('image', file);
-
       try {
-        const res = await fetch('https://api.imgur.com/3/image', {
+        const res = await fetch('/api/upload', {
           method: 'POST',
-          headers: {
-            'Authorization': 'Client-ID 546c25a59c58ad7' // Public Imgur Client ID
-          },
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Data })
         });
         const data = await res.json();
         
         if (data.success) {
-          showCustomAlert("Upload gambar asli ke Cloud berhasil!", "success");
-          callback(data.data.link);
+          showCustomAlert("Upload HD berhasil!", "success");
+          callback(data.url);
         } else {
-          showCustomAlert("Gagal upload gambar: " + (data.data?.error || "Coba lagi."), "error");
+          showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
         }
       } catch (err) {
         showCustomAlert("Upload error: Jaringan bermasalah.", "error");
       }
-    }
+    };
+    reader.readAsDataURL(file);
   };
+
+  const quillImageHandler = React.useCallback(() => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        // Pass a mock event object because handleImageUpload expects e.target.files
+        handleImageUpload({ target: { files: [file] } }, (url) => {
+          if (quillRef.current) {
+            const quill = quillRef.current.getEditor();
+            const range = quill.getSelection(true);
+            quill.insertEmbed(range.index, 'image', url);
+          }
+        });
+      }
+    };
+  }, []);
+
+  const quillModules = React.useMemo(() => ({
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'header': [1, 2, 3, false] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['blockquote', 'link', 'image'],
+        ['clean']
+      ],
+      handlers: {
+        image: quillImageHandler
+      }
+    }
+  }), [quillImageHandler]);
+
   // Period Handlers
   const handleAddPeriod = () => {
     if (!newPeriod.trim()) return;
@@ -484,8 +533,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
             { id: 'galeri', name: '6. Galeri Pergerakan', icon: Image },
             { id: 'volunteer', name: '7. Volunteer', icon: Layers },
             { id: 'silatnas', name: '8. Silatnas', icon: Users },
-            { id: 'visimisi', name: '9. Visi & Misi', icon: Settings },
-            { id: 'kalender', name: '10. Kalender Kegiatan', icon: Calendar }
+            { id: 'ormawahub', name: '9. Ormawa Hub', icon: Users },
+            { id: 'visimisi', name: '10. Visi & Misi', icon: Settings },
+            { id: 'kalender', name: '11. Kalender Kegiatan', icon: Calendar }
           ].map(tab => (
             <button
               key={tab.id}
@@ -824,19 +874,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Konten Artikel (Lengkap)</label>
                         <div className="bg-white text-black rounded-xl overflow-hidden [&_.ql-toolbar]:border-none [&_.ql-toolbar]:bg-neutral-100 [&_.ql-container]:border-none [&_.ql-container]:text-base [&_.ql-editor]:min-h-[300px]">
                           <ReactQuill 
+                            ref={quillRef}
                             theme="snow"
                             value={articleForm.content || ''} 
                             onChange={(val) => setArticleForm({ ...articleForm, content: val })} 
                             placeholder="Tulis konten artikel di sini..."
-                            modules={{
-                              toolbar: [
-                                ['bold', 'italic', 'underline', 'strike'],
-                                [{ 'header': [1, 2, 3, false] }],
-                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                                ['blockquote', 'link', 'image'],
-                                ['clean']
-                              ]
-                            }}
+                            modules={quillModules}
                           />
                         </div>
                       </div>
@@ -1704,6 +1747,188 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 Simpan Visi & Misi
               </button>
 
+            </div>
+          )}
+
+          {/* TAB 8.5: ORMAWA HUB */}
+          {activeTab === 'ormawahub' && (
+            <div className="space-y-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
+                <h2 className="text-3xl font-display uppercase">Manajemen Ormawa Hub</h2>
+                {!isEditingOrmawa && !isAddingOrmawa && (
+                  <button onClick={() => {
+                    setOrmawaForm({ id: '', name: '', category: 'universitas', desc: '', fullDesc: '', logoUrl: '', bannerUrl: '', websiteUrl: '', proker: [], strukpimp: [] });
+                    setIsAddingOrmawa(true);
+                  }} className="flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold text-xs uppercase tracking-wider hover:bg-primary-container rounded">
+                    <Plus size={16} /> Tambah Ormawa
+                  </button>
+                )}
+              </div>
+
+              {(isEditingOrmawa || isAddingOrmawa) ? (
+                <div className="p-6 bg-[#0a0a0a]/40 border border-white/10 rounded-3xl backdrop-blur-md">
+                  <h3 className="font-display uppercase mb-6 text-primary border-b border-white/10 pb-2">
+                    {isAddingOrmawa ? 'Tambah Ormawa Baru' : 'Edit Ormawa'}
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">ID Unik (untuk URL)</label>
+                        <input type="text" value={ormawaForm.id || ''} onChange={e => setOrmawaForm({...ormawaForm, id: e.target.value})} disabled={isEditingOrmawa} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white disabled:opacity-50" placeholder="contoh: dpm-universitas" />
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Nama Organisasi</label>
+                        <input type="text" value={ormawaForm.name} onChange={e => setOrmawaForm({...ormawaForm, name: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Kategori</label>
+                        <select value={ormawaForm.category} onChange={e => setOrmawaForm({...ormawaForm, category: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white">
+                          <option value="universitas">Ormawa Universitas</option>
+                          <option value="olahraga">Olahraga & Beladiri</option>
+                          <option value="seni">Kesenian & Penerbitan</option>
+                          <option value="penalaran">Penalaran & Khusus</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Link Website Resmi (Opsional)</label>
+                        <input type="text" value={ormawaForm.websiteUrl} onChange={e => setOrmawaForm({...ormawaForm, websiteUrl: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white" placeholder="https://..." />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Deskripsi Singkat</label>
+                        <input type="text" value={ormawaForm.desc} onChange={e => setOrmawaForm({...ormawaForm, desc: e.target.value})} className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Deskripsi Lengkap</label>
+                        <textarea value={ormawaForm.fullDesc} onChange={e => setOrmawaForm({...ormawaForm, fullDesc: e.target.value})} className="w-full h-32 bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white resize-none" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 border-t border-white/10 pt-6">
+                    <div>
+                      <label className="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Upload Logo UKM / Ormawa</label>
+                      <input type="file" accept="image/*" onChange={e => handleImageUpload(e, url => setOrmawaForm({...ormawaForm, logoUrl: url}))} className="w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer" />
+                      <input type="text" placeholder="Atau ketik URL / path lokal (misal: /assets/logo.png)" value={ormawaForm.logoUrl} onChange={e => setOrmawaForm({...ormawaForm, logoUrl: e.target.value})} className="mt-2 w-full px-3 py-1.5 bg-black/50 border border-white/10 rounded text-xs text-white placeholder-neutral-600 focus:border-primary/50" />
+                      {ormawaForm.logoUrl && (
+                        <div className="relative inline-block mt-3">
+                          <img src={ormawaForm.logoUrl} alt="Logo" className="h-32 object-contain bg-white/5 p-2 rounded-lg border border-white/10" />
+                          <button onClick={() => setOrmawaForm({...ormawaForm, logoUrl: ''})} className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors"><Trash2 size={14} /></button>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-white text-sm mb-2 font-bold mt-4">Banner UKM/Ormawa</label>
+                      <input type="file" accept="image/*" onChange={e => handleImageUpload(e, url => setOrmawaForm({...ormawaForm, bannerUrl: url}))} className="w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer" />
+                      <input type="text" placeholder="Atau ketik URL / path lokal (misal: /assets/banner.jpg)" value={ormawaForm.bannerUrl} onChange={e => setOrmawaForm({...ormawaForm, bannerUrl: e.target.value})} className="mt-2 w-full px-3 py-1.5 bg-black/50 border border-white/10 rounded text-xs text-white placeholder-neutral-600 focus:border-primary/50" />
+                      {ormawaForm.bannerUrl && (
+                        <div className="relative mt-3">
+                          <img src={ormawaForm.bannerUrl} alt="Banner" className="w-full h-40 object-cover rounded-lg border border-white/10 shadow-lg" />
+                          <button onClick={() => setOrmawaForm({...ormawaForm, bannerUrl: ''})} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-colors"><Trash2 size={16} /></button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 border-t border-white/10 pt-6">
+                    {/* Proker Section */}
+                    <div className="bg-black/30 p-4 rounded-xl border border-white/5">
+                      <h4 className="font-bold text-white mb-4">Program Kerja</h4>
+                      <div className="flex flex-col xl:flex-row gap-2 mb-4">
+                        <input type="text" placeholder="Nama Proker" value={newProkerTitle} onChange={e => setNewProkerTitle(e.target.value)} className="flex-1 min-w-0 bg-black/50 border border-white/10 rounded px-3 py-1.5 text-sm" />
+                        <input type="text" placeholder="Deskripsi Singkat" value={newProkerDesc} onChange={e => setNewProkerDesc(e.target.value)} className="flex-1 min-w-0 bg-black/50 border border-white/10 rounded px-3 py-1.5 text-sm" />
+                        <button onClick={() => {
+                          if(!newProkerTitle) return;
+                          setOrmawaForm(prev => ({ ...prev, proker: [...prev.proker, { title: newProkerTitle, desc: newProkerDesc }] }));
+                          setNewProkerTitle(''); setNewProkerDesc('');
+                        }} className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded flex justify-center items-center"><Plus size={16}/></button>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {(ormawaForm.proker || []).map((p, i) => (
+                          <div key={i} className="flex justify-between items-center bg-white/5 p-2 rounded text-sm">
+                            <div><strong className="block text-primary">{p.title}</strong><span className="text-neutral-400 text-xs">{p.desc}</span></div>
+                            <button onClick={() => setOrmawaForm(prev => ({ ...prev, proker: prev.proker.filter((_, idx) => idx !== i) }))} className="text-red-500 hover:text-red-400 p-1"><Trash2 size={14}/></button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Strukpimp Section */}
+                    <div className="bg-black/30 p-4 rounded-xl border border-white/5">
+                      <h4 className="font-bold text-white mb-4">Struktur Pimpinan</h4>
+                      <div className="flex flex-col xl:flex-row gap-2 mb-4">
+                        <input type="text" placeholder="Nama Lengkap" value={newPimpName} onChange={e => setNewPimpName(e.target.value)} className="flex-1 min-w-0 bg-black/50 border border-white/10 rounded px-3 py-1.5 text-sm" />
+                        <input type="text" placeholder="Jabatan" value={newPimpRole} onChange={e => setNewPimpRole(e.target.value)} className="flex-1 min-w-0 bg-black/50 border border-white/10 rounded px-3 py-1.5 text-sm" />
+                        <button onClick={() => {
+                          if(!newPimpName) return;
+                          setOrmawaForm(prev => ({ ...prev, strukpimp: [...prev.strukpimp, { nama: newPimpName, jabatan: newPimpRole }] }));
+                          setNewPimpName(''); setNewPimpRole('');
+                        }} className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded flex justify-center items-center"><Plus size={16}/></button>
+                      </div>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {(ormawaForm.strukpimp || []).map((p, i) => (
+                          <div key={i} className="flex justify-between items-center bg-white/5 p-2 rounded text-sm">
+                            <div><strong className="block text-white">{p.nama}</strong><span className="text-neutral-400 text-xs">{p.jabatan}</span></div>
+                            <button onClick={() => setOrmawaForm(prev => ({ ...prev, strukpimp: prev.strukpimp.filter((_, idx) => idx !== i) }))} className="text-red-500 hover:text-red-400 p-1"><Trash2 size={14}/></button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button onClick={() => { setIsEditingOrmawa(false); setIsAddingOrmawa(false); }} className="px-6 py-2 border border-white/20 hover:bg-white/10 rounded font-bold uppercase text-xs">Batal</button>
+                    <button onClick={() => {
+                      if (!ormawaForm.id || !ormawaForm.name) return showCustomAlert('ID dan Nama harus diisi', 'error');
+                      let newOrmawaList = [...(db.ormawa || [])];
+                      if (isAddingOrmawa) {
+                        if (newOrmawaList.find(o => o.id === ormawaForm.id)) return showCustomAlert('ID sudah digunakan', 'error');
+                        newOrmawaList.push(ormawaForm);
+                      } else {
+                        const index = newOrmawaList.findIndex(o => o.id === ormawaForm.id);
+                        if (index > -1) newOrmawaList[index] = ormawaForm;
+                      }
+                      onUpdateDB({ ...db, ormawa: newOrmawaList });
+                      setIsEditingOrmawa(false); setIsAddingOrmawa(false);
+                      showCustomAlert('Data Ormawa berhasil disimpan!');
+                    }} className="px-6 py-2 bg-primary hover:bg-primary-container text-white rounded font-bold uppercase text-xs">Simpan Data</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(db?.ormawa || []).map((o) => (
+                    <div key={o.id} className="bg-[#0a0a0a]/40 border border-white/10 rounded-2xl p-5 flex flex-col hover:border-primary/50 transition-colors">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-black border border-white/10 rounded-xl flex items-center justify-center overflow-hidden">
+                          {o.logoUrl ? <img src={o.logoUrl} alt="Logo" className="w-full h-full object-contain p-1" /> : <Users className="w-6 h-6 text-neutral-500" />}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-white leading-tight">{o.name}</h4>
+                          <span className="text-[10px] text-primary uppercase tracking-widest">{o.category}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-neutral-400 mb-4 line-clamp-2 flex-grow">{o.desc}</p>
+                      <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                        <div className="text-[10px] text-neutral-500">
+                          {o.proker?.length || 0} Proker • {o.strukpimp?.length || 0} Pimpinan
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => { setOrmawaForm(o); setIsEditingOrmawa(true); }} className="p-2 bg-white/5 hover:bg-white/20 rounded text-neutral-300 transition-colors"><Edit3 size={14}/></button>
+                          <button onClick={() => {
+                            confirmAction(`Yakin ingin menghapus ${o.name}?`, () => {
+                              onUpdateDB({ ...db, ormawa: db.ormawa.filter(item => item.id !== o.id) });
+                              showCustomAlert(`${o.name} berhasil dihapus`);
+                            });
+                          }} className="p-2 bg-red-500/10 hover:bg-red-500/30 rounded text-red-500 transition-colors"><Trash2 size={14}/></button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
