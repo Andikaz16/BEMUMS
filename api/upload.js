@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    const formData = new URLSearchParams();
+    const formData = new FormData();
     formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
     formData.append('source', image);
     formData.append('format', 'json');
