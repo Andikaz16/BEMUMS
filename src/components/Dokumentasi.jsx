@@ -209,7 +209,7 @@ export default function Dokumentasi({ db }) {
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 src={fullscreenImage} 
-                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" 
+                className="w-full h-full max-h-[90vh] object-contain rounded-lg shadow-2xl" 
                 alt="Fullscreen view" 
                 onClick={(e) => e.stopPropagation()}
               />
