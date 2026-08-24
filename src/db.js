@@ -331,6 +331,27 @@ export const incrementPageView = async (pageName) => {
     const today = new Date();
     today.setHours(today.getHours() + 7); // Force WIB
     const dateStr = today.toISOString().split('T')[0];
+    
+    // --- SISTEM ANTI-CHEAT (Berdasarkan Device/Browser) ---
+    // Mencegah spam klik / refresh halaman berkali-kali
+    const viewedKey = `visited_${dateStr}_${pageName}`;
+    
+    // Bersihkan kunci localStorage hari-hari sebelumnya agar tidak menumpuk
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      if (key.startsWith('visited_') && !key.includes(dateStr)) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    if (localStorage.getItem(viewedKey)) {
+      // Jika device ini sudah pernah mengunjungi halaman ini pada hari yang sama, abaikan!
+      return; 
+    }
+    
+    // Tandai bahwa device ini SAH sudah berkunjung hari ini
+    localStorage.setItem(viewedKey, 'true');
+
     const DOC_REF = doc(firestore, 'analytics', dateStr);
     await setDoc(DOC_REF, {
       date: dateStr,
