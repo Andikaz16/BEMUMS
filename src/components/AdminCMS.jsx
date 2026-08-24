@@ -155,19 +155,19 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   // --- Handler Functions ---
-  const handleImageUpload = (e, callback) => {
+  const handleImageUpload = async (e, callback) => {
     const file = e.target.files[0];
     if (file) {
+      showCustomAlert("Sedang mengupload gambar ke Cloud... Mohon tunggu.", "warning");
       const reader = new FileReader();
       reader.onloadend = () => {
         const img = new window.Image();
-        img.onload = () => {
+        img.onload = async () => {
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
           
-          // Max width/height for compression
-          const MAX_SIZE = 600;
+          const MAX_SIZE = 1200;
           if (width > height && width > MAX_SIZE) {
             height *= MAX_SIZE / width;
             width = MAX_SIZE;
@@ -181,9 +181,30 @@ export default function AdminCMS({ db, onUpdateDB }) {
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          // Compress to JPEG with 0.6 quality
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
-          callback(compressedDataUrl);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          const base64Data = compressedDataUrl.split(',')[1];
+          
+          try {
+            const formData = new URLSearchParams();
+            formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
+            formData.append('source', base64Data);
+            formData.append('format', 'json');
+            
+            const res = await fetch('https://freeimage.host/api/1/upload', {
+              method: 'POST',
+              body: formData
+            });
+            const data = await res.json();
+            
+            if (data.status_code === 200) {
+              showCustomAlert("Upload gambar ke Cloud berhasil!", "success");
+              callback(data.image.url);
+            } else {
+              showCustomAlert("Gagal upload gambar ke Cloud.", "error");
+            }
+          } catch (err) {
+            showCustomAlert("Upload error: Jaringan bermasalah.", "error");
+          }
         };
         img.src = reader.result;
       };
