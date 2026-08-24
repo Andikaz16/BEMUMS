@@ -59,7 +59,8 @@ export default function BeritaNasional() {
 
   useEffect(() => {
     fetchNews();
-    const interval = setInterval(fetchNews, 5 * 60 * 1000);
+    // Auto-refresh setiap 1 menit (sebelumnya 5 menit)
+    const interval = setInterval(fetchNews, 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchNews]);
 

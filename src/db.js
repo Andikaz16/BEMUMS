@@ -372,3 +372,20 @@ export const getAnalytics = async () => {
     return [];
   }
 };
+
+export const subscribeAnalytics = (callback) => {
+  try {
+    const unsubscribe = onSnapshot(collection(firestore, 'analytics'), (snapshot) => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      callback(data.sort((a, b) => b.date.localeCompare(a.date)));
+    }, (err) => {
+      console.error('Failed to subscribe analytics', err);
+      callback([]);
+    });
+    return unsubscribe;
+  } catch (err) {
+    console.error('Failed to init analytics subscription', err);
+    return () => {};
+  }
+};

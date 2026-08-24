@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, Users, Clock, CalendarDays, Eye, TrendingUp } from 'lucide-react';
-import { getAnalytics } from '../db';
+import { subscribeAnalytics } from '../db';
 
 export default function StatistikAdmin() {
   const [data, setData] = useState([]);
@@ -9,13 +9,12 @@ export default function StatistikAdmin() {
   const [filter, setFilter] = useState('24h'); // '24h', '7d', '30d', 'all'
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const rawData = await getAnalytics();
+    setLoading(true);
+    const unsubscribe = subscribeAnalytics((rawData) => {
       setData(rawData);
       setLoading(false);
-    };
-    fetchData();
+    });
+    return () => unsubscribe();
   }, []);
 
   // Filter and aggregate data
@@ -182,6 +181,104 @@ export default function StatistikAdmin() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Trend Chart (7 Hari Terakhir) */}
+          <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-6">
+            <h3 className="text-white font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+              <TrendingUp size={18} className="text-primary" />
+              Grafik Tren Kunjungan (7 Hari Terakhir)
+            </h3>
+            
+            {(() => {
+              const today = new Date();
+              today.setHours(today.getHours() + 7);
+              
+              const trend = [];
+              let max = 0;
+              
+              // Generate last 7 days
+              for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                const doc = data.find(x => x.date === dateStr);
+                const total = doc ? doc.total : 0;
+                if (total > max) max = total;
+                
+                trend.push({
+                  label: d.toLocaleDateString('id-ID', { weekday: 'short' }), // "Sen", "Sel"
+                  date: dateStr,
+                  total
+                });
+              }
+              
+              const width = 1000;
+              const height = 250;
+              const padding = 20;
+              
+              // Prevent division by zero
+              const safeMax = max || 1;
+              
+              // Calculate points
+              const points = trend.map((d, i) => {
+                const x = (i / (trend.length - 1)) * width;
+                const y = height - ((d.total / safeMax) * (height - padding * 2)) - padding;
+                return `${x},${y}`;
+              });
+              
+              const polylinePoints = points.join(' ');
+              const areaPoints = `${points.join(' ')} ${width},${height} 0,${height}`;
+              
+              return (
+                <div className="w-full overflow-x-auto pb-4">
+                  <div className="min-w-[600px] relative">
+                    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-xl" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#b90014" stopOpacity="0.5" />
+                          <stop offset="100%" stopColor="#b90014" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      
+                      {/* Grid Lines */}
+                      <line x1="0" y1={padding} x2={width} y2={padding} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5,5" />
+                      <line x1="0" y1={height/2} x2={width} y2={height/2} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5,5" />
+                      <line x1="0" y1={height - padding} x2={width} y2={height - padding} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                      
+                      {/* Gradient Area */}
+                      <polygon points={areaPoints} fill="url(#chartGradient)" />
+                      
+                      {/* Line */}
+                      <polyline points={polylinePoints} fill="none" stroke="#b90014" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                      
+                      {/* Points & Tooltips */}
+                      {points.map((p, i) => {
+                        const [x, y] = p.split(',');
+                        return (
+                          <g key={i}>
+                            <circle cx={x} cy={y} r="6" fill="#0a0a0a" stroke="#b90014" strokeWidth="3" />
+                            <text x={x} y={y - 15} fill="white" fontSize="14" fontWeight="bold" textAnchor="middle">
+                              {trend[i].total}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                    
+                    {/* Labels */}
+                    <div className="flex justify-between mt-4 px-2">
+                      {trend.map((d, i) => (
+                        <div key={i} className="text-center text-xs text-neutral-500 font-bold uppercase w-12">
+                          <div className="mb-1">{d.label}</div>
+                          <div className="text-[9px] opacity-50">{d.date.slice(5, 10)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </>
       )}
