@@ -185,22 +185,18 @@ export default function AdminCMS({ db, onUpdateDB }) {
           const base64Data = compressedDataUrl.split(',')[1];
           
           try {
-            const formData = new URLSearchParams();
-            formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
-            formData.append('source', base64Data);
-            formData.append('format', 'json');
-            
-            const res = await fetch('https://freeimage.host/api/1/upload', {
+            const res = await fetch('/api/upload', {
               method: 'POST',
-              body: formData
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image: base64Data })
             });
             const data = await res.json();
             
-            if (data.status_code === 200) {
+            if (data.success) {
               showCustomAlert("Upload gambar ke Cloud berhasil!", "success");
-              callback(data.image.url);
+              callback(data.url);
             } else {
-              showCustomAlert("Gagal upload gambar ke Cloud.", "error");
+              showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
             }
           } catch (err) {
             showCustomAlert("Upload error: Jaringan bermasalah.", "error");
