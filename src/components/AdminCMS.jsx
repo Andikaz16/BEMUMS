@@ -202,18 +202,23 @@ export default function AdminCMS({ db, onUpdateDB }) {
         const base64Data = canvas.toDataURL(format, quality).split(',')[1];
         
         try {
-          const res = await fetch('/api/upload', {
+          const formData = new FormData();
+          formData.append('image', base64Data);
+
+          const res = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Data })
+            headers: {
+              'Authorization': 'Client-ID 546c25a59c58ad7'
+            },
+            body: formData
           });
           const data = await res.json();
           
           if (data.success) {
             showCustomAlert("Upload HD berhasil!", "success");
-            callback(data.url);
+            callback(data.data.link);
           } else {
-            showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
+            showCustomAlert("Gagal upload gambar: " + (data.data?.error || "Coba lagi."), "error");
           }
         } catch (err) {
           showCustomAlert("Upload error: Jaringan bermasalah.", "error");
