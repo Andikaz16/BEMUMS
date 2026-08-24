@@ -18,29 +18,31 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
+    // Convert base64 to Blob
+    const buffer = Buffer.from(image, 'base64');
+    const blob = new Blob([buffer], { type: 'image/jpeg' });
+    
+    // Construct FormData for Catbox
     const formData = new FormData();
-    formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
-    formData.append('source', image);
-    formData.append('format', 'json');
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', blob, 'upload_' + Date.now() + '.jpg');
 
-    const response = await fetch('https://freeimage.host/api/1/upload', {
+    const response = await fetch('https://catbox.moe/user/api.php', {
       method: 'POST',
       body: formData
     });
 
-    const data = await response.json();
+    const resultText = await response.text();
 
-    if (data.status_code === 200) {
+    if (resultText.startsWith('https://')) {
       return res.status(200).json({
         success: true,
-        url: data.image.url,
-        thumb: data.image.thumb?.url || data.image.url,
-        display_url: data.image.display_url
+        url: resultText
       });
     } else {
       return res.status(400).json({
         success: false,
-        error: data.error?.message || 'Upload failed'
+        error: resultText || 'Catbox upload failed'
       });
     }
   } catch (error) {

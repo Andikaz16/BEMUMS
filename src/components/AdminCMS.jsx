@@ -171,28 +171,51 @@ export default function AdminCMS({ db, onUpdateDB }) {
     
     showCustomAlert("Sedang mengupload gambar mentahan ke Cloud... Mohon tunggu.", "warning");
     
-    showCustomAlert("Mengupload foto HD Mentahan ke Catbox Cloud...", "warning");
+    showCustomAlert("Mengompres & Mengupload foto HD ke Catbox Cloud...", "warning");
     const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Data = reader.result.split(',')[1];
-      
-      try {
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64Data })
-        });
-        const data = await res.json();
-        
-        if (data.success) {
-          showCustomAlert("Upload HD berhasil!", "success");
-          callback(data.url);
-        } else {
-          showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
+    reader.onloadend = () => {
+      const img = new Image();
+      img.onload = async () => {
+        const MAX_WIDTH = 2560; // 2.5K Resolution (Sangat HD tapi hemat ukuran)
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
         }
-      } catch (err) {
-        showCustomAlert("Upload error: Jaringan bermasalah.", "error");
-      }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Pertahankan format asli (PNG untuk logo transparan, JPEG untuk foto)
+        const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        const quality = format === 'image/jpeg' ? 0.90 : undefined; // PNG is lossless, ignores quality parameter
+        
+        const base64Data = canvas.toDataURL(format, quality).split(',')[1];
+        
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64Data })
+          });
+          const data = await res.json();
+          
+          if (data.success) {
+            showCustomAlert("Upload HD berhasil!", "success");
+            callback(data.url);
+          } else {
+            showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
+          }
+        } catch (err) {
+          showCustomAlert("Upload error: Jaringan bermasalah.", "error");
+        }
+      };
+      img.src = reader.result;
     };
     reader.readAsDataURL(file);
   };
