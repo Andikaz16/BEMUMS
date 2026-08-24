@@ -180,7 +180,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     reader.onloadend = () => {
       const img = new Image();
       img.onload = async () => {
-        const MAX_WIDTH = 2560; // 2.5K Resolution (Sangat HD tapi hemat ukuran)
+        const MAX_WIDTH = 1280; // Standar web HD (sangat cepat diproses & diupload)
         let width = img.width;
         let height = img.height;
 
@@ -197,7 +197,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
         
         // Pertahankan format asli (PNG untuk logo transparan, JPEG untuk foto)
         const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        const quality = format === 'image/jpeg' ? 0.90 : undefined; // PNG is lossless, ignores quality parameter
+        const quality = format === 'image/jpeg' ? 0.80 : undefined; // Kualitas 80% tidak beda jauh dengan 100% tapi ukuran file turun drastis
         
         const base64Data = canvas.toDataURL(format, quality).split(',')[1];
         
