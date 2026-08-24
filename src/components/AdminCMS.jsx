@@ -158,30 +158,30 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const handleImageUpload = async (e, callback) => {
     const file = e.target.files[0];
     if (file) {
-      showCustomAlert("Sedang mengupload gambar ke Cloud... Mohon tunggu.", "warning");
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Data = reader.result.split(',')[1];
+      showCustomAlert("Sedang mengupload gambar mentahan ke Cloud... Mohon tunggu.", "warning");
+      
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const res = await fetch('https://api.imgur.com/3/image', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Client-ID 546c25a59c58ad7' // Public Imgur Client ID
+          },
+          body: formData
+        });
+        const data = await res.json();
         
-        try {
-          const res = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Data })
-          });
-          const data = await res.json();
-          
-          if (data.success) {
-            showCustomAlert("Upload gambar ke Cloud berhasil!", "success");
-            callback(data.url);
-          } else {
-            showCustomAlert("Gagal upload gambar: " + (data.error || "Coba lagi."), "error");
-          }
-        } catch (err) {
-          showCustomAlert("Upload error: Jaringan bermasalah.", "error");
+        if (data.success) {
+          showCustomAlert("Upload gambar asli ke Cloud berhasil!", "success");
+          callback(data.data.link);
+        } else {
+          showCustomAlert("Gagal upload gambar: " + (data.data?.error || "Coba lagi."), "error");
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        showCustomAlert("Upload error: Jaringan bermasalah.", "error");
+      }
     }
   };
   // Period Handlers
