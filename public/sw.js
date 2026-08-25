@@ -2,7 +2,8 @@ const CACHE_NAME = 'bem-ums-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/assets/logo_bem_baru.png'
+  '/assets/logo_bem_baru.png',
+  '/assets/kolektiva_app_icon.jpg'
 ];
 
 self.addEventListener('install', (e) => {
