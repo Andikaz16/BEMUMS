@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 
 // Awan Tipe 1 (Original)
 const AkatsukiCloud1 = ({ className }) => (
@@ -35,6 +35,85 @@ const AkatsukiCloud3 = ({ className }) => (
     <path d="M30,60 C40,50 50,70 40,80" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
   </svg>
 );
+
+// Awan Tunggal untuk performa tinggi & pergerakan awal langsung di layar
+const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
+  const isHovered = !isMobile && hoveredIndex === i;
+
+  if (c.type === 'floating') {
+    return (
+      <motion.div
+        className="absolute"
+        animate={{ y: [-10, 10, -10] }}
+        transition={{ duration: 7 + i * 2, repeat: Infinity, ease: "easeInOut" }}
+        style={{ top: c.top, left: c.left, width: c.w, height: c.h, willChange: 'transform' }}
+      >
+        <motion.div
+          ref={el => cloudsRef.current[i] = el}
+          animate={{ 
+            scale: isHovered ? 1.25 : 1, 
+            opacity: isHovered ? 0.8 : c.baseOpacity,
+            y: isHovered ? -12 : 0
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="w-full h-full"
+        >
+          <c.Component 
+            className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_18px_rgba(255,0,0,0.9)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
+          />
+        </motion.div>
+      </motion.div>
+    );
+  }
+
+  // Awan tipe panning (jalan dari kiri ke kanan)
+  // c.startX menentukan posisi awal layar (misal: 10vw, 40vw, dll) agar langsung muncul ketika dibuka
+  const controls = useAnimation();
+
+  useEffect(() => {
+    const startXNum = c.startX || -25;
+    const distanceToTravel = 125 - startXNum;
+    const firstDuration = c.duration * (distanceToTravel / 150);
+
+    controls.start({
+      x: '125vw',
+      transition: { duration: firstDuration, ease: "linear" }
+    }).then(() => {
+      // Setel ulang posisi ke sebelah kiri luar layar (-25vw) lalu mulai loop infinity
+      controls.set({ x: '-25vw' });
+      controls.start({
+        x: '125vw',
+        transition: { duration: c.duration, repeat: Infinity, ease: "linear" }
+      });
+    });
+    
+    return () => controls.stop();
+  }, [controls, c.duration, c.startX]);
+
+  return (
+    <motion.div
+      initial={{ x: `${c.startX || -25}vw` }}
+      animate={controls}
+      className="absolute"
+      style={{ top: c.top, width: c.w, height: c.h, willChange: 'transform' }}
+    >
+      <motion.div
+        ref={el => cloudsRef.current[i] = el}
+        animate={{ 
+          scale: isHovered ? 1.25 : 1, 
+          opacity: isHovered ? 0.8 : c.baseOpacity,
+          y: isHovered ? -12 : 0
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="w-full h-full"
+      >
+        <c.Component 
+          className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_18px_rgba(255,0,0,0.9)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
+        />
+      </motion.div>
+    </motion.div>
+  );
+};
 
 export default function AnimatedBackground() {
   const [isMobile, setIsMobile] = useState(false);
@@ -90,11 +169,12 @@ export default function AnimatedBackground() {
     { type: 'floating', left: '20%', top: '75%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud3 },
 
     // --- 5 Awan Panning (Lewat perlahan dari kiri ke kanan) ---
-    { type: 'panning', delay: 0, duration: 65, top: '10%', w: 200, h: 120, baseOpacity: 0.25, Component: AkatsukiCloud1 },
-    { type: 'panning', delay: 15, duration: 55, top: '30%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud2 },
-    { type: 'panning', delay: 5, duration: 75, top: '55%', w: 250, h: 150, baseOpacity: 0.2, Component: AkatsukiCloud3 },
-    { type: 'panning', delay: 25, duration: 60, top: '80%', w: 180, h: 110, baseOpacity: 0.3, Component: AkatsukiCloud2 },
-    { type: 'panning', delay: 35, duration: 80, top: '20%', w: 220, h: 130, baseOpacity: 0.2, Component: AkatsukiCloud1 },
+    // startX mendistribusikan awan agar langsung muncul secara acak saat web dibuka
+    { type: 'panning', startX: 10, duration: 65, top: '10%', w: 200, h: 120, baseOpacity: 0.25, Component: AkatsukiCloud1 },
+    { type: 'panning', startX: 40, duration: 55, top: '30%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud2 },
+    { type: 'panning', startX: 70, duration: 75, top: '55%', w: 250, h: 150, baseOpacity: 0.2, Component: AkatsukiCloud3 },
+    { type: 'panning', startX: 25, duration: 60, top: '80%', w: 180, h: 110, baseOpacity: 0.3, Component: AkatsukiCloud2 },
+    { type: 'panning', startX: 90, duration: 80, top: '20%', w: 220, h: 130, baseOpacity: 0.2, Component: AkatsukiCloud1 },
   ];
 
   const mobileClouds = [
@@ -107,48 +187,16 @@ export default function AnimatedBackground() {
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none transform-gpu">
-      {activeClouds.map((c, i) => {
-        const isHovered = !isMobile && hoveredIndex === i;
-        
-        // Pisahkan animasi berdasarkan tipe awan
-        const outerAnimationProps = c.type === 'floating' 
-          ? {
-              initial: { y: 0 },
-              animate: { y: [-10, 10, -10] },
-              transition: { duration: 7 + i * 2, repeat: Infinity, ease: "easeInOut" },
-              style: { top: c.top, left: c.left, width: c.w, height: c.h, willChange: 'transform' }
-            }
-          : {
-              initial: { x: '-25vw' },
-              animate: { x: '125vw' },
-              transition: { duration: c.duration, repeat: Infinity, ease: "linear", delay: c.delay },
-              style: { top: c.top, width: c.w, height: c.h, willChange: 'transform' }
-            };
-        
-        return (
-          <motion.div
-            key={i}
-            className="absolute"
-            {...outerAnimationProps}
-          >
-            {/* Inner div untuk interaksi individual saat disorot mouse */}
-            <motion.div
-              ref={el => cloudsRef.current[i] = el}
-              animate={{ 
-                scale: isHovered ? 1.25 : 1, 
-                opacity: isHovered ? 0.8 : c.baseOpacity,
-                y: isHovered ? -12 : 0
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="w-full h-full"
-            >
-              <c.Component 
-                className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_18px_rgba(255,0,0,0.9)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
-              />
-            </motion.div>
-          </motion.div>
-        );
-      })}
+      {activeClouds.map((c, i) => (
+        <SingleCloud
+          key={i}
+          c={c}
+          i={i}
+          isMobile={isMobile}
+          hoveredIndex={hoveredIndex}
+          cloudsRef={cloudsRef}
+        />
+      ))}
     </div>
   );
 }
