@@ -1,43 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 
-// Awan Tipe 1 (Original)
-const AkatsukiCloud1 = ({ className }) => (
-  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path 
-      d="M50,90 C30,90 10,75 20,50 C25,35 40,30 50,40 C55,15 90,5 110,30 C140,10 180,30 170,60 C190,75 180,100 160,95 C150,115 110,115 100,95 C80,105 55,100 50,90 Z" 
-      fill="#b90014" stroke="white" strokeWidth="4" strokeLinejoin="round" 
+// Komponen Bintang Merah Kabinet Kolektiva (Merah dengan outline putih)
+const KolektivaStar = ({ className }) => (
+  <svg viewBox="0 0 100 100" className={className} xmlns="http://www.w3.org/2000/svg">
+    <polygon 
+      points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" 
+      fill="#b90014" 
+      stroke="white" 
+      strokeWidth="4" 
+      strokeLinejoin="round" 
     />
-    <path d="M20,50 C30,40 40,60 30,70" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
-    <path d="M170,60 C160,50 150,70 160,80" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
   </svg>
 );
 
-// Awan Tipe 2 (Lebih panjang dan landai)
-const AkatsukiCloud2 = ({ className }) => (
-  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path 
-      d="M30,80 C5,80 -5,55 15,40 C20,25 45,20 55,30 C60,5 110,0 130,25 C160,15 190,30 185,55 C205,65 190,95 160,90 C150,110 90,110 80,90 C60,100 40,95 30,80 Z" 
-      fill="#b90014" stroke="white" strokeWidth="4" strokeLinejoin="round" 
-    />
-    <path d="M15,40 C25,30 45,45 35,55" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
-  </svg>
-);
-
-// Awan Tipe 3 (Berlawanan arah / Flipped & Gemuk)
-const AkatsukiCloud3 = ({ className }) => (
-  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path 
-      d="M150,90 C170,90 190,75 180,50 C175,35 160,30 150,40 C145,15 110,5 90,30 C60,10 20,30 30,60 C10,75 20,100 40,95 C50,115 90,115 100,95 C120,105 145,100 150,90 Z" 
-      fill="#b90014" stroke="white" strokeWidth="4" strokeLinejoin="round" 
-    />
-    <path d="M180,50 C170,40 160,60 170,70" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
-    <path d="M30,60 C40,50 50,70 40,80" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
-  </svg>
-);
-
-// Awan Tunggal untuk performa tinggi & pergerakan awal langsung di layar
-const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
+// Bintang Tunggal dengan pergerakan awal langsung di layar
+const SingleStar = ({ c, i, isMobile, hoveredIndex, starsRef }) => {
   const isHovered = !isMobile && hoveredIndex === i;
 
   if (c.type === 'floating') {
@@ -49,17 +27,18 @@ const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
         style={{ top: c.top, left: c.left, width: c.w, height: c.h, willChange: 'transform' }}
       >
         <motion.div
-          ref={el => cloudsRef.current[i] = el}
+          ref={el => starsRef.current[i] = el}
           animate={{ 
-            scale: isHovered ? 1.25 : 1, 
-            opacity: isHovered ? 0.8 : c.baseOpacity,
-            y: isHovered ? -12 : 0
+            scale: isHovered ? 1.3 : 1, 
+            opacity: isHovered ? 0.9 : c.baseOpacity,
+            y: isHovered ? -12 : 0,
+            rotate: isHovered ? 180 : 0
           }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           className="w-full h-full"
         >
-          <c.Component 
-            className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_18px_rgba(255,0,0,0.9)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
+          <KolektivaStar 
+            className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_20px_rgba(255,0,0,1)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
           />
         </motion.div>
       </motion.div>
@@ -67,7 +46,6 @@ const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
   }
 
   // Awan tipe panning (jalan dari kiri ke kanan)
-  // c.startX menentukan posisi awal layar (misal: 10vw, 40vw, dll) agar langsung muncul ketika dibuka
   const controls = useAnimation();
 
   useEffect(() => {
@@ -79,7 +57,6 @@ const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
       x: '125vw',
       transition: { duration: firstDuration, ease: "linear" }
     }).then(() => {
-      // Setel ulang posisi ke sebelah kiri luar layar (-25vw) lalu mulai loop infinity
       controls.set({ x: '-25vw' });
       controls.start({
         x: '125vw',
@@ -98,17 +75,18 @@ const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
       style={{ top: c.top, width: c.w, height: c.h, willChange: 'transform' }}
     >
       <motion.div
-        ref={el => cloudsRef.current[i] = el}
+        ref={el => starsRef.current[i] = el}
         animate={{ 
-          scale: isHovered ? 1.25 : 1, 
-          opacity: isHovered ? 0.8 : c.baseOpacity,
-          y: isHovered ? -12 : 0
+          scale: isHovered ? 1.3 : 1, 
+          opacity: isHovered ? 0.9 : c.baseOpacity,
+          y: isHovered ? -12 : 0,
+          rotate: isHovered ? 180 : 0
         }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="w-full h-full"
       >
-        <c.Component 
-          className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_18px_rgba(255,0,0,0.9)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
+        <KolektivaStar 
+          className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_20px_rgba(255,0,0,1)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
         />
       </motion.div>
     </motion.div>
@@ -118,7 +96,7 @@ const SingleCloud = ({ c, i, isMobile, hoveredIndex, cloudsRef }) => {
 export default function AnimatedBackground() {
   const [isMobile, setIsMobile] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const cloudsRef = useRef([]);
+  const starsRef = useRef([]);
   const rafRef = useRef(null);
 
   useEffect(() => {
@@ -130,21 +108,21 @@ export default function AnimatedBackground() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Hanya jalankan pelacakan kursor di Desktop saat mouse BENAR-BENAR bergerak (bukan loop 60fps terus menerus)
+  // Pelacakan kursor di Desktop saat mouse bergerak
   useEffect(() => {
-    if (isMobile) return; // Nonaktifkan total di HP untuk menghemat baterai & performa maksimal
+    if (isMobile) return;
 
     const handleMouseMove = (e) => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
         let found = null;
-        for (let i = 0; i < cloudsRef.current.length; i++) {
-          const el = cloudsRef.current[i];
+        for (let i = 0; i < starsRef.current.length; i++) {
+          const el = starsRef.current[i];
           if (!el) continue;
           const rect = el.getBoundingClientRect();
           if (
-            e.clientX >= rect.left - 25 && e.clientX <= rect.right + 25 &&
-            e.clientY >= rect.top - 25 && e.clientY <= rect.bottom + 25
+            e.clientX >= rect.left - 20 && e.clientX <= rect.right + 20 &&
+            e.clientY >= rect.top - 20 && e.clientY <= rect.bottom + 20
           ) {
             found = i;
             break;
@@ -161,40 +139,39 @@ export default function AnimatedBackground() {
     };
   }, [isMobile]);
 
-  // Data awan: di HP hanya tampilkan 3 awan mengambang ringan, di Desktop tampilkan 8
-  const desktopClouds = [
-    // --- 3 Awan Stay (Mengambang di tempat) ---
-    { type: 'floating', left: '10%', top: '15%', w: 140, h: 84, baseOpacity: 0.35, Component: AkatsukiCloud1 },
-    { type: 'floating', left: '75%', top: '45%', w: 180, h: 108, baseOpacity: 0.25, Component: AkatsukiCloud2 },
-    { type: 'floating', left: '20%', top: '75%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud3 },
+  // Data bintang: di HP 3 bintang mengambang, di Desktop 8 bintang (3 stay, 5 jalan)
+  const desktopStars = [
+    // --- 3 Bintang Stay ---
+    { type: 'floating', left: '10%', top: '15%', w: 70, h: 70, baseOpacity: 0.35 },
+    { type: 'floating', left: '75%', top: '45%', w: 90, h: 90, baseOpacity: 0.25 },
+    { type: 'floating', left: '20%', top: '75%', w: 80, h: 80, baseOpacity: 0.3 },
 
-    // --- 5 Awan Panning (Lewat perlahan dari kiri ke kanan) ---
-    // startX mendistribusikan awan agar langsung muncul secara acak saat web dibuka
-    { type: 'panning', startX: 10, duration: 65, top: '10%', w: 200, h: 120, baseOpacity: 0.25, Component: AkatsukiCloud1 },
-    { type: 'panning', startX: 40, duration: 55, top: '30%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud2 },
-    { type: 'panning', startX: 70, duration: 75, top: '55%', w: 250, h: 150, baseOpacity: 0.2, Component: AkatsukiCloud3 },
-    { type: 'panning', startX: 25, duration: 60, top: '80%', w: 180, h: 110, baseOpacity: 0.3, Component: AkatsukiCloud2 },
-    { type: 'panning', startX: 90, duration: 80, top: '20%', w: 220, h: 130, baseOpacity: 0.2, Component: AkatsukiCloud1 },
+    // --- 5 Bintang Panning ---
+    { type: 'panning', startX: 10, duration: 65, top: '10%', w: 90, h: 90, baseOpacity: 0.25 },
+    { type: 'panning', startX: 40, duration: 55, top: '30%', w: 60, h: 60, baseOpacity: 0.3 },
+    { type: 'panning', startX: 70, duration: 75, top: '55%', w: 110, h: 110, baseOpacity: 0.2 },
+    { type: 'panning', startX: 25, duration: 60, top: '80%', w: 80, h: 80, baseOpacity: 0.3 },
+    { type: 'panning', startX: 90, duration: 80, top: '20%', w: 100, h: 100, baseOpacity: 0.2 },
   ];
 
-  const mobileClouds = [
-    { type: 'floating', left: '8%', top: '12%', w: 110, h: 66, baseOpacity: 0.3, Component: AkatsukiCloud1 },
-    { type: 'floating', left: '70%', top: '45%', w: 130, h: 78, baseOpacity: 0.25, Component: AkatsukiCloud2 },
-    { type: 'floating', left: '15%', top: '75%', w: 120, h: 72, baseOpacity: 0.25, Component: AkatsukiCloud3 },
+  const mobileStars = [
+    { type: 'floating', left: '8%', top: '12%', w: 55, h: 55, baseOpacity: 0.3 },
+    { type: 'floating', left: '70%', top: '45%', w: 65, h: 65, baseOpacity: 0.25 },
+    { type: 'floating', left: '15%', top: '75%', w: 60, h: 60, baseOpacity: 0.25 },
   ];
 
-  const activeClouds = isMobile ? mobileClouds : desktopClouds;
+  const activeStars = isMobile ? mobileStars : desktopStars;
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none transform-gpu">
-      {activeClouds.map((c, i) => (
-        <SingleCloud
+      {activeStars.map((c, i) => (
+        <SingleStar
           key={i}
           c={c}
           i={i}
           isMobile={isMobile}
           hoveredIndex={hoveredIndex}
-          cloudsRef={cloudsRef}
+          starsRef={starsRef}
         />
       ))}
     </div>
