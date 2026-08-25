@@ -16,6 +16,7 @@ import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
 import HalamanKalender from './components/HalamanKalender.jsx';
 import AnimatedBackground from './components/AnimatedBackground.jsx';
+import SplashScreen from './components/SplashScreen.jsx';
 import { initDB, saveDB, incrementPageView } from './db.js';
 import Lenis from 'lenis';
 
@@ -23,6 +24,7 @@ export default function App() {
   const [db, setDb] = useState(null);
   const [isFirebaseLoaded, setIsFirebaseLoaded] = useState(false);
   const [activePage, setActivePage] = useState('beranda');
+  const [isSplashComplete, setIsSplashComplete] = useState(false);
   
   // Auth state for Admin CMS
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
@@ -100,20 +102,17 @@ export default function App() {
     return saveDB(newDB);
   };
 
-  if (!db) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-primary font-display font-bold">
-        MEMUAT DATABASE...
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#3B0505] to-black text-[#1a1c1c] overflow-x-hidden font-body relative">
-      <AnimatedBackground />
-      <div className="relative z-10 flex flex-col flex-grow">
-        {/* Dynamic Navigation Header */}
-        <Navbar db={db} activePage={activePage} setActivePage={handlePageChange} />
+      {(!isSplashComplete || !db) && (
+        <SplashScreen onComplete={() => setIsSplashComplete(true)} />
+      )}
+
+      {db && (
+        <>
+          <AnimatedBackground />
+          <div className="relative z-10 flex flex-col flex-grow">
+            <Navbar db={db} activePage={activePage} setActivePage={handlePageChange} />
 
       {/* Main Pages Content Switcher */}
       <main className="flex-grow">
@@ -171,7 +170,9 @@ export default function App() {
 
       {/* Shared Footer */}
       <Footer setActivePage={handlePageChange} />
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

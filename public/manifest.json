@@ -1,0 +1,22 @@
+{
+  "short_name": "BEM UMS",
+  "name": "BEM UMS 2026 — Kabinet Kolektiva",
+  "description": "Website Resmi Badan Eksekutif Mahasiswa Universitas Muhammadiyah Surakarta (BEM UMS) Kabinet Kolektiva 2026.",
+  "icons": [
+    {
+      "src": "/assets/logo_bem_baru.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/assets/logo_bem_baru.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#050505",
+  "theme_color": "#b90014",
+  "display": "standalone",
+  "orientation": "portrait"
+}
