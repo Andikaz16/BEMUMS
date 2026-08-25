@@ -37,46 +37,53 @@ const AkatsukiCloud3 = ({ className }) => (
 );
 
 export default function AnimatedBackground() {
-  const mouseRef = useRef({ x: -1000, y: -1000 });
-  const cloudsRef = useRef([]);
+  const [isMobile, setIsMobile] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const cloudsRef = useRef([]);
+  const rafRef = useRef(null);
 
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Hanya jalankan pelacakan kursor di Desktop saat mouse BENAR-BENAR bergerak (bukan loop 60fps terus menerus)
+  useEffect(() => {
+    if (isMobile) return; // Nonaktifkan total di HP untuk menghemat baterai & performa maksimal
+
     const handleMouseMove = (e) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  useEffect(() => {
-    let animationFrameId;
-    const checkHover = () => {
-      let found = null;
-      cloudsRef.current.forEach((el, index) => {
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        if (
-          mouseRef.current.x >= rect.left - 20 && mouseRef.current.x <= rect.right + 20 &&
-          mouseRef.current.y >= rect.top - 20 && mouseRef.current.y <= rect.bottom + 20
-        ) {
-          found = index;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        let found = null;
+        for (let i = 0; i < cloudsRef.current.length; i++) {
+          const el = cloudsRef.current[i];
+          if (!el) continue;
+          const rect = el.getBoundingClientRect();
+          if (
+            e.clientX >= rect.left - 25 && e.clientX <= rect.right + 25 &&
+            e.clientY >= rect.top - 25 && e.clientY <= rect.bottom + 25
+          ) {
+            found = i;
+            break;
+          }
         }
+        setHoveredIndex(found);
       });
-      
-      setHoveredIndex(prev => {
-        if (prev !== found) return found;
-        return prev;
-      });
-      
-      animationFrameId = requestAnimationFrame(checkHover);
     };
-    
-    checkHover();
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
 
-  const cloudData = [
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [isMobile]);
+
+  // Data awan: di HP hanya tampilkan 3 awan mengambang ringan, di Desktop tampilkan 8
+  const desktopClouds = [
     // --- 3 Awan Stay (Mengambang di tempat) ---
     { type: 'floating', left: '10%', top: '15%', w: 140, h: 84, baseOpacity: 0.35, Component: AkatsukiCloud1 },
     { type: 'floating', left: '75%', top: '45%', w: 180, h: 108, baseOpacity: 0.25, Component: AkatsukiCloud2 },
@@ -90,25 +97,32 @@ export default function AnimatedBackground() {
     { type: 'panning', delay: 35, duration: 80, top: '20%', w: 220, h: 130, baseOpacity: 0.2, Component: AkatsukiCloud1 },
   ];
 
+  const mobileClouds = [
+    { type: 'floating', left: '8%', top: '12%', w: 110, h: 66, baseOpacity: 0.3, Component: AkatsukiCloud1 },
+    { type: 'floating', left: '70%', top: '45%', w: 130, h: 78, baseOpacity: 0.25, Component: AkatsukiCloud2 },
+    { type: 'floating', left: '15%', top: '75%', w: 120, h: 72, baseOpacity: 0.25, Component: AkatsukiCloud3 },
+  ];
+
+  const activeClouds = isMobile ? mobileClouds : desktopClouds;
+
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-      
-      {cloudData.map((c, i) => {
-        const isHovered = hoveredIndex === i;
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none transform-gpu">
+      {activeClouds.map((c, i) => {
+        const isHovered = !isMobile && hoveredIndex === i;
         
         // Pisahkan animasi berdasarkan tipe awan
         const outerAnimationProps = c.type === 'floating' 
           ? {
               initial: { y: 0 },
-              animate: { y: [-15, 15, -15] },
-              transition: { duration: 8 + i * 2, repeat: Infinity, ease: "easeInOut" },
-              style: { top: c.top, left: c.left, width: c.w, height: c.h }
+              animate: { y: [-10, 10, -10] },
+              transition: { duration: 7 + i * 2, repeat: Infinity, ease: "easeInOut" },
+              style: { top: c.top, left: c.left, width: c.w, height: c.h, willChange: 'transform' }
             }
           : {
-              initial: { x: '-20vw' },
-              animate: { x: '120vw' },
+              initial: { x: '-25vw' },
+              animate: { x: '125vw' },
               transition: { duration: c.duration, repeat: Infinity, ease: "linear", delay: c.delay },
-              style: { top: c.top, width: c.w, height: c.h }
+              style: { top: c.top, width: c.w, height: c.h, willChange: 'transform' }
             };
         
         return (
@@ -121,23 +135,20 @@ export default function AnimatedBackground() {
             <motion.div
               ref={el => cloudsRef.current[i] = el}
               animate={{ 
-                scale: isHovered ? 1.3 : 1, 
+                scale: isHovered ? 1.25 : 1, 
                 opacity: isHovered ? 0.8 : c.baseOpacity,
-                y: isHovered ? -15 : 0 // Lompat dikit ke atas kalau disorot
+                y: isHovered ? -12 : 0
               }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="w-full h-full"
             >
               <c.Component 
-                className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_25px_rgba(255,0,0,1)]" : "drop-shadow-[0_0_10px_rgba(185,0,20,0.8)]")} 
+                className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_18px_rgba(255,0,0,0.9)]" : "drop-shadow-[0_0_8px_rgba(185,0,20,0.6)]")} 
               />
             </motion.div>
           </motion.div>
         );
       })}
-
-      {/* Noise overlay */}
-      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
     </div>
   );
 }
