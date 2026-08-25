@@ -1,46 +1,143 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-export default function AnimatedBackground() {
-  return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden bg-black pointer-events-none">
-      {/* Base dark gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1a0000] to-black opacity-90" />
-      
-      {/* Moving cloud 1 (Reddish) */}
-      <motion.div
-        animate={{
-          x: ['-20%', '20%', '-20%'],
-          y: ['-10%', '10%', '-10%'],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-[#590000] mix-blend-screen filter blur-[120px] opacity-30"
-      />
+// Awan Tipe 1 (Original)
+const AkatsukiCloud1 = ({ className }) => (
+  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M50,90 C30,90 10,75 20,50 C25,35 40,30 50,40 C55,15 90,5 110,30 C140,10 180,30 170,60 C190,75 180,100 160,95 C150,115 110,115 100,95 C80,105 55,100 50,90 Z" 
+      fill="#b90014" stroke="white" strokeWidth="4" strokeLinejoin="round" 
+    />
+    <path d="M20,50 C30,40 40,60 30,70" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+    <path d="M170,60 C160,50 150,70 160,80" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
 
-      {/* Moving cloud 2 (Darker Red) */}
-      <motion.div
-        animate={{
-          x: ['20%', '-20%', '20%'],
-          y: ['10%', '-10%', '10%'],
-          scale: [1.2, 1, 1.2],
-        }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[40%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[#3b0505] mix-blend-screen filter blur-[120px] opacity-50"
-      />
+// Awan Tipe 2 (Lebih panjang dan landai)
+const AkatsukiCloud2 = ({ className }) => (
+  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M30,80 C5,80 -5,55 15,40 C20,25 45,20 55,30 C60,5 110,0 130,25 C160,15 190,30 185,55 C205,65 190,95 160,90 C150,110 90,110 80,90 C60,100 40,95 30,80 Z" 
+      fill="#b90014" stroke="white" strokeWidth="4" strokeLinejoin="round" 
+    />
+    <path d="M15,40 C25,30 45,45 35,55" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
+
+// Awan Tipe 3 (Berlawanan arah / Flipped & Gemuk)
+const AkatsukiCloud3 = ({ className }) => (
+  <svg viewBox="0 0 200 120" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M150,90 C170,90 190,75 180,50 C175,35 160,30 150,40 C145,15 110,5 90,30 C60,10 20,30 30,60 C10,75 20,100 40,95 C50,115 90,115 100,95 C120,105 145,100 150,90 Z" 
+      fill="#b90014" stroke="white" strokeWidth="4" strokeLinejoin="round" 
+    />
+    <path d="M180,50 C170,40 160,60 170,70" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+    <path d="M30,60 C40,50 50,70 40,80" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
+
+export default function AnimatedBackground() {
+  const mouseRef = useRef({ x: -1000, y: -1000 });
+  const cloudsRef = useRef([]);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    let animationFrameId;
+    const checkHover = () => {
+      let found = null;
+      cloudsRef.current.forEach((el, index) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        if (
+          mouseRef.current.x >= rect.left - 20 && mouseRef.current.x <= rect.right + 20 &&
+          mouseRef.current.y >= rect.top - 20 && mouseRef.current.y <= rect.bottom + 20
+        ) {
+          found = index;
+        }
+      });
       
-      {/* Moving cloud 3 (Subtle Accent) */}
-      <motion.div
-        animate={{
-          x: ['0%', '10%', '-10%', '0%'],
-          y: ['10%', '0%', '-10%', '10%'],
-        }}
-        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-        className="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] rounded-full bg-[#8b0000] mix-blend-screen filter blur-[150px] opacity-20"
-      />
+      setHoveredIndex(prev => {
+        if (prev !== found) return found;
+        return prev;
+      });
       
-      {/* Noise overlay for texture (Membuatnya terlihat lebih elegan) */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+      animationFrameId = requestAnimationFrame(checkHover);
+    };
+    
+    checkHover();
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  const cloudData = [
+    // --- 3 Awan Stay (Mengambang di tempat) ---
+    { type: 'floating', left: '10%', top: '15%', w: 140, h: 84, baseOpacity: 0.35, Component: AkatsukiCloud1 },
+    { type: 'floating', left: '75%', top: '45%', w: 180, h: 108, baseOpacity: 0.25, Component: AkatsukiCloud2 },
+    { type: 'floating', left: '20%', top: '75%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud3 },
+
+    // --- 5 Awan Panning (Lewat perlahan dari kiri ke kanan) ---
+    { type: 'panning', delay: 0, duration: 65, top: '10%', w: 200, h: 120, baseOpacity: 0.25, Component: AkatsukiCloud1 },
+    { type: 'panning', delay: 15, duration: 55, top: '30%', w: 150, h: 90, baseOpacity: 0.3, Component: AkatsukiCloud2 },
+    { type: 'panning', delay: 5, duration: 75, top: '55%', w: 250, h: 150, baseOpacity: 0.2, Component: AkatsukiCloud3 },
+    { type: 'panning', delay: 25, duration: 60, top: '80%', w: 180, h: 110, baseOpacity: 0.3, Component: AkatsukiCloud2 },
+    { type: 'panning', delay: 35, duration: 80, top: '20%', w: 220, h: 130, baseOpacity: 0.2, Component: AkatsukiCloud1 },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      
+      {cloudData.map((c, i) => {
+        const isHovered = hoveredIndex === i;
+        
+        // Pisahkan animasi berdasarkan tipe awan
+        const outerAnimationProps = c.type === 'floating' 
+          ? {
+              initial: { y: 0 },
+              animate: { y: [-15, 15, -15] },
+              transition: { duration: 8 + i * 2, repeat: Infinity, ease: "easeInOut" },
+              style: { top: c.top, left: c.left, width: c.w, height: c.h }
+            }
+          : {
+              initial: { x: '-20vw' },
+              animate: { x: '120vw' },
+              transition: { duration: c.duration, repeat: Infinity, ease: "linear", delay: c.delay },
+              style: { top: c.top, width: c.w, height: c.h }
+            };
+        
+        return (
+          <motion.div
+            key={i}
+            className="absolute"
+            {...outerAnimationProps}
+          >
+            {/* Inner div untuk interaksi individual saat disorot mouse */}
+            <motion.div
+              ref={el => cloudsRef.current[i] = el}
+              animate={{ 
+                scale: isHovered ? 1.3 : 1, 
+                opacity: isHovered ? 0.8 : c.baseOpacity,
+                y: isHovered ? -15 : 0 // Lompat dikit ke atas kalau disorot
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="w-full h-full"
+            >
+              <c.Component 
+                className={"w-full h-full transition-all duration-300 " + (isHovered ? "drop-shadow-[0_0_25px_rgba(255,0,0,1)]" : "drop-shadow-[0_0_10px_rgba(185,0,20,0.8)]")} 
+              />
+            </motion.div>
+          </motion.div>
+        );
+      })}
+
+      {/* Noise overlay */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
     </div>
   );
 }

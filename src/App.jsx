@@ -109,10 +109,11 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent text-[#1a1c1c] overflow-x-hidden font-body relative">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#3B0505] to-black text-[#1a1c1c] overflow-x-hidden font-body relative">
       <AnimatedBackground />
-      {/* Dynamic Navigation Header */}
-      <Navbar db={db} activePage={activePage} setActivePage={handlePageChange} />
+      <div className="relative z-10 flex flex-col flex-grow">
+        {/* Dynamic Navigation Header */}
+        <Navbar db={db} activePage={activePage} setActivePage={handlePageChange} />
 
       {/* Main Pages Content Switcher */}
       <main className="flex-grow">
@@ -170,6 +171,7 @@ export default function App() {
 
       {/* Shared Footer */}
       <Footer setActivePage={handlePageChange} />
+      </div>
     </div>
   );
 }
