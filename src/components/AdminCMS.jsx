@@ -28,6 +28,57 @@ export default function AdminCMS({ db, onUpdateDB }) {
     }
   }, []);
 
+  const handleDownloadBackup = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", `backup_bemums_${new Date().toISOString().split('T')[0]}.json`);
+    dlAnchorElem.click();
+    showCustomAlert("Database berhasil didownload! Simpan file ini baik-baik.");
+  };
+
+  const handleRestoreBackup = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    confirmAction("PERINGATAN! Me-restore database akan menimpa SELURUH data yang ada saat ini. Anda yakin?", () => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsedData = JSON.parse(event.target.result);
+          if (parsedData.categories) {
+            onUpdateDB(parsedData);
+            showCustomAlert("Database berhasil dipulihkan!");
+          } else {
+            showCustomAlert("File backup tidak valid!", "error");
+          }
+        } catch (e) {
+          showCustomAlert("Gagal membaca file backup!", "error");
+        }
+      };
+      reader.readAsText(file);
+    });
+    e.target.value = null; // reset input
+  };
+
+  // PROTEKSI COPY-PASTE GAMBAR BASE64
+  React.useEffect(() => {
+    const handlePaste = (e) => {
+      if (!e.clipboardData) return;
+      const items = e.clipboardData.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          e.preventDefault();
+          e.stopPropagation();
+          showCustomAlert("DILARANG COPY-PASTE GAMBAR! 🚫\nSistem menolak gambar copy-paste karena akan merusak database. Silakan gunakan ikon 'Gambar' di menu bar atas artikel untuk mengupload gambar dengan aman.", "error", 8000);
+          return false;
+        }
+      }
+    };
+    // Gunakan capture phase agar jalan sebelum Quill memprosesnya
+    document.addEventListener('paste', handlePaste, true);
+    return () => document.removeEventListener('paste', handlePaste, true);
+  }, [showCustomAlert]);
+
   const confirmAction = (message, callback) => {
     setConfirmState({ isOpen: true, message, onConfirm: callback });
   };
@@ -587,7 +638,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
             { id: 'silatnas', name: '8. Silatnas', icon: Users },
             { id: 'visimisi', name: '10. Visi & Misi', icon: Settings },
             { id: 'kalender', name: '11. Kalender Kegiatan', icon: Calendar },
-            { id: 'statistik', name: '12. Statistik Web', icon: BarChart3 }
+            { id: 'statistik', name: '12. Statistik Web', icon: BarChart3 },
+            { id: 'backup', name: '13. Backup Database', icon: Download }
           ].map(tab => (
             <button
               key={tab.id}
@@ -2067,6 +2119,58 @@ export default function AdminCMS({ db, onUpdateDB }) {
               <StatistikAdmin />
             )}
 
+            {activeTab === 'backup' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-display uppercase border-b border-white/10 pb-2 flex items-center gap-3">
+                  <Download size={28} className="text-primary" />
+                  Backup & Restore Database
+                </h2>
+                <div className="bg-[#0a0a0a]/60 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                  <div className="flex items-start gap-4 p-4 bg-primary/10 rounded-xl mb-6">
+                    <AlertTriangle className="text-primary shrink-0" />
+                    <div>
+                      <h4 className="font-bold text-white mb-1">Pusat Keamanan Data</h4>
+                      <p className="text-sm text-neutral-400 leading-relaxed">
+                        Fitur ini memungkinkan Anda untuk mengunduh seluruh data BEM UMS (Struktural, Artikel, Galeri, Kalender) sebagai file cadangan (Backup) ke laptop Anda. Jika terjadi hal yang tidak diinginkan, Anda bisa mengunggah file tersebut di sini untuk memulihkan (Restore) website ke kondisi semula.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="border border-white/10 rounded-xl p-6 flex flex-col items-center text-center">
+                      <div className="w-16 h-16 bg-blue-500/20 text-blue-500 rounded-full flex items-center justify-center mb-4">
+                        <Download size={32} />
+                      </div>
+                      <h3 className="font-bold text-white text-lg mb-2">Download Backup Data</h3>
+                      <p className="text-sm text-neutral-400 mb-6">Unduh semua data website saat ini ke laptop Anda dalam format .json.</p>
+                      <button 
+                        onClick={handleDownloadBackup}
+                        className="mt-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] w-full"
+                      >
+                        Download (.json)
+                      </button>
+                    </div>
+
+                    <div className="border border-white/10 rounded-xl p-6 flex flex-col items-center text-center">
+                      <div className="w-16 h-16 bg-red-500/20 text-primary rounded-full flex items-center justify-center mb-4">
+                        <Edit3 size={32} />
+                      </div>
+                      <h3 className="font-bold text-white text-lg mb-2">Restore Backup Data</h3>
+                      <p className="text-sm text-neutral-400 mb-6">Pilih file .json dari laptop Anda untuk memulihkan database.</p>
+                      <label className="mt-auto bg-primary hover:bg-primary/80 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] w-full cursor-pointer">
+                        Pilih File Restore
+                        <input 
+                          type="file" 
+                          accept=".json"
+                          onChange={handleRestoreBackup}
+                          className="hidden" 
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

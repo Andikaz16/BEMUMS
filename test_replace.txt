@@ -169,101 +169,13 @@ const DEFAULT_DATA = {
 import { doc, setDoc, onSnapshot, writeBatch, increment, collection, getDocs } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
-export const initDB = (setDb, setIsFirebaseLoaded) => {
-  const localData = localStorage.getItem("bem_ums_db");
-  if (localData) {
-    try { setDb(JSON.parse(localData)); } catch(e) { setDb(DEFAULT_DATA); }
-  } else {
-    setDb(DEFAULT_DATA);
-  }
-
-  const unsubscribe = onSnapshot(collection(firestore, "cms"), (snapshot) => {
-    let combinedData = { ...DEFAULT_DATA };
-    let hasCore = false;
-    let oldLegacyData = null;
-
-    snapshot.forEach((docSnap) => {
-      if (docSnap.id === 'data') {
-        oldLegacyData = docSnap.data();
-      } else if (docSnap.id === 'core') {
-        hasCore = true;
-        combinedData = { ...combinedData, ...docSnap.data() };
-      } else if (docSnap.id === 'articles') {
-        combinedData.articles = docSnap.data().data || [];
-      } else if (docSnap.id === 'albums') {
-        combinedData.albums = docSnap.data().data || [];
-      } else if (docSnap.id === 'kegiatan') {
-        const kData = docSnap.data();
-        combinedData.kegiatan = kData.kegiatan || [];
-        combinedData.volunteerCatalog = kData.volunteerCatalog || [];
-        combinedData.silatnasCatalog = kData.silatnasCatalog || [];
-      }
-    });
-
-    if (hasCore) {
-      if (combinedData.kegiatan) {
-        const eventsToAdd = [
-          { id: 'kuliah-1-2026', title: "Masa Kuliah Hari Pertama", desc: "Awal perkuliahan Semester Ganjil TA 2026/2027.", date: "2026-09-07" },
-          { id: 'uts-2026', title: "Ujian Tengah Semester (UTS)", desc: "UTS Semester Ganjil TA 2026/2027.", date: "2026-11-02", endDate: "2026-11-14" },
-          { id: 'uas-2027', title: "Ujian Akhir Semester (UAS)", desc: "UAS Semester Ganjil TA 2026/2027.", date: "2027-01-04", endDate: "2027-01-16" },
-        ];
-        eventsToAdd.forEach(ev => {
-          if (!combinedData.kegiatan.find(k => k.id === ev.id)) combinedData.kegiatan.push(ev);
-        });
-      }
-
-      localStorage.setItem("bem_ums_db", JSON.stringify(combinedData));
-      setDb(combinedData);
-      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
-    } else {
-      saveDB(oldLegacyData || DEFAULT_DATA);
-      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
-    }
-  }, (error) => {
-    console.error("Firebase sync error: ", error);
-    if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
-  });
-
-  return unsubscribe;
-};
-
-export const saveDB = async (data) => {
-  data.lastUpdated = Date.now();
-  localStorage.setItem("bem_ums_db", JSON.stringify(data));
-  
-  const jsonString = JSON.stringify(data);
-  const sizeInMB = (jsonString.length / (1024 * 1024)).toFixed(2);
-  
-  if (sizeInMB > 3.9) {
-    alert("?? GAGAL MENYIMPAN KE SERVER! ??\n\nUkuran data terlalu besar (" + sizeInMB + " MB).\n\nPENYEBAB: Ada gambar besar yang dimasukkan dengan cara COPY-PASTE langsung.\n\nSOLUSI: \n1. Hapus gambar yang di-copy-paste.\n2. WAJIB gunakan ikon 'Gambar' di menu bar atas artikel.\n3. Klik Simpan lagi.");
-    throw new Error("Payload size exceeds 4MB limit.");
-  }
-
-  try {
-    const batch = writeBatch(firestore);
-    const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, ...coreData } = data;
-    
-    batch.set(doc(firestore, "cms", "core"), coreData);
-    batch.set(doc(firestore, "cms", "articles"), { data: articles || [], lastUpdated: data.lastUpdated });
-    batch.set(doc(firestore, "cms", "albums"), { data: albums || [], lastUpdated: data.lastUpdated });
-    batch.set(doc(firestore, "cms", "kegiatan"), { 
-      kegiatan: kegiatan || [], 
-      volunteerCatalog: volunteerCatalog || [], 
-      silatnasCatalog: silatnasCatalog || [], 
-      lastUpdated: data.lastUpdated 
-    });
-
-    await batch.commit();
-  } catch (error) {
-    console.error("Error saving to Firebase: ", error);
-    alert("GAGAL MENYIMPAN KE SERVER!\n\nMohon hapus foto/artikel terakhir lalu coba simpan lagi.");
-    throw error;
-  }
-};
+REPLACE_ME
 
 // --- SAFE TRANSACTION FUNCTIONS FOR PUBLIC FORMS ---
+// These prevent a user with stale local cache from wiping the whole database when submitting a form
+
 export const addOprecApplicant = async (applicantData) => {
-  const DOC_REF = doc(firestore, "cms", "core");
+  const DOC_REF = doc(firestore, "cms", "data");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
     if (!docSnap.exists()) throw new Error("Database kosong!");
@@ -278,42 +190,49 @@ export const addOprecApplicant = async (applicantData) => {
 };
 
 export const addVolunteerApplicant = async (volId, applicantData) => {
-  const DOC_REF = doc(firestore, "cms", "kegiatan");
+  const DOC_REF = doc(firestore, "cms", "data");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
     if (!docSnap.exists()) throw new Error("Database kosong!");
     const data = docSnap.data();
+    
     const updatedCatalog = (data.volunteerCatalog || []).map(v => {
-      if (v.id === volId) return { ...v, applicants: [...(v.applicants || []), applicantData] };
+      if (v.id === volId) {
+        return {
+          ...v,
+          applicants: [...(v.applicants || []), applicantData]
+        };
+      }
       return v;
     });
+    
     transaction.update(DOC_REF, { volunteerCatalog: updatedCatalog });
   });
 };
 
-export const addReport = async (reportData) => {
-  const DOC_REF = doc(firestore, "cms", "core");
-  await runTransaction(firestore, async (transaction) => {
-    const docSnap = await transaction.get(DOC_REF);
-    if (!docSnap.exists()) throw new Error("Database kosong!");
-    const data = docSnap.data();
-    transaction.update(DOC_REF, { reports: [...(data.reports || []), reportData] });
-  });
-};
-
 export const addSilatnasApplicant = async (eventId, applicantData) => {
-  const DOC_REF = doc(firestore, "cms", "kegiatan");
+  const DOC_REF = doc(firestore, "cms", "data");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
     if (!docSnap.exists()) throw new Error("Database kosong!");
     const data = docSnap.data();
+    
     const updatedCatalog = (data.silatnasCatalog || []).map(v => {
-      if (v.id === eventId) return { ...v, applicants: [...(v.applicants || []), applicantData] };
+      if (v.id === eventId) {
+        return {
+          ...v,
+          applicants: [...(v.applicants || []), applicantData]
+        };
+      }
       return v;
     });
+    
     transaction.update(DOC_REF, { silatnasCatalog: updatedCatalog });
   });
 };
+
+
+
 
 // --- WEB ANALYTICS ---
 export const incrementPageView = async (pageName) => {
