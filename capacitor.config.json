@@ -1,5 +1,16 @@
 {
   "appId": "com.bemums.app",
   "appName": "BEM UMS",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://bemums-three.vercel.app/",
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "launchAutoHide": true,
+      "backgroundColor": "#050505"
+    }
+  }
 }
