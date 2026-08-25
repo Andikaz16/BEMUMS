@@ -4,17 +4,18 @@
   "description": "Website Resmi Badan Eksekutif Mahasiswa Universitas Muhammadiyah Surakarta (BEM UMS) Kabinet Kolektiva 2026.",
   "icons": [
     {
-      "src": "/assets/kolektiva_app_icon.jpg",
-      "type": "image/jpeg",
+      "src": "/assets/kolektiva_app_icon_192.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/assets/kolektiva_app_icon.jpg",
-      "type": "image/jpeg",
+      "src": "/assets/kolektiva_app_icon_512.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": "/",
+  "id": "/",
   "background_color": "#050505",
   "theme_color": "#b90014",
   "display": "standalone",

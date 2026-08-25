@@ -3,7 +3,8 @@ const ASSETS = [
   '/',
   '/index.html',
   '/assets/logo_bem_baru.png',
-  '/assets/kolektiva_app_icon.jpg'
+  '/assets/kolektiva_app_icon_192.png',
+  '/assets/kolektiva_app_icon_512.png'
 ];
 
 self.addEventListener('install', (e) => {
