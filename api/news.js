@@ -19,8 +19,8 @@ export default async function handler(req, res) {
   try {
     const allArticles = [];
 
-    const results = await Promise.allSettled(
-      RSS_SOURCES.map(async (source) => {
+    const fetchTasks = [
+      ...RSS_SOURCES.map(async (source) => {
         try {
           const response = await fetch(source.url, {
             headers: { 'User-Agent': 'Mozilla/5.0 BEM-UMS-News-Aggregator/1.0' }
@@ -32,8 +32,11 @@ export default async function handler(req, res) {
           console.error(`Failed to fetch ${source.name}:`, err.message);
           return [];
         }
-      })
-    );
+      }),
+      fetchSuaraMuhammadiyah()
+    ];
+
+    const results = await Promise.allSettled(fetchTasks);
 
     results.forEach(r => {
       if (r.status === 'fulfilled' && r.value) {
@@ -50,6 +53,62 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     return res.status(500).json({ status: 'error', message: err.message });
+  }
+}
+
+async function fetchSuaraMuhammadiyah() {
+  const source = { id: 'suara_muhammadiyah', name: 'Suara Muhammadiyah', color: '#b90014' };
+  try {
+    const response = await fetch('https://suaramuhammadiyah.id/', {
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
+      }
+    });
+    if (!response.ok) return [];
+    const html = await response.text();
+
+    const regex = /<a href="(\/read\/[^"]+)"[^>]*class="[^"]*news-list-item[^"]*">([\s\S]*?)<\/a>/gi;
+    let match;
+    const items = [];
+    let index = 0;
+
+    while ((match = regex.exec(html)) !== null && index < 15) {
+      const link = 'https://suaramuhammadiyah.id' + match[1];
+      const inner = match[2];
+      
+      const tMatch = inner.match(/<h6[^>]*class="news-list-title"[^>]*>([\s\S]*?)<\/h6>/i);
+      const dMatch = inner.match(/<span[^>]*class="news-list-date"[^>]*>([\s\S]*?)<\/span>/i);
+      const iMatch = inner.match(/<img[^>]+src="([^"]+)"/i);
+      
+      const title = tMatch ? tMatch[1].trim() : '';
+      const dateRaw = dMatch ? dMatch[1].trim() : '';
+      const thumbnail = iMatch ? iMatch[1] : null;
+
+      let pubDate = new Date().toISOString();
+      if (dateRaw) {
+        try {
+          pubDate = new Date(dateRaw).toISOString();
+        } catch (e) {}
+      }
+
+      items.push({
+        id: `${source.id}-${index}`,
+        source: source.id,
+        sourceName: source.name,
+        sourceColor: source.color,
+        title: cleanText(title),
+        description: 'Membaca kajian Islami dan kabar terkini persyarikatan dari portal resmi Suara Muhammadiyah.',
+        link,
+        thumbnail,
+        pubDate
+      });
+
+      index++;
+    }
+    return items;
+  } catch (err) {
+    console.error('Failed to fetch Suara Muhammadiyah:', err.message);
+    return [];
   }
 }
 
