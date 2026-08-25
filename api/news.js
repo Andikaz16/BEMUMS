@@ -131,9 +131,17 @@ function parseRSS(xmlText, source) {
     // Extract thumbnail
     let thumbnail = null;
     
+    // Try custom <img> tag (e.g. Tempo.co)
+    const imgTag = extractTag(itemXml, 'img');
+    if (imgTag && imgTag.startsWith('http')) {
+      thumbnail = imgTag;
+    }
+    
     // Try enclosure
-    const encMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
-    if (encMatch) thumbnail = encMatch[1];
+    if (!thumbnail) {
+      const encMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
+      if (encMatch) thumbnail = encMatch[1];
+    }
     
     // Try media:thumbnail
     if (!thumbnail) {

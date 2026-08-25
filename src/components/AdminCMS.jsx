@@ -326,7 +326,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       container: [
         ['bold', 'italic', 'underline', 'strike'],
         [{ 'header': [1, 2, 3, false] }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'align': [] }],
         ['blockquote', 'link', 'image'],
         ['clean']
       ],
