@@ -249,8 +249,8 @@ export default function StatistikAdmin() {
                 });
                 
                 return (
-                  <div className="w-full overflow-x-auto pb-4">
-                    <div className="min-w-[600px] relative">
+                  <div className="w-full pb-4">
+                    <div className="w-full relative">
                       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" preserveAspectRatio="none">
                         
                         {/* Trading Grid Lines */}
