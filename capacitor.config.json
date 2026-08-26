@@ -3,7 +3,7 @@
   "appName": "BEM UMS",
   "webDir": "dist",
   "server": {
-    "url": "https://bemums-three.vercel.app/",
+    "_url": "https://bemums-three.vercel.app/",
     "cleartext": true
   },
   "plugins": {
