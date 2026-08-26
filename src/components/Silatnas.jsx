@@ -66,7 +66,7 @@ export default function Silatnas({ db }) {
 
     const interval = setInterval(() => {
       setCurrentFrame((prev) => (prev % 9) + 1);
-    }, 150);
+    }, 300);
     return () => clearInterval(interval);
   }, []);
 
@@ -195,7 +195,7 @@ export default function Silatnas({ db }) {
           <img 
             src={`/assets/frame_maskot/${currentFrame}-removebg-preview.png`} 
             alt="Maskot Silatnas" 
-            className="w-56 md:w-64 h-auto object-contain"
+            className="w-56 md:w-64 h-[300px] md:h-[380px] object-contain"
           />
           <div className="space-y-1">
             <h3 className="text-lg font-heading font-bold uppercase tracking-widest text-[#38BDF8]">Maskot Resmi Silatnas</h3>
