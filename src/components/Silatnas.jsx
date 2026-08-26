@@ -55,17 +55,18 @@ export default function Silatnas({ db }) {
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
-  const [currentFrame, setCurrentFrame] = useState(1);
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+  const frames = [1, 2, 5, 6, 7, 8, 9];
 
   // Preload and animate mascot frames
   useEffect(() => {
-    for (let i = 1; i <= 9; i++) {
+    frames.forEach((f) => {
       const img = new Image();
-      img.src = `/assets/frame_maskot/${i}-removebg-preview.png`;
-    }
+      img.src = `/assets/frame_maskot/${f}-removebg-preview.png`;
+    });
 
     const interval = setInterval(() => {
-      setCurrentFrame((prev) => (prev % 9) + 1);
+      setCurrentFrameIndex((prev) => (prev + 1) % frames.length);
     }, 300);
     return () => clearInterval(interval);
   }, []);
@@ -193,7 +194,7 @@ export default function Silatnas({ db }) {
           className="flex flex-col items-center justify-center text-center space-y-4 pt-12"
         >
           <img 
-            src={`/assets/frame_maskot/${currentFrame}-removebg-preview.png`} 
+            src={`/assets/frame_maskot/${frames[currentFrameIndex]}-removebg-preview.png`} 
             alt="Maskot Silatnas" 
             className="w-72 md:w-80 h-[380px] md:h-[480px] object-contain"
           />
