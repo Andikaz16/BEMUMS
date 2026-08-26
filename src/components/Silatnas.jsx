@@ -119,40 +119,54 @@ export default function Silatnas({ db }) {
               Selamat datang di portal informasi dan pendaftaran Silaturahmi Nasional BEM se-Indonesia. Wadah resmi konsolidasi ide, kolaborasi strategis, dan persatuan ukhuwah gerakan mahasiswa nasional.
             </p>
             
-            {/* Quick Stats Widget */}
-            <div className="grid grid-cols-3 gap-4 pt-6 max-w-lg">
-              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl text-center shadow-xl">
-                <div className="text-2xl md:text-3xl font-heading font-bold text-[#38BDF8]">180+</div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#BAE6FD] mt-1 font-bold">Delegasi</div>
+            {/* Core Info Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 max-w-2xl">
+              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
+                <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Waktu Kegiatan</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">Mei - Juni 2026</div>
+                </div>
               </div>
-              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl text-center shadow-xl">
-                <div className="text-2xl md:text-3xl font-heading font-bold text-[#38BDF8]">45+</div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#BAE6FD] mt-1 font-bold">Kampus</div>
+              
+              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
+                <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Lokasi Utama</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">Kampus UMS, Solo</div>
+                </div>
               </div>
-              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl text-center shadow-xl">
-                <div className="text-2xl md:text-3xl font-heading font-bold text-[#38BDF8]">4 Hari</div>
-                <div className="text-[10px] md:text-xs uppercase tracking-widest text-[#BAE6FD] mt-1 font-bold">Kegiatan</div>
+
+              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
+                <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Target Delegasi</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">BEM se-Indonesia</div>
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Hero Image / Animated Star Logo */}
+          {/* Hero Image / Animated Silatnas Logo */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, x: 35 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             className="lg:col-span-5 flex justify-center"
           >
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#0EA5E9] to-[#38BDF8] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-              <motion.img 
-                src="/assets/logo_bem_baru.png" 
-                alt="Logo BEM" 
-                className="w-72 h-72 md:w-80 md:h-80 object-contain relative bg-[#082F49] p-6 rounded-full border border-white/20"
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </div>
+            <motion.img 
+              src="/assets/logo_silatnas.png" 
+              alt="Logo Silatnas" 
+              className="w-80 h-80 md:w-[420px] md:h-[420px] object-contain relative"
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            />
           </motion.div>
         </div>
 
