@@ -149,6 +149,22 @@ export default function AdminCMS({ db, onUpdateDB }) {
     pillars: db.visiMisi?.pillars || []
   });
 
+  // Silatnas Additional Fields
+  const [silatnasVisiMisiForm, setSilatnasVisiMisiForm] = useState({
+    visiTitle: db.silatnasVisiMisi?.visiTitle || '',
+    visiDesc: db.silatnasVisiMisi?.visiDesc || '',
+    misiTitle: db.silatnasVisiMisi?.misiTitle || '',
+    misiDesc: db.silatnasVisiMisi?.misiDesc || ''
+  });
+  const [silatnasAlurForm, setSilatnasAlurForm] = useState(db.silatnasAlur || []);
+  const [silatnasTimelineList, setSilatnasTimelineList] = useState(db.silatnasTimeline || []);
+  const [newSilatnasDay, setNewSilatnasDay] = useState({ day: '', title: '', desc: '' });
+  const [editingSilatnasDayIndex, setEditingSilatnasDayIndex] = useState(null);
+
+  const [silatnasDocsList, setSilatnasDocsList] = useState(db.silatnasDocs || []);
+  const [newSilatnasDoc, setNewSilatnasDoc] = useState({ title: '', desc: '', size: '', url: '' });
+  const [editingSilatnasDocIndex, setEditingSilatnasDocIndex] = useState(null);
+
   // Sync forms when database receives an update from Firebase
   useEffect(() => {
     if (db.contact) setContactForm(db.contact);
@@ -165,6 +181,17 @@ export default function AdminCMS({ db, onUpdateDB }) {
         pillars: db.visiMisi.pillars || []
       });
     }
+    if (db.silatnasVisiMisi) {
+      setSilatnasVisiMisiForm({
+        visiTitle: db.silatnasVisiMisi.visiTitle || '',
+        visiDesc: db.silatnasVisiMisi.visiDesc || '',
+        misiTitle: db.silatnasVisiMisi.misiTitle || '',
+        misiDesc: db.silatnasVisiMisi.misiDesc || ''
+      });
+    }
+    if (db.silatnasAlur) setSilatnasAlurForm(db.silatnasAlur);
+    if (db.silatnasTimeline) setSilatnasTimelineList(db.silatnasTimeline);
+    if (db.silatnasDocs) setSilatnasDocsList(db.silatnasDocs);
   }, [db.lastUpdated]);
 
   const kegiatanList = db.kegiatan || [];
@@ -519,6 +546,94 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
   const handleRemoveExtraField = (idx) => {
     setSilatnasForm({ ...silatnasForm, extraFields: silatnasForm.extraFields.filter((_, i) => i !== idx) });
+  };
+
+  // Silatnas Visi Misi Handlers
+  const handleSaveSilatnasVisiMisi = () => {
+    save({ silatnasVisiMisi: silatnasVisiMisiForm });
+  };
+
+  // Silatnas Alur Handlers
+  const handleUpdateAlurField = (idx, field, value) => {
+    const updated = [...silatnasAlurForm];
+    updated[idx] = { ...updated[idx], [field]: value };
+    setSilatnasAlurForm(updated);
+  };
+
+  const handleSaveSilatnasAlur = () => {
+    save({ silatnasAlur: silatnasAlurForm });
+  };
+
+  // Silatnas Timeline CRUD Handlers
+  const handleAddSilatnasDay = () => {
+    if (!newSilatnasDay.day || !newSilatnasDay.title || !newSilatnasDay.desc) {
+      showCustomAlert("Lengkapi semua kolom Hari, Judul, dan Deskripsi Agenda!", "warning");
+      return;
+    }
+    let updated;
+    if (editingSilatnasDayIndex !== null) {
+      updated = [...silatnasTimelineList];
+      updated[editingSilatnasDayIndex] = newSilatnasDay;
+      setEditingSilatnasDayIndex(null);
+    } else {
+      updated = [...silatnasTimelineList, newSilatnasDay];
+    }
+    setSilatnasTimelineList(updated);
+    setNewSilatnasDay({ day: '', title: '', desc: '' });
+    save({ silatnasTimeline: updated });
+  };
+
+  const handleEditSilatnasDay = (idx) => {
+    setNewSilatnasDay(silatnasTimelineList[idx]);
+    setEditingSilatnasDayIndex(idx);
+  };
+
+  const handleDeleteSilatnasDay = (idx) => {
+    confirmAction("Hapus agenda timeline hari ini?", () => {
+      const updated = silatnasTimelineList.filter((_, i) => i !== idx);
+      setSilatnasTimelineList(updated);
+      save({ silatnasTimeline: updated });
+      if (editingSilatnasDayIndex === idx) {
+        setEditingSilatnasDayIndex(null);
+        setNewSilatnasDay({ day: '', title: '', desc: '' });
+      }
+    });
+  };
+
+  // Silatnas Docs CRUD Handlers
+  const handleAddSilatnasDoc = () => {
+    if (!newSilatnasDoc.title || !newSilatnasDoc.desc || !newSilatnasDoc.size) {
+      showCustomAlert("Lengkapi semua kolom Nama Berkas, Deskripsi, dan Ukuran!", "warning");
+      return;
+    }
+    let updated;
+    if (editingSilatnasDocIndex !== null) {
+      updated = [...silatnasDocsList];
+      updated[editingSilatnasDocIndex] = newSilatnasDoc;
+      setEditingSilatnasDocIndex(null);
+    } else {
+      updated = [...silatnasDocsList, newSilatnasDoc];
+    }
+    setSilatnasDocsList(updated);
+    setNewSilatnasDoc({ title: '', desc: '', size: '', url: '' });
+    save({ silatnasDocs: updated });
+  };
+
+  const handleEditSilatnasDoc = (idx) => {
+    setNewSilatnasDoc(silatnasDocsList[idx]);
+    setEditingSilatnasDocIndex(idx);
+  };
+
+  const handleDeleteSilatnasDoc = (idx) => {
+    confirmAction("Hapus dokumen download ini?", () => {
+      const updated = silatnasDocsList.filter((_, i) => i !== idx);
+      setSilatnasDocsList(updated);
+      save({ silatnasDocs: updated });
+      if (editingSilatnasDocIndex === idx) {
+        setEditingSilatnasDocIndex(null);
+        setNewSilatnasDoc({ title: '', desc: '', size: '', url: '' });
+      }
+    });
   };
 
   // Export JSON (for backup/rekap)
@@ -1746,6 +1861,246 @@ export default function AdminCMS({ db, onUpdateDB }) {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* --- EDIT VISI & MISI KONSOLIDASI --- */}
+              <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">
+                <h3 className="font-display text-xl uppercase border-b border-white/5 pb-2 text-primary">Visi & Misi Konsolidasi</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-neutral-400">Judul Visi</label>
+                    <input 
+                      type="text" 
+                      value={silatnasVisiMisiForm.visiTitle}
+                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, visiTitle: e.target.value })}
+                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-neutral-400">Judul Misi</label>
+                    <input 
+                      type="text" 
+                      value={silatnasVisiMisiForm.misiTitle}
+                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, misiTitle: e.target.value })}
+                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold uppercase text-neutral-400">Deskripsi Visi</label>
+                    <textarea 
+                      value={silatnasVisiMisiForm.visiDesc}
+                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, visiDesc: e.target.value })}
+                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm h-24"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold uppercase text-neutral-400">Deskripsi Misi</label>
+                    <textarea 
+                      value={silatnasVisiMisiForm.misiDesc}
+                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, misiDesc: e.target.value })}
+                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm h-24"
+                    />
+                  </div>
+                </div>
+                <button 
+                  onClick={handleSaveSilatnasVisiMisi}
+                  className="bg-primary hover:bg-primary/80 text-white rounded-xl font-bold px-5 py-2.5 text-xs transition-all border border-primary/50"
+                >
+                  Simpan Visi & Misi Silatnas
+                </button>
+              </div>
+
+              {/* --- EDIT ALUR PENDAFTARAN DELEGASI --- */}
+              <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">
+                <h3 className="font-display text-xl uppercase border-b border-white/5 pb-2 text-primary">Alur Pendaftaran Delegasi</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {silatnasAlurForm.map((item, idx) => (
+                    <div key={idx} className="p-4 bg-black/30 border border-white/5 rounded-xl space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-[#38BDF8]">Langkah {item.step}</span>
+                        <input 
+                          type="text" 
+                          value={item.step}
+                          onChange={e => handleUpdateAlurField(idx, 'step', e.target.value)}
+                          className="w-12 text-center py-1 bg-black border border-white/10 rounded-md text-[10px] text-white"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <input 
+                          type="text" 
+                          placeholder="Judul Langkah" 
+                          value={item.title}
+                          onChange={e => handleUpdateAlurField(idx, 'title', e.target.value)}
+                          className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none text-xs"
+                        />
+                        <textarea 
+                          placeholder="Deskripsi Langkah" 
+                          value={item.desc}
+                          onChange={e => handleUpdateAlurField(idx, 'desc', e.target.value)}
+                          className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white focus:outline-none text-xs h-16"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button 
+                  onClick={handleSaveSilatnasAlur}
+                  className="bg-primary hover:bg-primary/80 text-white rounded-xl font-bold px-5 py-2.5 text-xs transition-all border border-primary/50"
+                >
+                  Simpan Alur Pendaftaran
+                </button>
+              </div>
+
+              {/* --- EDIT AGENDA & RANGKAIAN ACARA (TIMELINE) --- */}
+              <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">
+                <h3 className="font-display text-xl uppercase border-b border-white/5 pb-2 text-primary">Agenda & Rangkaian Acara (Timeline)</h3>
+                
+                {/* Form Input Day */}
+                <div className="p-4 bg-black/30 border border-white/5 rounded-xl space-y-3 max-w-xl">
+                  <h4 className="text-xs font-bold uppercase text-neutral-400">{editingSilatnasDayIndex !== null ? 'Edit Agenda Acara' : 'Tambah Agenda Acara Baru'}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="Hari (Cth: Hari 1, Day 1)" 
+                      value={newSilatnasDay.day}
+                      onChange={e => setNewSilatnasDay({ ...newSilatnasDay, day: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs"
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Judul Acara" 
+                      value={newSilatnasDay.title}
+                      onChange={e => setNewSilatnasDay({ ...newSilatnasDay, title: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs"
+                    />
+                    <textarea 
+                      placeholder="Deskripsi Acara" 
+                      value={newSilatnasDay.desc}
+                      onChange={e => setNewSilatnasDay({ ...newSilatnasDay, desc: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs sm:col-span-2 h-16"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={handleAddSilatnasDay}
+                      className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors"
+                    >
+                      {editingSilatnasDayIndex !== null ? 'Simpan Edit' : '+ Tambah Agenda'}
+                    </button>
+                    {editingSilatnasDayIndex !== null && (
+                      <button 
+                        onClick={() => {
+                          setEditingSilatnasDayIndex(null);
+                          setNewSilatnasDay({ day: '', title: '', desc: '' });
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors border border-white/10"
+                      >
+                        Batal
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* List Days */}
+                <div className="space-y-2">
+                  {silatnasTimelineList.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                      <div className="flex-1">
+                        <span className="text-[10px] bg-[#0EA5E9]/20 text-[#38BDF8] border border-[#0EA5E9]/30 px-2 py-0.5 rounded-md font-bold uppercase">{item.day}</span>
+                        <h4 className="text-sm font-bold text-white mt-1">{item.title}</h4>
+                        <p className="text-xs text-neutral-400 mt-0.5 font-body leading-relaxed">{item.desc}</p>
+                      </div>
+                      <div className="flex gap-1 ml-4 shrink-0">
+                        <button onClick={() => handleEditSilatnasDay(idx)} className="p-2 hover:text-[#38BDF8] text-neutral-400">
+                          <Edit3 size={14} />
+                        </button>
+                        <button onClick={() => handleDeleteSilatnasDay(idx)} className="p-2 hover:text-red-400 text-neutral-400">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* --- EDIT DOKUMEN & PANDUAN PENTING --- */}
+              <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">
+                <h3 className="font-display text-xl uppercase border-b border-white/5 pb-2 text-primary">Dokumen & Panduan Penting</h3>
+                
+                {/* Form Input Doc */}
+                <div className="p-4 bg-black/30 border border-white/5 rounded-xl space-y-3 max-w-xl">
+                  <h4 className="text-xs font-bold uppercase text-neutral-400">{editingSilatnasDocIndex !== null ? 'Edit Dokumen' : 'Tambah Dokumen Baru'}</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="Nama Dokumen (Cth: Rundown Acara, TOR)" 
+                      value={newSilatnasDoc.title}
+                      onChange={e => setNewSilatnasDoc({ ...newSilatnasDoc, title: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs"
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Ukuran File (Cth: PDF (1.2 MB))" 
+                      value={newSilatnasDoc.size}
+                      onChange={e => setNewSilatnasDoc({ ...newSilatnasDoc, size: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs"
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Tautan Unduh (Google Drive/Link File)" 
+                      value={newSilatnasDoc.url}
+                      onChange={e => setNewSilatnasDoc({ ...newSilatnasDoc, url: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs sm:col-span-2"
+                    />
+                    <textarea 
+                      placeholder="Deskripsi Dokumen" 
+                      value={newSilatnasDoc.desc}
+                      onChange={e => setNewSilatnasDoc({ ...newSilatnasDoc, desc: e.target.value })}
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-xs sm:col-span-2 h-16"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={handleAddSilatnasDoc}
+                      className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors"
+                    >
+                      {editingSilatnasDocIndex !== null ? 'Simpan Edit' : '+ Tambah Dokumen'}
+                    </button>
+                    {editingSilatnasDocIndex !== null && (
+                      <button 
+                        onClick={() => {
+                          setEditingSilatnasDocIndex(null);
+                          setNewSilatnasDoc({ title: '', desc: '', size: '', url: '' });
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors border border-white/10"
+                      >
+                        Batal
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* List Docs */}
+                <div className="space-y-2">
+                  {silatnasDocsList.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                      <div className="flex-1">
+                        <span className="text-[10px] bg-emerald-950/40 text-emerald-400 border border-emerald-900/30 px-2 py-0.5 rounded-md font-bold uppercase">{item.size}</span>
+                        <h4 className="text-sm font-bold text-white mt-1">{item.title}</h4>
+                        <p className="text-xs text-neutral-400 mt-0.5 font-body leading-relaxed">{item.desc}</p>
+                        {item.url && <p className="text-[10px] text-[#38BDF8] mt-1 break-all select-all font-body">🔗 Link: {item.url}</p>}
+                      </div>
+                      <div className="flex gap-1 ml-4 shrink-0">
+                        <button onClick={() => handleEditSilatnasDoc(idx)} className="p-2 hover:text-[#38BDF8] text-neutral-400">
+                          <Edit3 size={14} />
+                        </button>
+                        <button onClick={() => handleDeleteSilatnasDoc(idx)} className="p-2 hover:text-red-400 text-neutral-400">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

@@ -26,28 +26,7 @@ const faqData = [
   }
 ];
 
-const timelineData = [
-  {
-    day: "Hari 1",
-    title: "Registrasi & Welcoming Dinner",
-    desc: "Penyambutan delegasi dari seluruh Indonesia, verifikasi ulang berkas fisik, dan makan malam bersama jajaran rektorat UMS."
-  },
-  {
-    day: "Hari 2",
-    title: "Opening Ceremony & Seminar Nasional",
-    desc: "Seminar kebangsaan menghadirkan tokoh nasional, diikuti dengan konsolidasi awal dan pembagian komisi sidang."
-  },
-  {
-    day: "Hari 3",
-    title: "Sidang Komisi & Perumusan Resolusi",
-    desc: "Pembahasan isu strategis kebangsaan, perumusan hasil rekomendasi BEM se-Indonesia, dan malam deklarasi bersama."
-  },
-  {
-    day: "Hari 4",
-    title: "Field Trip & Closing Ceremony",
-    desc: "Kunjungan budaya ke tempat bersejarah di Surakarta (Solo), dilanjutkan dengan malam keakraban, pembagian sertifikat, dan penutupan resmi."
-  }
-];
+
 
 export default function Silatnas({ db }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -72,6 +51,33 @@ export default function Silatnas({ db }) {
   }, []);
 
   const catalog = db.silatnasCatalog || [];
+
+  const visiMisi = db.silatnasVisiMisi || {
+    visiTitle: "Visi Kolaboratif",
+    visiDesc: "Menciptakan ruang dialog nasional yang terbuka dan konstruktif guna merumuskan rekomendasi kritis terhadap arah kebijakan nasional demi memperjuangkan hak-hak kesejahteraan masyarakat umum.",
+    misiTitle: "Ukhuwah Gerakan",
+    misiDesc: "Mempererat jalinan tali persaudaraan intelektual antar seluruh pengurus BEM se-Indonesia, menyelaraskan persepsi isu, serta membangun solidaritas aliansi gerakan yang independen."
+  };
+
+  const alurData = db.silatnasAlur || [
+    { step: "01", title: "Pilih Agenda", desc: "Cari agenda Silatnas aktif di bagian pendaftaran portal ini." },
+    { step: "02", title: "Isi Formulir", desc: "Isi data delegasi, nomor WhatsApp, serta motivasi pendaftaran." },
+    { step: "03", title: "Verifikasi Berkas", desc: "Panitia akan menghubungi Anda dalam 24 jam untuk verifikasi administrasi." },
+    { step: "04", title: "Gabung Grup", desc: "Masuk grup resmi koordinasi delegasi untuk informasi akomodasi." }
+  ];
+
+  const timeline = db.silatnasTimeline || [
+    { day: "Hari 1", title: "Registrasi & Welcoming Dinner", desc: "Penyambutan delegasi dari seluruh Indonesia, verifikasi ulang berkas fisik, dan makan malam bersama jajaran rektorat UMS." },
+    { day: "Hari 2", title: "Opening Ceremony & Seminar Nasional", desc: "Seminar kebangsaan menghadirkan tokoh nasional, diikuti dengan konsolidasi awal dan pembagian komisi sidang." },
+    { day: "Hari 3", title: "Sidang Komisi & Perumusan Resolusi", desc: "Pembahasan isu strategis kebangsaan, perumusan hasil rekomendasi BEM se-Indonesia, dan malam deklarasi bersama." },
+    { day: "Hari 4", title: "Field Trip & Closing Ceremony", desc: "Kunjungan budaya ke tempat bersejarah di Surakarta (Solo), dilanjutkan dengan malam keakraban, pembagian sertifikat, dan penutupan resmi." }
+  ];
+
+  const docsList = db.silatnasDocs || [
+    { title: "Rundown Acara", desc: "Rincian tentatif jadwal kegiatan lengkap selama 4 hari.", size: "PDF (1.2 MB)", url: "" },
+    { title: "Term of Reference (TOR)", desc: "Term of reference, tata tertib, dan syarat administrasi delegasi.", size: "PDF (2.5 MB)", url: "" },
+    { title: "Surat Undangan Resmi", desc: "Format surat undangan resmi untuk birokrasi perizinan kampus.", size: "DOCX (850 KB)", url: "" }
+  ];
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -222,9 +228,9 @@ export default function Silatnas({ db }) {
               <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8]">
                 <Award className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-heading font-bold uppercase text-white">Visi Kolaboratif</h3>
+              <h3 className="text-xl font-heading font-bold uppercase text-white">{visiMisi.visiTitle}</h3>
               <p className="text-sm font-body text-[#E0F2FE]/80 leading-relaxed">
-                Menciptakan ruang dialog nasional yang terbuka dan konstruktif guna merumuskan rekomendasi kritis terhadap arah kebijakan nasional demi memperjuangkan hak-hak kesejahteraan masyarakat umum.
+                {visiMisi.visiDesc}
               </p>
             </div>
 
@@ -232,9 +238,9 @@ export default function Silatnas({ db }) {
               <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8]">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-heading font-bold uppercase text-white">Ukhuwah Gerakan</h3>
+              <h3 className="text-xl font-heading font-bold uppercase text-white">{visiMisi.misiTitle}</h3>
               <p className="text-sm font-body text-[#E0F2FE]/80 leading-relaxed">
-                Mempererat jalinan tali persaudaraan intelektual antar seluruh pengurus BEM se-Indonesia, menyelaraskan persepsi isu, serta membangun solidaritas aliansi gerakan yang independen.
+                {visiMisi.misiDesc}
               </p>
             </div>
           </div>
@@ -252,12 +258,7 @@ export default function Silatnas({ db }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { step: "01", title: "Pilih Agenda", desc: "Cari agenda Silatnas aktif di bagian pendaftaran portal ini." },
-              { step: "02", title: "Isi Formulir", desc: "Isi data delegasi, nomor WhatsApp, serta motivasi pendaftaran." },
-              { step: "03", title: "Verifikasi Berkas", desc: "Panitia akan menghubungi Anda dalam 24 jam untuk verifikasi administrasi." },
-              { step: "04", title: "Gabung Grup", desc: "Masuk grup resmi koordinasi delegasi untuk informasi akomodasi." }
-            ].map((step, idx) => (
+            {alurData.map((step, idx) => (
               <div key={idx} className="relative bg-black/35 backdrop-blur-xl border border-white/10 p-6 rounded-2xl space-y-3 shadow-xl">
                 <div className="text-4xl font-heading font-black text-white/5 absolute top-4 right-4">{step.step}</div>
                 <div className="w-8 h-8 rounded-full bg-[#0EA5E9]/20 text-[#38BDF8] flex items-center justify-center font-heading font-bold text-xs border border-[#0EA5E9]/30">
@@ -282,7 +283,7 @@ export default function Silatnas({ db }) {
           </div>
 
           <div className="relative border-l border-white/20 ml-4 md:ml-12 space-y-8 max-w-4xl mx-auto">
-            {timelineData.map((item, idx) => (
+            {timeline.map((item, idx) => (
               <div key={idx} className="relative pl-8 md:pl-12 group">
                 {/* Dot */}
                 <div className="absolute left-[-6px] top-1 w-3 h-3 rounded-full bg-[#38BDF8] border-4 border-[#0369A1] group-hover:scale-125 transition duration-300"></div>
@@ -411,11 +412,7 @@ export default function Silatnas({ db }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[
-              { title: "Rundown Acara", desc: "Rincian tentatif jadwal kegiatan lengkap selama 4 hari.", size: "PDF (1.2 MB)" },
-              { title: "Term of Reference (TOR)", desc: "Term of reference, tata tertib, dan syarat administrasi delegasi.", size: "PDF (2.5 MB)" },
-              { title: "Surat Undangan Resmi", desc: "Format surat undangan resmi untuk birokrasi perizinan kampus.", size: "DOCX (850 KB)" }
-            ].map((doc, idx) => (
+            docsList.map((doc, idx) => (
               <div key={idx} className="bg-black/35 backdrop-blur-xl border border-white/10 p-6 rounded-2xl flex flex-col justify-between hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
                 <div className="space-y-3">
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#38BDF8]">
@@ -426,7 +423,13 @@ export default function Silatnas({ db }) {
                 </div>
                 <div className="pt-6">
                   <button 
-                    onClick={() => alert(`Unduhan ${doc.title} simulasi berhasil dilakukan.`)}
+                    onClick={() => {
+                      if (doc.url) {
+                        window.open(doc.url, '_blank');
+                      } else {
+                        alert(`Unduhan ${doc.title} simulasi berhasil dilakukan.`);
+                      }
+                    }}
                     className="w-full inline-flex items-center justify-center gap-2 bg-black/40 border border-white/5 hover:border-[#0EA5E9]/40 text-neutral-300 font-bold uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition duration-300"
                   >
                     <Download className="w-3.5 h-3.5 text-[#38BDF8]" /> Unduh Berkas ({doc.size})
