@@ -120,7 +120,7 @@ export default function Silatnas({ db }) {
       {/* 1. Left Gunungan (Back Layer) */}
       <div 
         style={{ transform: 'rotate(12deg)' }}
-        className="fixed left-[-45vw] sm:left-[-35vw] md:left-[-30vw] lg:left-[-28vw] xl:left-[-22vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
+        className="fixed left-[-45vw] sm:left-[-35vw] md:left-[-30vw] lg:left-[-28vw] xl:left-[-22vw] top-[20vh] lg:top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left.png" 
@@ -136,7 +136,7 @@ export default function Silatnas({ db }) {
       {/* 2. Left Wayang (Front Layer - Facing Inward/Right) */}
       <div 
         style={{ transform: 'rotate(12deg)' }}
-        className="fixed left-[-40vw] sm:left-[-30vw] md:left-[-26vw] lg:left-[-24vw] xl:left-[-18vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
+        className="fixed left-[-40vw] sm:left-[-30vw] md:left-[-26vw] lg:left-[-24vw] xl:left-[-18vw] top-[20vh] lg:top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left2.png" 
@@ -154,7 +154,7 @@ export default function Silatnas({ db }) {
       {/* 3. Right Gunungan (Back Layer - Mirrored) */}
       <div 
         style={{ transform: 'scaleX(-1) rotate(12deg)' }}
-        className="fixed right-[-45vw] sm:right-[-35vw] md:right-[-30vw] lg:right-[-28vw] xl:right-[-22vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
+        className="fixed right-[-45vw] sm:right-[-35vw] md:right-[-30vw] lg:right-[-28vw] xl:right-[-22vw] top-[20vh] lg:top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left.png" 
@@ -171,7 +171,7 @@ export default function Silatnas({ db }) {
       {/* 4. Right Wayang (Front Layer - Mirrored - Facing Inward/Left) */}
       <div 
         style={{ transform: 'scaleX(-1) rotate(12deg)' }}
-        className="fixed right-[-40vw] sm:right-[-30vw] md:right-[-26vw] lg:right-[-24vw] xl:right-[-18vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
+        className="fixed right-[-40vw] sm:right-[-30vw] md:right-[-26vw] lg:right-[-24vw] xl:right-[-18vw] top-[20vh] lg:top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left2.png" 
