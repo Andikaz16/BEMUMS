@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, CheckCircle, X, Users, MapPin, Globe, 
   Download, Phone, HelpCircle, FileText, ChevronDown, 
-  Award, Clock, CheckSquare, Sparkles, Send
+  Award, Clock, CheckSquare, Sparkles, Send, GraduationCap
 } from 'lucide-react';
 import { addSilatnasApplicant } from '../db';
 
@@ -143,11 +143,11 @@ export default function Silatnas({ db }) {
 
               <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
                 <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
-                  <Users className="w-5 h-5" />
+                  <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Target Delegasi</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">BEM se-Indonesia</div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Total Kampus</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">172 Kampus</div>
                 </div>
               </div>
             </div>
@@ -169,6 +169,27 @@ export default function Silatnas({ db }) {
             />
           </motion.div>
         </div>
+
+        {/* MASCOT SECTION */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="flex flex-col items-center justify-center text-center space-y-4 pt-12"
+        >
+          <img 
+            src="/assets/maskot_silatnas.png" 
+            alt="Maskot Silatnas" 
+            className="w-56 md:w-64 h-auto object-contain"
+          />
+          <div className="space-y-1">
+            <h3 className="text-lg font-heading font-bold uppercase tracking-widest text-[#38BDF8]">Maskot Resmi Silatnas</h3>
+            <p className="text-xs text-[#E0F2FE]/60 font-body max-w-md">
+              Representasi ketangguhan, persatuan, dan intelektualisme mahasiswa Indonesia dalam menyongsong Silaturahmi Nasional 2026.
+            </p>
+          </div>
+        </motion.div>
 
         {/* 2. TENTANG SILATNAS & VISI MISI */}
         <div className="space-y-10">
@@ -290,7 +311,7 @@ export default function Silatnas({ db }) {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className={catalog.length === 1 ? "max-w-2xl mx-auto w-full" : "grid grid-cols-1 md:grid-cols-2 gap-8 items-start"}>
               {catalog.map(v => (
                 <div 
                   key={v.id} 
