@@ -111,30 +111,6 @@ export default function Silatnas({ db }) {
       <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/20 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#0369A1]/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
-      {/* Javanese Artifact Borders */}
-      <div className="absolute top-0 left-0 w-full overflow-hidden pointer-events-none z-10 opacity-70 mix-blend-screen">
-        <img src="/assets/jawa_top.png" alt="Top Border" className="w-full h-auto object-cover max-h-[180px]" />
-      </div>
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none z-10 opacity-70 mix-blend-screen">
-        <img src="/assets/jawa_bottom.png" alt="Bottom Border" className="w-full h-auto object-cover max-h-[180px]" />
-      </div>
-      
-      {/* Left & Right Wayang Silhouettes (Top Fold) */}
-      <div className="absolute left-0 top-[12%] w-[120px] md:w-[180px] pointer-events-none z-10 opacity-20 mix-blend-screen select-none">
-        <img src="/assets/jawa_left.png" alt="Left Wayang" className="w-full h-auto object-contain" />
-      </div>
-      <div className="absolute right-0 top-[12%] w-[120px] md:w-[180px] pointer-events-none z-10 opacity-20 mix-blend-screen select-none">
-        <img src="/assets/jawa_right.png" alt="Right Wayang" className="w-full h-auto object-contain" />
-      </div>
-
-      {/* Left & Right Wayang Silhouettes (Middle Fold) */}
-      <div className="absolute left-0 top-[50%] w-[120px] md:w-[180px] pointer-events-none z-10 opacity-15 mix-blend-screen select-none">
-        <img src="/assets/jawa_left.png" alt="Left Wayang" className="w-full h-auto object-contain" />
-      </div>
-      <div className="absolute right-0 top-[50%] w-[120px] md:w-[180px] pointer-events-none z-10 opacity-15 mix-blend-screen select-none">
-        <img src="/assets/jawa_right.png" alt="Right Wayang" className="w-full h-auto object-contain" />
-      </div>
-
       <div className="max-w-7xl mx-auto space-y-24">
         
         {/* 1. HERO SECTION (FULL SCREEN FOLD) */}
