@@ -120,7 +120,7 @@ export default function Silatnas({ db }) {
       {/* 1. Left Gunungan (Back Layer) */}
       <div 
         style={{ transform: 'rotate(12deg)' }}
-        className="fixed left-[-28vw] xl:left-[-22vw] top-[-5vh] h-[110vh] w-auto z-0 pointer-events-none hidden lg:block"
+        className="fixed left-[-45vw] sm:left-[-35vw] md:left-[-30vw] lg:left-[-28vw] xl:left-[-22vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left.png" 
@@ -130,13 +130,13 @@ export default function Silatnas({ db }) {
             y: [-5, 5, -5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full h-full object-contain opacity-15 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-10 lg:opacity-15 transform-gpu will-change-transform" 
         />
       </div>
       {/* 2. Left Wayang (Front Layer - Facing Inward/Right) */}
       <div 
         style={{ transform: 'rotate(12deg)' }}
-        className="fixed left-[-24vw] xl:left-[-18vw] top-[-5vh] h-[110vh] w-auto z-0 pointer-events-none hidden lg:block"
+        className="fixed left-[-40vw] sm:left-[-30vw] md:left-[-26vw] lg:left-[-24vw] xl:left-[-18vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left2.png" 
@@ -146,7 +146,7 @@ export default function Silatnas({ db }) {
             y: [5, -5, 5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="w-full h-full object-contain opacity-25 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-15 lg:opacity-25 transform-gpu will-change-transform" 
         />
       </div>
       
@@ -154,7 +154,7 @@ export default function Silatnas({ db }) {
       {/* 3. Right Gunungan (Back Layer - Mirrored) */}
       <div 
         style={{ transform: 'scaleX(-1) rotate(12deg)' }}
-        className="fixed right-[-28vw] xl:right-[-22vw] top-[-5vh] h-[110vh] w-auto z-0 pointer-events-none hidden lg:block"
+        className="fixed right-[-45vw] sm:right-[-35vw] md:right-[-30vw] lg:right-[-28vw] xl:right-[-22vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left.png" 
@@ -164,14 +164,14 @@ export default function Silatnas({ db }) {
             y: [-5, 5, -5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full h-full object-contain opacity-15 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-10 lg:opacity-15 transform-gpu will-change-transform" 
         />
       </div>
       
       {/* 4. Right Wayang (Front Layer - Mirrored - Facing Inward/Left) */}
       <div 
         style={{ transform: 'scaleX(-1) rotate(12deg)' }}
-        className="fixed right-[-24vw] xl:right-[-18vw] top-[-5vh] h-[110vh] w-auto z-0 pointer-events-none hidden lg:block"
+        className="fixed right-[-40vw] sm:right-[-30vw] md:right-[-26vw] lg:right-[-24vw] xl:right-[-18vw] top-[-5vh] h-[60vh] md:h-[90vh] lg:h-[110vh] w-auto z-0 pointer-events-none block"
       >
         <motion.img 
           src="/assets/artefak/right and left2.png" 
@@ -181,7 +181,7 @@ export default function Silatnas({ db }) {
             y: [5, -5, 5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="w-full h-full object-contain opacity-25 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-15 lg:opacity-25 transform-gpu will-change-transform" 
         />
       </div>
       
@@ -193,7 +193,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-50, 50, -50], y: [-10, 10, -10] }}
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[6%] left-[10%] w-60 h-auto opacity-[0.25] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[6%] left-[10%] w-32 md:w-60 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 2 */}
       <motion.img
@@ -201,7 +201,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [40, -40, 40], y: [8, -8, 8] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[9%] right-[15%] w-52 h-auto opacity-[0.3] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[9%] right-[15%] w-28 md:w-52 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 3 */}
       <motion.img
@@ -209,7 +209,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-35, 35, -35], y: [-6, 6, -6] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[13%] left-[45%] w-48 h-auto opacity-[0.2] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[13%] left-[45%] w-24 md:w-48 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 4 */}
       <motion.img
@@ -217,7 +217,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [55, -55, 55], y: [12, -12, 12] }}
         transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[17%] right-[35%] w-64 h-auto opacity-[0.28] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[17%] right-[35%] w-36 md:w-64 h-auto opacity-[0.28] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 5 */}
       <motion.img
@@ -225,7 +225,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-40, 40, -40], y: [-7, 7, -7] }}
         transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[21%] left-[20%] w-56 h-auto opacity-[0.25] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[21%] left-[20%] w-32 md:w-56 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 6 */}
       <motion.img
@@ -233,7 +233,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [60, -60, 60], y: [10, -10, 10] }}
         transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[25%] right-[8%] w-72 h-auto opacity-[0.3] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[25%] right-[8%] w-40 md:w-72 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 7 */}
       <motion.img
@@ -241,7 +241,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-30, 30, -30], y: [-5, 5, -5] }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[29%] left-[40%] w-50 h-auto opacity-[0.2] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[29%] left-[40%] w-28 md:w-50 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
 
       {/* --- FOLD 2: MIDDLE SECTION (30% - 65% height) --- */}
@@ -251,7 +251,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [50, -50, 50], y: [-9, 9, -9] }}
         transition={{ duration: 27, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[34%] right-[20%] w-60 h-auto opacity-[0.25] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[34%] right-[20%] w-32 md:w-60 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 9 */}
       <motion.img
@@ -259,7 +259,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-40, 40, -40], y: [7, -7, 7] }}
         transition={{ duration: 23, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[39%] left-[15%] w-48 h-auto opacity-[0.2] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[39%] left-[15%] w-24 md:w-48 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 10 */}
       <motion.img
@@ -267,7 +267,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [55, -55, 55], y: [-11, 11, -11] }}
         transition={{ duration: 31, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[44%] right-[45%] w-68 h-auto opacity-[0.3] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[44%] right-[45%] w-36 md:w-68 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 11 */}
       <motion.img
@@ -275,7 +275,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-35, 35, -35], y: [-6, 6, -6] }}
         transition={{ duration: 21, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[49%] left-[30%] w-54 h-auto opacity-[0.25] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[49%] left-[30%] w-28 md:w-54 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 12 */}
       <motion.img
@@ -283,7 +283,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [60, -60, 60], y: [10, -10, 10] }}
         transition={{ duration: 33, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[54%] right-[10%] w-72 h-auto opacity-[0.28] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[54%] right-[10%] w-40 md:w-72 h-auto opacity-[0.28] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 13 */}
       <motion.img
@@ -291,7 +291,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-45, 45, -45], y: [-8, 8, -8] }}
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[59%] left-[22%] w-58 h-auto opacity-[0.25] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[59%] left-[22%] w-32 md:w-58 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
 
       {/* --- FOLD 3: BOTTOM SECTION (65% - 90% height) --- */}
@@ -301,7 +301,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [40, -40, 40], y: [8, -8, 8] }}
         transition={{ duration: 29, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[64%] right-[30%] w-46 h-auto opacity-[0.2] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[64%] right-[30%] w-24 md:w-46 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 15 */}
       <motion.img
@@ -309,7 +309,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-50, 50, -50], y: [-10, 10, -10] }}
         transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[70%] left-[12%] w-64 h-auto opacity-[0.28] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[70%] left-[12%] w-36 md:w-64 h-auto opacity-[0.28] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 16 */}
       <motion.img
@@ -317,7 +317,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [45, -45, 45], y: [7, -7, 7] }}
         transition={{ duration: 27, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[76%] right-[18%] w-52 h-auto opacity-[0.25] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[76%] right-[18%] w-28 md:w-52 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 17 */}
       <motion.img
@@ -325,7 +325,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [-35, 35, -35], y: [-6, 6, -6] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[82%] left-[40%] w-48 h-auto opacity-[0.2] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[82%] left-[40%] w-24 md:w-48 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       {/* Cloud 18 */}
       <motion.img
@@ -333,7 +333,7 @@ export default function Silatnas({ db }) {
         alt=""
         animate={{ x: [55, -55, 55], y: [-11, 11, -11] }}
         transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[88%] right-[22%] w-70 h-auto opacity-[0.3] z-[1] pointer-events-none hidden md:block transform-gpu will-change-transform"
+        className="absolute top-[88%] right-[22%] w-36 md:w-70 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
       />
       
       {/* Background Decorators */}

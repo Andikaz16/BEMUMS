@@ -46,6 +46,7 @@ const localApiProxy = () => ({
 });
 
 export default defineConfig({
+  base: './',
   plugins: [react(), tailwindcss(), localApiProxy()],
   build: {
     chunkSizeWarningLimit: 1600,
