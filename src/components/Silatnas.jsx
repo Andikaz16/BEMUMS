@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, CheckCircle, X, Users, MapPin, Globe, 
@@ -55,6 +55,20 @@ export default function Silatnas({ db }) {
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
+  const [currentFrame, setCurrentFrame] = useState(1);
+
+  // Preload and animate mascot frames
+  useEffect(() => {
+    for (let i = 1; i <= 9; i++) {
+      const img = new Image();
+      img.src = `/assets/frame_maskot/${i}-removebg-preview.png`;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentFrame((prev) => (prev % 9) + 1);
+    }, 150);
+    return () => clearInterval(interval);
+  }, []);
 
   const catalog = db.silatnasCatalog || [];
 
@@ -113,7 +127,7 @@ export default function Silatnas({ db }) {
             </div>
             <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg leading-tight">
               PORTAL UTAMA <br/>
-              <span className="text-[#38BDF8] drop-shadow-md">SILATNAS BEM UMS</span>
+              <span className="text-[#38BDF8] drop-shadow-md">SILATNAS BEM PTMAI</span>
             </h1>
             <p className="font-body text-[#E0F2FE] mt-4 max-w-2xl text-base md:text-lg leading-relaxed font-medium">
               Selamat datang di portal informasi dan pendaftaran Silaturahmi Nasional BEM se-Indonesia. Wadah resmi konsolidasi ide, kolaborasi strategis, dan persatuan ukhuwah gerakan mahasiswa nasional.
@@ -127,7 +141,7 @@ export default function Silatnas({ db }) {
                 </div>
                 <div>
                   <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Waktu Kegiatan</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">Mei - Juni 2026</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">30 September - 3 Oktober 2026</div>
                 </div>
               </div>
               
@@ -179,7 +193,7 @@ export default function Silatnas({ db }) {
           className="flex flex-col items-center justify-center text-center space-y-4 pt-12"
         >
           <img 
-            src="/assets/maskot_silatnas.png" 
+            src={`/assets/frame_maskot/${currentFrame}-removebg-preview.png`} 
             alt="Maskot Silatnas" 
             className="w-56 md:w-64 h-auto object-contain"
           />
@@ -198,7 +212,7 @@ export default function Silatnas({ db }) {
               Visi & Misi Konsolidasi
             </h2>
             <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
-              Tujuan dan prinsip gerakan Silaturahmi Nasional BEM UMS 2026.
+              Tujuan dan prinsip gerakan Silaturahmi Nasional BEM PTMAI 2026.
             </p>
           </div>
 
