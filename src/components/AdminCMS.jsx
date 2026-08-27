@@ -165,6 +165,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [newSilatnasDoc, setNewSilatnasDoc] = useState({ title: '', desc: '', size: '', url: '' });
   const [editingSilatnasDocIndex, setEditingSilatnasDocIndex] = useState(null);
 
+  const [silatnasCultureList, setSilatnasCultureList] = useState(db.silatnasCulture || []);
+  const [newSilatnasCulture, setNewSilatnasCulture] = useState({ category: '', title: '', desc: '', highlight: '', location: '', image: '' });
+  const [editingSilatnasCultureIndex, setEditingSilatnasCultureIndex] = useState(null);
+
   // Sync forms when database receives an update from Firebase
   useEffect(() => {
     if (db.contact) setContactForm(db.contact);
@@ -192,6 +196,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (db.silatnasAlur) setSilatnasAlurForm(db.silatnasAlur);
     if (db.silatnasTimeline) setSilatnasTimelineList(db.silatnasTimeline);
     if (db.silatnasDocs) setSilatnasDocsList(db.silatnasDocs);
+    if (db.silatnasCulture) setSilatnasCultureList(db.silatnasCulture);
   }, [db.lastUpdated]);
 
   const kegiatanList = db.kegiatan || [];
@@ -636,6 +641,42 @@ export default function AdminCMS({ db, onUpdateDB }) {
     });
   };
 
+  // Silatnas Culture CRUD Handlers
+  const handleAddSilatnasCulture = () => {
+    if (!newSilatnasCulture.title || !newSilatnasCulture.desc) {
+      showCustomAlert("Judul dan deskripsi destinasi wisata/budaya harus diisi!", "warning");
+      return;
+    }
+    let updated;
+    if (editingSilatnasCultureIndex !== null) {
+      updated = [...silatnasCultureList];
+      updated[editingSilatnasCultureIndex] = newSilatnasCulture;
+      setEditingSilatnasCultureIndex(null);
+    } else {
+      updated = [...silatnasCultureList, { ...newSilatnasCulture, id: Date.now() }];
+    }
+    setSilatnasCultureList(updated);
+    setNewSilatnasCulture({ category: '', title: '', desc: '', highlight: '', location: '', image: '' });
+    save({ silatnasCulture: updated });
+  };
+
+  const handleEditSilatnasCulture = (idx) => {
+    setNewSilatnasCulture(silatnasCultureList[idx]);
+    setEditingSilatnasCultureIndex(idx);
+  };
+
+  const handleDeleteSilatnasCulture = (idx) => {
+    confirmAction("Hapus destinasi budaya ini dari Silatnas?", () => {
+      const updated = silatnasCultureList.filter((_, i) => i !== idx);
+      setSilatnasCultureList(updated);
+      save({ silatnasCulture: updated });
+      if (editingSilatnasCultureIndex === idx) {
+        setEditingSilatnasCultureIndex(null);
+        setNewSilatnasCulture({ category: '', title: '', desc: '', highlight: '', location: '', image: '' });
+      }
+    });
+  };
+
   // Export JSON (for backup/rekap)
   const downloadJSON = (data, filename) => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -664,6 +705,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
       id: "Waktu Daftar",
       phone: "No Telepon / WA",
       commitment: "Komitmen Waktu",
+      commitmentLink: "Link Google Drive Dokumen",
+      commitmentFileName: "Nama Berkas Terlampir",
       nowa: "No. WhatsApp",
       campus: "Asal Kampus",
       jabatan: "Jabatan",
@@ -1633,7 +1676,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                 {app.name} ({app.nim} / {app.faculty}) — Komitmen: "{app.commitment}"
                                 {app.commitmentLink && (
                                   <a href={app.commitmentLink} target="_blank" rel="noopener noreferrer" className="ml-2 text-primary hover:underline font-bold">
-                                    [📄 Lihat Formulir]
+                                    [🔗 Link Drive]
+                                  </a>
+                                )}
+                                {app.commitmentFile && (
+                                  <a href={app.commitmentFile} download={app.commitmentFileName || "Pakta_Integritas.pdf"} target="_blank" rel="noopener noreferrer" className="ml-2 text-emerald-600 hover:underline font-bold">
+                                    [📎 Download Berkas: {app.commitmentFileName || "Pakta Integritas"}]
                                   </a>
                                 )}
                               </div>
@@ -2095,6 +2143,123 @@ export default function AdminCMS({ db, onUpdateDB }) {
                           <Edit3 size={14} />
                         </button>
                         <button onClick={() => handleDeleteSilatnasDoc(idx)} className="p-2 hover:text-red-400 text-neutral-400">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section Manager: Cultural & Heritage Showcase */}
+              <div className="bg-black/30 border border-white/10 p-6 rounded-2xl space-y-4">
+                <h3 className="text-xl font-bold uppercase text-white flex items-center gap-2">
+                  🏛️ Wisata & Budaya Solo (Solo Cultural Showcase)
+                </h3>
+                <p className="text-xs text-neutral-400 font-body">
+                  Kelola kartu destinasi wisata, heritage, kuliner, dan landmark kampus UMS yang tampil pada seksi "Solo Cultural Showcase" di halaman Silatnas.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/40 p-4 rounded-xl border border-white/5">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400">Kategori / Label Badge</label>
+                    <input
+                      type="text"
+                      className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
+                      placeholder="Misal: Ikon Religi Megah, Warisan Batik Dunia"
+                      value={newSilatnasCulture.category}
+                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, category: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400">Judul Destinasi *</label>
+                    <input
+                      type="text"
+                      className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
+                      placeholder="Misal: Masjid Raya Sheikh Zayed Surakarta"
+                      value={newSilatnasCulture.title}
+                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, title: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400">Deskripsi Singkat *</label>
+                    <textarea
+                      rows="2"
+                      className="w-full bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
+                      placeholder="Deskripsi keunikan dan daya tarik destinasi ini..."
+                      value={newSilatnasCulture.desc}
+                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, desc: e.target.value })}
+                    ></textarea>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400">Highlight Tag</label>
+                    <input
+                      type="text"
+                      className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
+                      placeholder="Misal: Destinasi Field Trip, Kunjungan Budaya"
+                      value={newSilatnasCulture.highlight}
+                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, highlight: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400">Lokasi / Keterangan Wilayah</label>
+                    <input
+                      type="text"
+                      className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
+                      placeholder="Misal: Solo Utara, Laweyan, Kampus UMS"
+                      value={newSilatnasCulture.location}
+                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, location: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400">URL Gambar / Foto</label>
+                    <input
+                      type="text"
+                      className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
+                      placeholder="https://... atau /assets/..."
+                      value={newSilatnasCulture.image}
+                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, image: e.target.value })}
+                    />
+                  </div>
+                  <div className="md:col-span-2 flex gap-2 pt-2">
+                    <button
+                      onClick={handleAddSilatnasCulture}
+                      className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold text-xs px-5 py-2.5 rounded-lg transition-colors"
+                    >
+                      {editingSilatnasCultureIndex !== null ? 'Simpan Perubahan' : '+ Tambah Destinasi Budaya'}
+                    </button>
+                    {editingSilatnasCultureIndex !== null && (
+                      <button
+                        onClick={() => {
+                          setEditingSilatnasCultureIndex(null);
+                          setNewSilatnasCulture({ category: '', title: '', desc: '', highlight: '', location: '', image: '' });
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors border border-white/10"
+                      >
+                        Batal
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* List Culture Destinations */}
+                <div className="space-y-2 pt-2">
+                  {silatnasCultureList.map((item, idx) => (
+                    <div key={item.id || idx} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                      <div className="flex-1">
+                        <span className="text-[10px] bg-sky-950/40 text-[#38BDF8] border border-sky-900/30 px-2 py-0.5 rounded-md font-bold uppercase">{item.category || 'Destinasi Solo'}</span>
+                        <h4 className="text-sm font-bold text-white mt-1">{item.title}</h4>
+                        <p className="text-xs text-neutral-400 mt-0.5 font-body leading-relaxed">{item.desc || item.description}</p>
+                        <div className="flex gap-4 mt-1 text-[10px] text-neutral-500 font-mono">
+                          <span>📍 {item.highlight || 'Field Trip'}</span>
+                          <span>🏛️ {item.location || 'Surakarta'}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-1 ml-4 shrink-0">
+                        <button onClick={() => handleEditSilatnasCulture(idx)} className="p-2 hover:text-[#38BDF8] text-neutral-400">
+                          <Edit3 size={14} />
+                        </button>
+                        <button onClick={() => handleDeleteSilatnasCulture(idx)} className="p-2 hover:text-red-400 text-neutral-400">
                           <Trash2 size={14} />
                         </button>
                       </div>

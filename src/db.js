@@ -121,7 +121,25 @@ const DEFAULT_DATA = {
 
   // 7. Jadilah Volunteer
   volunteerCatalog: [
-    { id: 1, title: "Volunteer Kepanitiaan Seleknas PTMAI 2026", isOpen: true, requirements: "Terbuka untuk seluruh mahasiswa aktif UMS.", jobdesc: "Berpartisipasi sebagai panitia untuk menyukseskan agenda Seleksi Nasional PTMAI 2026.", schedule: "Agustus - September 2026", applicants: [] }
+    { 
+      id: 1, 
+      title: "Volunteer Kepanitiaan Silatnas BEM UMS 2026", 
+      isOpen: true, 
+      requirements: "Terbuka untuk seluruh mahasiswa aktif UMS. Wajib mengunduh, mengisi, dan menandatangani Pakta Integritas Silatnas 2026.", 
+      jobdesc: "Berpartisipasi aktif sebagai Liaison Officer (LO), Panitia Konsolidasi, Acara, & Logistik dalam menyukseskan agenda Silaturahmi Nasional BEM se-Indonesia 2026 di Kampus UMS Surakarta.", 
+      schedule: "Agustus - September 2026", 
+      templateUrl: "/dokument_volunter/Pakta Integritas Silatnas 2026.pdf",
+      applicants: [] 
+    },
+    { 
+      id: 2, 
+      title: "Volunteer Kepanitiaan Seleknas PTMAI 2026", 
+      isOpen: true, 
+      requirements: "Terbuka untuk seluruh mahasiswa aktif UMS.", 
+      jobdesc: "Berpartisipasi sebagai panitia untuk menyukseskan agenda Seleksi Nasional PTMAI 2026.", 
+      schedule: "Agustus - September 2026", 
+      applicants: [] 
+    }
   ],
 
   // 8. Visi & Misi
@@ -168,6 +186,58 @@ const DEFAULT_DATA = {
     { title: "Rundown Acara", desc: "Rincian tentatif jadwal kegiatan lengkap selama 4 hari.", size: "PDF (1.2 MB)", url: "" },
     { title: "Term of Reference (TOR)", desc: "Term of reference, tata tertib, dan syarat administrasi delegasi.", size: "PDF (2.5 MB)", url: "" },
     { title: "Surat Undangan Resmi", desc: "Format surat undangan resmi untuk birokrasi perizinan kampus.", size: "DOCX (850 KB)", url: "" }
+  ],
+  silatnasCulture: [
+    {
+      id: 1,
+      category: "Ikon Religi Megah",
+      title: "Masjid Raya Sheikh Zayed Surakarta",
+      desc: "Replika megah Sheikh Zayed Grand Mosque Abu Dhabi dengan perpaduan seni ukir khas Surakarta. Destinasi ibadah dan ziarah arsitektur kebanggaan warga Solo.",
+      highlight: "Destinasi Field Trip",
+      location: "Solo Utara",
+      badgeColor: "sky",
+      image: "https://images.unsplash.com/photo-1590076175571-4b5459efb08c?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 2,
+      category: "Pusat Sejarah & Tradisi",
+      title: "Keraton Surakarta & Mangkunegaran",
+      desc: "Istana kerajaan bersejarah pusat tatanan budaya Jawa. Tempat lahirnya karya seni tari sakral, arsitektur joglo luhur, dan museum pusaka nusantara.",
+      highlight: "Kunjungan Budaya",
+      location: "Pusat Kota Solo",
+      badgeColor: "amber",
+      image: "https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 3,
+      category: "Warisan Batik Dunia",
+      title: "Kampung Batik Laweyan & Kauman",
+      desc: "Kawasan cagar budaya produsen batik tertua di Solo dengan lorong-lorong arsitektur klasik Jawa-Eropa. Tempat belanja cenderamata batik asli Solo.",
+      highlight: "Wisata Oleh-oleh",
+      location: "Laweyan, Solo",
+      badgeColor: "indigo",
+      image: "https://images.unsplash.com/photo-1606744837616-56c9a5c6a6eb?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 4,
+      category: "Cita Rasa Legend",
+      title: "Gastronomi & Kuliner Surakarta",
+      desc: "Nikmati kelezatan authentic Selat Solo, Nasi Liwet Gurih, Timlo, Tengkleng, hingga Es Dawet Telasih khas Pasar Gede yang legendaris.",
+      highlight: "Jamuan Malam Panitia",
+      location: "Kuliner Solo",
+      badgeColor: "rose",
+      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 5,
+      category: "Landmark Kampus UMS",
+      title: "Edutorium Universitas Muhammadiyah Surakarta",
+      desc: "Gedung convention hall termegah di Jawa Tengah milik UMS dengan kapasitas puluhan ribu orang, dilengkapi museum sejarah kebudayaan dan fasilitas konvensi internasional. Tempat digelarnya Pembukaan & Malam Puncak Silatnas BEM UMS 2026.",
+      highlight: "Lokasi Utama Silatnas",
+      location: "Kampus UMS, Surakarta",
+      badgeColor: "sky",
+      image: "/assets/artefak/edutorium.png"
+    }
   ],
   kegiatan: [
     {
@@ -235,6 +305,7 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         combinedData.kegiatan = kData.kegiatan || [];
         combinedData.volunteerCatalog = kData.volunteerCatalog || [];
         combinedData.silatnasCatalog = kData.silatnasCatalog || [];
+        combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
       }
     });
 
@@ -331,7 +402,7 @@ export const saveDB = async (data) => {
 
   try {
     const batch = writeBatch(firestore);
-    const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, ...coreData } = data;
+    const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, silatnasCulture, ...coreData } = data;
     
     batch.set(doc(firestore, "cms", "core"), coreData);
     batch.set(doc(firestore, "cms", "articles"), { data: articles || [], lastUpdated: data.lastUpdated });
@@ -340,6 +411,7 @@ export const saveDB = async (data) => {
       kegiatan: kegiatan || [], 
       volunteerCatalog: volunteerCatalog || [], 
       silatnasCatalog: silatnasCatalog || [], 
+      silatnasCulture: silatnasCulture || [],
       lastUpdated: data.lastUpdated 
     });
 

@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, CheckCircle, X, Users, MapPin, Globe, 
   Download, Phone, HelpCircle, FileText, ChevronDown, 
-  Award, Clock, CheckSquare, Sparkles, Send, GraduationCap
+  Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
+  Compass, Utensils, Landmark, Camera, Heart
 } from 'lucide-react';
 import { addSilatnasApplicant } from '../db';
 
@@ -82,6 +83,54 @@ export default function Silatnas({ db }) {
     { title: "Rundown Acara", desc: "Rincian tentatif jadwal kegiatan lengkap selama 4 hari.", size: "PDF (1.2 MB)", url: "" },
     { title: "Term of Reference (TOR)", desc: "Term of reference, tata tertib, dan syarat administrasi delegasi.", size: "PDF (2.5 MB)", url: "" },
     { title: "Surat Undangan Resmi", desc: "Format surat undangan resmi untuk birokrasi perizinan kampus.", size: "DOCX (850 KB)", url: "" }
+  ];
+
+  const cultureList = Array.isArray(db.silatnasCulture) && db.silatnasCulture.length > 0 ? db.silatnasCulture : [
+    {
+      id: 1,
+      category: "Ikon Religi Megah",
+      title: "Masjid Raya Sheikh Zayed Surakarta",
+      desc: "Replika megah Sheikh Zayed Grand Mosque Abu Dhabi dengan perpaduan seni ukir khas Surakarta. Destinasi ibadah dan ziarah arsitektur kebanggaan warga Solo.",
+      highlight: "Destinasi Field Trip",
+      location: "Solo Utara",
+      image: "https://images.unsplash.com/photo-1590076175571-4b5459efb08c?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 2,
+      category: "Pusat Sejarah & Tradisi",
+      title: "Keraton Surakarta & Mangkunegaran",
+      desc: "Istana kerajaan bersejarah pusat tatanan budaya Jawa. Tempat lahirnya karya seni tari sakral, arsitektur joglo luhur, dan museum pusaka nusantara.",
+      highlight: "Kunjungan Budaya",
+      location: "Pusat Kota Solo",
+      image: "https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 3,
+      category: "Warisan Batik Dunia",
+      title: "Kampung Batik Laweyan & Kauman",
+      desc: "Kawasan cagar budaya produsen batik tertua di Solo dengan lorong-lorong arsitektur klasik Jawa-Eropa. Tempat belanja cenderamata batik asli Solo.",
+      highlight: "Wisata Oleh-oleh",
+      location: "Laweyan, Solo",
+      image: "https://images.unsplash.com/photo-1606744837616-56c9a5c6a6eb?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 4,
+      category: "Cita Rasa Legend",
+      title: "Gastronomi & Kuliner Surakarta",
+      desc: "Nikmati kelezatan authentic Selat Solo, Nasi Liwet Gurih, Timlo, Tengkleng, hingga Es Dawet Telasih khas Pasar Gede yang legendaris.",
+      highlight: "Jamuan Malam Panitia",
+      location: "Kuliner Solo",
+      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      id: 5,
+      category: "Landmark Kampus UMS",
+      title: "Edutorium Universitas Muhammadiyah Surakarta",
+      desc: "Gedung convention hall termegah di Jawa Tengah milik UMS dengan kapasitas puluhan ribu orang, dilengkapi museum sejarah kebudayaan dan fasilitas konvensi internasional. Tempat digelarnya Pembukaan & Malam Puncak Silatnas BEM UMS 2026.",
+      highlight: "Lokasi Utama Silatnas",
+      location: "Kampus UMS, Surakarta",
+      image: "/assets/artefak/edutorium.png"
+    }
   ];
 
   const handleSignup = async (e) => {
@@ -187,155 +236,166 @@ export default function Silatnas({ db }) {
         />
       </div>
       
-      {/* ================= FLOATING JAVANESE CLOUDS (MEGAMENDUNG PNG) ================= */}
-      {/* --- FOLD 1: TOP / HERO SECTION (0% - 30% height) --- */}
+      {/* ================= FLOATING JAVANESE CLOUDS (MEGAMENDUNG PNG - 20 MEDIUM INSTANCES) ================= */}
       {/* Cloud 1 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-50, 50, -50], y: [-10, 10, -10] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[6%] left-[10%] w-32 md:w-60 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-35, 35, -35], y: [-8, 8, -8] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[3%] left-[4%] w-28 md:w-52 h-auto opacity-[0.4] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 2 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [40, -40, 40], y: [8, -8, 8] }}
-        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[9%] right-[15%] w-28 md:w-52 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [40, -40, 40], y: [9, -9, 9] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[7%] right-[6%] w-32 md:w-56 h-auto opacity-[0.45] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 3 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-35, 35, -35], y: [-6, 6, -6] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[13%] left-[45%] w-24 md:w-48 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-30, 30, -30], y: [-6, 6, -6] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[12%] left-[40%] w-24 md:w-44 h-auto opacity-[0.35] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 4 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [55, -55, 55], y: [12, -12, 12] }}
-        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[17%] right-[35%] w-36 md:w-64 h-auto opacity-[0.28] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [45, -45, 45], y: [10, -10, 10] }}
+        transition={{ duration: 27, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[16%] right-[28%] w-28 md:w-48 h-auto opacity-[0.4] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 5 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-40, 40, -40], y: [-7, 7, -7] }}
-        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[21%] left-[20%] w-32 md:w-56 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-35, 35, -35], y: [-8, 8, -8] }}
+        transition={{ duration: 23, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[21%] left-[18%] w-32 md:w-52 h-auto opacity-[0.42] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 6 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [60, -60, 60], y: [10, -10, 10] }}
-        transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[25%] right-[8%] w-40 md:w-72 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [35, -35, 35], y: [7, -7, 7] }}
+        transition={{ duration: 21, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[26%] right-[10%] w-30 md:w-54 h-auto opacity-[0.45] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 7 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-30, 30, -30], y: [-5, 5, -5] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[29%] left-[40%] w-28 md:w-50 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-40, 40, -40], y: [-9, 9, -9] }}
+        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[31%] left-[45%] w-26 md:w-46 h-auto opacity-[0.38] z-[1] pointer-events-none transform-gpu"
       />
-
-      {/* --- FOLD 2: MIDDLE SECTION (30% - 65% height) --- */}
       {/* Cloud 8 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [50, -50, 50], y: [-9, 9, -9] }}
-        transition={{ duration: 27, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[34%] right-[20%] w-32 md:w-60 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [40, -40, 40], y: [8, -8, 8] }}
+        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[36%] left-[6%] w-32 md:w-56 h-auto opacity-[0.42] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 9 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-40, 40, -40], y: [7, -7, 7] }}
-        transition={{ duration: 23, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[39%] left-[15%] w-24 md:w-48 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-45, 45, -45], y: [-10, 10, -10] }}
+        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[41%] right-[18%] w-30 md:w-52 h-auto opacity-[0.4] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 10 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [55, -55, 55], y: [-11, 11, -11] }}
-        transition={{ duration: 31, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[44%] right-[45%] w-36 md:w-68 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [35, -35, 35], y: [7, -7, 7] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[46%] left-[32%] w-28 md:w-48 h-auto opacity-[0.38] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 11 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-35, 35, -35], y: [-6, 6, -6] }}
-        transition={{ duration: 21, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[49%] left-[30%] w-28 md:w-54 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-40, 40, -40], y: [-9, 9, -9] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[51%] right-[5%] w-34 md:w-58 h-auto opacity-[0.45] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 12 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [60, -60, 60], y: [10, -10, 10] }}
-        transition={{ duration: 33, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[54%] right-[10%] w-40 md:w-72 h-auto opacity-[0.28] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [45, -45, 45], y: [10, -10, 10] }}
+        transition={{ duration: 29, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[56%] left-[12%] w-30 md:w-50 h-auto opacity-[0.4] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 13 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-45, 45, -45], y: [-8, 8, -8] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[59%] left-[22%] w-32 md:w-58 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-30, 30, -30], y: [-6, 6, -6] }}
+        transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[61%] right-[35%] w-26 md:w-46 h-auto opacity-[0.36] z-[1] pointer-events-none transform-gpu"
       />
-
-      {/* --- FOLD 3: BOTTOM SECTION (65% - 90% height) --- */}
       {/* Cloud 14 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
         animate={{ x: [40, -40, 40], y: [8, -8, 8] }}
-        transition={{ duration: 29, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[64%] right-[30%] w-24 md:w-46 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[66%] left-[42%] w-30 md:w-52 h-auto opacity-[0.4] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 15 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-50, 50, -50], y: [-10, 10, -10] }}
-        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[70%] left-[12%] w-36 md:w-64 h-auto opacity-[0.28] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-45, 45, -45], y: [-10, 10, -10] }}
+        transition={{ duration: 27, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[71%] right-[12%] w-34 md:w-56 h-auto opacity-[0.44] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 16 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [45, -45, 45], y: [7, -7, 7] }}
-        transition={{ duration: 27, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[76%] right-[18%] w-28 md:w-52 h-auto opacity-[0.25] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [35, -35, 35], y: [7, -7, 7] }}
+        transition={{ duration: 21, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[76%] left-[8%] w-28 md:w-48 h-auto opacity-[0.38] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 17 */}
       <motion.img
         src="/assets/artefak/awan_jawa-remove-bg-io.png"
         alt=""
-        animate={{ x: [-35, 35, -35], y: [-6, 6, -6] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[82%] left-[40%] w-24 md:w-48 h-auto opacity-[0.2] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [-40, 40, -40], y: [-9, 9, -9] }}
+        transition={{ duration: 23, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[81%] right-[25%] w-32 md:w-54 h-auto opacity-[0.42] z-[1] pointer-events-none transform-gpu"
       />
       {/* Cloud 18 */}
       <motion.img
         src="/assets/artefak/awan_jawa2-remove-bg-io.png"
         alt=""
-        animate={{ x: [55, -55, 55], y: [-11, 11, -11] }}
-        transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[88%] right-[22%] w-36 md:w-70 h-auto opacity-[0.3] z-[1] pointer-events-none block transform-gpu will-change-transform"
+        animate={{ x: [45, -45, 45], y: [10, -10, 10] }}
+        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[85%] left-[28%] w-26 md:w-46 h-auto opacity-[0.36] z-[1] pointer-events-none transform-gpu"
+      />
+      {/* Cloud 19 */}
+      <motion.img
+        src="/assets/artefak/awan_jawa-remove-bg-io.png"
+        alt=""
+        animate={{ x: [-35, 35, -35], y: [-8, 8, -8] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[89%] right-[5%] w-34 md:w-58 h-auto opacity-[0.45] z-[1] pointer-events-none transform-gpu"
+      />
+      {/* Cloud 20 */}
+      <motion.img
+        src="/assets/artefak/awan_jawa2-remove-bg-io.png"
+        alt=""
+        animate={{ x: [40, -40, 40], y: [8, -8, 8] }}
+        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[93%] left-[5%] w-30 md:w-50 h-auto opacity-[0.4] z-[1] pointer-events-none transform-gpu"
       />
       
       {/* Background Decorators */}
@@ -665,6 +725,96 @@ export default function Silatnas({ db }) {
           </div>
         </div>
 
+        {/* 6.5 SENTUHAN BUDAYA & WISATA SOLO (SOLO CULTURAL & HERITAGE SHOWCASE) */}
+        <div className="space-y-10 pt-10 border-t border-white/10">
+          <div className="text-center space-y-3">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#0EA5E9]/15 text-[#38BDF8] border border-[#0EA5E9]/30 uppercase tracking-widest">
+              <Compass className="w-4 h-4 text-[#38BDF8]" /> Solo Cultural & Heritage Showcase
+            </span>
+            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
+              Eksplorasi Budaya & Wisata Surakarta
+            </h2>
+            <p className="text-[#E0F2FE] font-body text-sm max-w-2xl mx-auto mt-2 font-medium leading-relaxed">
+              <span className="text-[#38BDF8] font-semibold italic">Sugeng Rawuh ing Solo!</span> Nikmati kehangatan hospitality Solo Kota Budaya. BEM UMS memanjakan seluruh kontingen delegasi BEM se-Indonesia dengan keindahan arsitektur, sejarah luhur, dan kelezatan gastronomi khas Surakarta.
+            </p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {cultureList.map((item, idx) => (
+              <div 
+                key={item.id || idx} 
+                className={`group relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#38BDF8]/40 transition-all duration-300 shadow-xl flex flex-col justify-between ${idx === cultureList.length - 1 && cultureList.length % 3 !== 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
+              >
+                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 flex items-center justify-center">
+                  {item.image ? (
+                    <img 
+                      src={item.image} 
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <Compass className="w-12 h-12 text-[#38BDF8]/40 animate-pulse" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                  <div className="absolute top-3 left-3">
+                    <span className="bg-[#0EA5E9] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> {item.category || 'Destinasi Solo'}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-heading font-bold text-white uppercase group-hover:text-[#38BDF8] transition-colors">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">
+                      {item.desc || item.description}
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-semibold text-[#38BDF8]">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> {item.highlight || 'Destinasi Field Trip'}
+                    </span>
+                    <span className="text-neutral-400 text-[10px] font-mono">{item.location || 'Surakarta'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Special Host Commitment Banner */}
+          <div className="max-w-6xl mx-auto bg-gradient-to-r from-sky-950/60 via-black/80 to-slate-950/60 border border-[#0EA5E9]/30 p-6 md:p-8 rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[#0EA5E9]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-bold text-[#38BDF8] uppercase tracking-widest">
+                  <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" /> Jaminan Keramahan Tuan Rumah BEM UMS
+                </div>
+                <h3 className="text-xl md:text-2xl font-heading font-bold text-white uppercase">
+                  "Solo Kota Ramah & Berbudaya: Berwacana Tajam, Bersilaturahmi Hangat"
+                </h3>
+                <p className="text-xs font-body text-[#E0F2FE]/80 max-w-3xl leading-relaxed">
+                  Panitia Silatnas BEM UMS 2026 berkomitmen penuh memberikan pelayanan terbaik, pendampingan Liaison Officer (LO) 24 jam, serta akomodasi terbaik demi kenyamanan seluruh saudara mahasiswa dari Sabang sampai Merauke.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <a 
+                  href="#helpdesk" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('helpdesk-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
+                >
+                  <Phone className="w-4 h-4" /> Tanya Panitia / LO
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 7. FAQ (PERTANYAAN UMUM) */}
         <div className="space-y-10 pt-10 border-t border-white/10">
           <div className="text-center">
@@ -711,7 +861,7 @@ export default function Silatnas({ db }) {
         </div>
 
         {/* 8. HELPDESK & KONTAK PERSON */}
-        <div className="bg-gradient-to-r from-[#082F49] via-[#0369A1] to-[#082F49] border border-white/15 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto space-y-6 shadow-2xl">
+        <div id="helpdesk-section" className="bg-gradient-to-r from-[#082F49] via-[#0369A1] to-[#082F49] border border-white/15 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto space-y-6 shadow-2xl">
           <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mx-auto text-[#38BDF8] animate-pulse">
             <HelpCircle className="w-8 h-8" />
           </div>

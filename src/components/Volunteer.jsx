@@ -12,15 +12,40 @@ export default function Volunteer({ db, onUpdateDB }) {
     phone: '',
     faculty: '',
     commitment: '',
-    commitmentLink: ''
+    commitmentLink: '',
+    commitmentFile: '',
+    commitmentFileName: ''
   });
   const [submitted, setSubmitted] = useState(false);
 
   const catalog = db.volunteerCatalog || [];
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) { // 8MB limit
+      alert("Ukuran file terlalu besar! Maksimal 8MB. Atau cantumkan Link Google Drive.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFormData(prev => ({
+        ...prev,
+        commitmentFile: event.target.result,
+        commitmentFileName: file.name
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!selectedVol) return;
+
+    if (!formData.commitmentLink && !formData.commitmentFile) {
+      alert("Mohon upload file Pakta Integritas (Opsi 1) ATAU sertakan Link Google Drive (Opsi 2)!");
+      return;
+    }
 
     try {
       // Use transaction to append safely without overwriting whole DB
@@ -129,6 +154,20 @@ export default function Volunteer({ db, onUpdateDB }) {
                         {v.requirements}
                       </p>
                     </div>
+
+                    {v.templateUrl && (
+                      <div className="pt-1">
+                        <a 
+                          href={v.templateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 font-bold text-xs px-4 py-3 rounded-xl transition duration-300"
+                        >
+                          <Download className="w-4 h-4" /> Unduh Pakta Integritas (PDF)
+                        </a>
+                      </div>
+                    )}
+
                     <div>
                       <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary mb-2">
                         <Users className="w-4 h-4" />
@@ -147,7 +186,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                       onClick={() => {
                         setSelectedVol(v);
                         setSubmitted(false);
-                        setFormData({ name: '', nim: '', email: '', phone: '', faculty: '', commitment: '', commitmentLink: '' });
+                        setFormData({ name: '', nim: '', email: '', phone: '', faculty: '', commitment: '', commitmentLink: '', commitmentFile: '', commitmentFileName: '' });
                       }}
                       className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-sm py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(185,0,20,0.3)] hover:shadow-[0_0_30px_rgba(185,0,20,0.5)] transform hover:-translate-y-1"
                     >
@@ -224,25 +263,16 @@ export default function Volunteer({ db, onUpdateDB }) {
                     <form onSubmit={handleSignup} className="space-y-6">
                       {/* Tips Panduan Pendaftaran */}
                       <div className="bg-amber-950/20 border border-amber-800/30 rounded-2xl p-5 space-y-3">
-                        <h4 className="text-sm font-bold uppercase tracking-widest text-amber-400 flex items-center gap-2">
-                          💡 Panduan Pendaftaran
+                        <h4 className="text-sm font-bold uppercase tracking-widest text-amber-400">
+                          Panduan Pendaftaran
                         </h4>
-                        {selectedVol.templateUrl ? (
-                          <ol className="text-xs font-body text-amber-200/70 leading-relaxed space-y-1.5 list-decimal list-inside">
-                            <li>Isi <strong className="text-white">Nama, NIM, Fakultas, Email, dan No. HP</strong> pada kolom di bawah.</li>
-                            <li>Download <strong className="text-white">Template Formulir Komitmen</strong> yang tersedia, lalu isi dengan lengkap.</li>
-                            <li>Upload formulir yang sudah diisi ke <strong className="text-white">Google Drive</strong> pribadi Anda.</li>
-                            <li>Atur akses file menjadi <strong className="text-white">"Anyone with the link"</strong>, lalu copy link-nya.</li>
-                            <li>Paste link tersebut di kolom <strong className="text-white">"Link Google Drive Formulir Komitmen"</strong>.</li>
-                            <li>Tuliskan <strong className="text-white">motivasi & komitmen</strong> Anda, lalu klik <strong className="text-white">Kirim Pendaftaran</strong>.</li>
-                          </ol>
-                        ) : (
-                          <ol className="text-xs font-body text-amber-200/70 leading-relaxed space-y-1.5 list-decimal list-inside">
-                            <li>Isi <strong className="text-white">Nama, NIM, Fakultas, Email, dan No. HP</strong> pada kolom di bawah.</li>
-                            <li>Tuliskan <strong className="text-white">motivasi & komitmen</strong> Anda untuk mengikuti program ini.</li>
-                            <li>Klik <strong className="text-white">Kirim Pendaftaran</strong> untuk menyelesaikan proses.</li>
-                          </ol>
-                        )}
+                        <ol className="text-xs font-body text-amber-200/70 leading-relaxed space-y-1.5 list-decimal list-inside">
+                          <li>Isi <strong className="text-white">Nama Lengkap, NIM, Fakultas, Email, dan No. WA</strong> pada kolom di bawah.</li>
+                          <li>Unduh berkas <strong className="text-white">Pakta Integritas Silatnas 2026 (PDF)</strong> pada tombol yang tersedia.</li>
+                          <li>Isi data & tanda tangani dokumen Pakta Integritas tersebut.</li>
+                          <li>Unggah berkas melalui <strong className="text-white">Opsi 1 (Upload File Langsung dari HP/Laptop)</strong> ATAU <strong className="text-white">Opsi 2 (Paste Link Google Drive)</strong>.</li>
+                          <li>Tuliskan <strong className="text-white">motivasi & komitmen</strong> Anda, lalu klik <strong className="text-white">Kirim Pendaftaran</strong>.</li>
+                        </ol>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -304,41 +334,72 @@ export default function Volunteer({ db, onUpdateDB }) {
                         </div>
                       </div>
 
-                      {/* Download Template Komitmen */}
-                      {selectedVol.templateUrl && (
-                        <div className="space-y-2 bg-primary/5 border border-primary/20 rounded-xl p-5">
-                          <label className="block text-xs font-bold uppercase tracking-widest text-primary">📄 Download Template Formulir Komitmen</label>
-                          <p className="text-xs font-body text-neutral-400 leading-relaxed mb-3">
-                            Silakan unduh template formulir komitmen di bawah ini, isi dengan lengkap, lalu upload kembali pada kolom di bawahnya.
-                          </p>
+                      {/* Download Template Pakta Integritas / Komitmen */}
+                      <div className="space-y-2 bg-neutral-900/80 border border-neutral-700/80 rounded-2xl p-5 shadow-lg">
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-primary">Unduh Berkas Pakta Integritas</label>
+                            <p className="text-xs font-body text-neutral-400 leading-relaxed mt-1">
+                              Unduh berkas resmi Pakta Integritas Silatnas 2026, isi data & tanda tangani sebelum mengunggah.
+                            </p>
+                          </div>
                           <a 
-                            href={selectedVol.templateUrl} 
+                            href={selectedVol.templateUrl || '/dokument_volunter/Pakta Integritas Silatnas 2026.pdf'} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-widest text-xs px-5 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)]"
+                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-widest text-xs px-5 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] shrink-0"
                           >
-                            <Download className="w-4 h-4" /> Download Template
+                            <Download className="w-4 h-4" /> Download Pakta Integritas (PDF)
                           </a>
                         </div>
-                      )}
+                      </div>
 
-                      {/* Link Upload Formulir Komitmen */}
-                      {selectedVol.templateUrl && (
-                        <div className="space-y-2">
-                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Link Google Drive Formulir Komitmen *</label>
-                          <p className="text-[11px] font-body text-neutral-500 leading-relaxed -mt-1">
-                            Upload formulir yang sudah diisi ke Google Drive Anda, lalu paste link-nya di bawah ini. Pastikan akses file diatur ke "Anyone with the link".
-                          </p>
-                          <input 
-                            type="url" 
-                            required
-                            className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body"
-                            value={formData.commitmentLink}
-                            onChange={(e) => setFormData({...formData, commitmentLink: e.target.value})}
-                            placeholder="https://drive.google.com/file/d/..."
-                          />
+                      {/* Unggah Berkas / Upload Section */}
+                      <div className="space-y-4 bg-black/40 border border-neutral-800 rounded-2xl p-5">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-white">
+                          Unggah Lembar Pakta Integritas / Berkas Komitmen *
+                        </label>
+                        <p className="text-xs font-body text-neutral-400 leading-relaxed -mt-2">
+                          Silakan pilih salah satu metode pengiriman berkas di bawah ini yang paling mudah menurut Anda:
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                          {/* Opsi 1: Upload File Langsung */}
+                          <div className="space-y-2 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-300">
+                              Opsi 1: Upload File Langsung (PDF/Gambar)
+                            </label>
+                            <input 
+                              type="file" 
+                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                              onChange={handleFileChange}
+                              className="block w-full text-xs text-neutral-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:bg-primary file:text-white hover:file:bg-primary/80 cursor-pointer"
+                            />
+                            {formData.commitmentFileName ? (
+                              <p className="text-[11px] font-bold text-emerald-400 mt-2 flex items-center gap-1.5">
+                                <CheckCircle className="w-3.5 h-3.5" /> File Terpilih: {formData.commitmentFileName}
+                              </p>
+                            ) : (
+                              <p className="text-[10px] text-neutral-500 font-body">Format: PDF, DOC, JPG, PNG (Maks 8MB)</p>
+                            )}
+                          </div>
+
+                          {/* Opsi 2: Link Google Drive */}
+                          <div className="space-y-2 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-300">
+                              Opsi 2: Atau Paste Link Google Drive
+                            </label>
+                            <input 
+                              type="url" 
+                              className="w-full bg-black border border-neutral-800 text-white px-4 py-2.5 rounded-xl focus:outline-none focus:border-primary text-xs font-body"
+                              value={formData.commitmentLink}
+                              onChange={(e) => setFormData({...formData, commitmentLink: e.target.value})}
+                              placeholder="https://drive.google.com/file/d/..."
+                            />
+                            <p className="text-[10px] text-neutral-500 font-body">Pastikan akses link diatur: "Anyone with the link"</p>
+                          </div>
                         </div>
-                      )}
+                      </div>
 
                       <div className="space-y-2">
                         <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Komitmen & Alasan Mengikuti *</label>
