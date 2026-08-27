@@ -163,7 +163,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 font-bold text-xs px-4 py-3 rounded-xl transition duration-300"
                         >
-                          <Download className="w-4 h-4" /> Unduh Pakta Integritas (PDF)
+                          <Download className="w-4 h-4" /> Unduh Pakta Integritas (Word / DOCX)
                         </a>
                       </div>
                     )}
@@ -268,8 +268,8 @@ export default function Volunteer({ db, onUpdateDB }) {
                         </h4>
                         <ol className="text-xs font-body text-amber-200/70 leading-relaxed space-y-1.5 list-decimal list-inside">
                           <li>Isi <strong className="text-white">Nama Lengkap, NIM, Fakultas, Email, dan No. WA</strong> pada kolom di bawah.</li>
-                          <li>Unduh berkas <strong className="text-white">Pakta Integritas Silatnas 2026 (PDF)</strong> pada tombol yang tersedia.</li>
-                          <li>Isi data & tanda tangani dokumen Pakta Integritas tersebut.</li>
+                          <li>Unduh berkas <strong className="text-white">Pakta Integritas Silatnas 2026 (Word / DOCX)</strong> pada tombol yang tersedia.</li>
+                          <li>Buka berkas di komputer/laptop Anda, lalu isi data & tanda tangani secara <strong className="text-white">DIKETIK (bukan ditulis tangan)</strong>.</li>
                           <li>Unggah berkas melalui <strong className="text-white">Opsi 1 (Upload File Langsung dari HP/Laptop)</strong> ATAU <strong className="text-white">Opsi 2 (Paste Link Google Drive)</strong>.</li>
                           <li>Tuliskan <strong className="text-white">motivasi & komitmen</strong> Anda, lalu klik <strong className="text-white">Kirim Pendaftaran</strong>.</li>
                         </ol>
@@ -338,18 +338,18 @@ export default function Volunteer({ db, onUpdateDB }) {
                       <div className="space-y-2 bg-neutral-900/80 border border-neutral-700/80 rounded-2xl p-5 shadow-lg">
                         <div className="flex items-center justify-between gap-3 flex-wrap">
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-primary">Unduh Berkas Pakta Integritas</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-primary">Unduh Berkas Pakta Integritas (Word / DOCX)</label>
                             <p className="text-xs font-body text-neutral-400 leading-relaxed mt-1">
-                              Unduh berkas resmi Pakta Integritas Silatnas 2026, isi data & tanda tangani sebelum mengunggah.
+                              Unduh berkas resmi format Word, isi data dengan cara <strong className="text-white">DIKETIK di komputer/laptop (bukan ditulis tangan)</strong>, lalu unggah kembali.
                             </p>
                           </div>
                           <a 
-                            href={selectedVol.templateUrl || '/dokument_volunter/Pakta Integritas Silatnas 2026.pdf'} 
+                            href={selectedVol.templateUrl || '/dokument_volunter/Pakta Integritas Silatnas 2026.docx'} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-widest text-xs px-5 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] shrink-0"
                           >
-                            <Download className="w-4 h-4" /> Download Pakta Integritas (PDF)
+                            <Download className="w-4 h-4" /> Download Pakta Integritas (Word)
                           </a>
                         </div>
                       </div>
@@ -367,11 +367,11 @@ export default function Volunteer({ db, onUpdateDB }) {
                           {/* Opsi 1: Upload File Langsung */}
                           <div className="space-y-2 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-300">
-                              Opsi 1: Upload File Langsung (PDF/Gambar)
+                              Opsi 1: Upload File Langsung (DOCX/PDF/Gambar)
                             </label>
                             <input 
                               type="file" 
-                              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                              accept=".docx,.doc,.pdf,.jpg,.jpeg,.png"
                               onChange={handleFileChange}
                               className="block w-full text-xs text-neutral-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:bg-primary file:text-white hover:file:bg-primary/80 cursor-pointer"
                             />
@@ -380,7 +380,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                                 <CheckCircle className="w-3.5 h-3.5" /> File Terpilih: {formData.commitmentFileName}
                               </p>
                             ) : (
-                              <p className="text-[10px] text-neutral-500 font-body">Format: PDF, DOC, JPG, PNG (Maks 8MB)</p>
+                              <p className="text-[10px] text-neutral-500 font-body">Format: DOCX, DOC, PDF, JPG, PNG (Maks 8MB)</p>
                             )}
                           </div>
 

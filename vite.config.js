@@ -2,11 +2,29 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// Vite plugin to mock Vercel serverless function /api/upload during local development
+import newsHandler from './api/news.js'
+
+// Vite plugin to mock Vercel serverless function /api/upload and /api/news during local development
 const localApiProxy = () => ({
   name: 'local-api-proxy',
   configureServer(server) {
     server.middlewares.use(async (req, res, next) => {
+      if (req.url === '/api/news' && req.method === 'GET') {
+        res.status = (code) => { res.statusCode = code; return res; };
+        res.json = (data) => {
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify(data));
+          return res;
+        };
+        try {
+          await newsHandler(req, res);
+        } catch (e) {
+          res.statusCode = 500;
+          res.end(JSON.stringify({ status: 'error', message: e.message }));
+        }
+        return;
+      }
+
       if (req.url === '/api/upload' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk.toString());

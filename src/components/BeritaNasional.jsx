@@ -18,6 +18,7 @@ const itemVariants = {
 };
 
 const SOURCES = [
+  { id: 'lensamu', name: 'LensaMu', color: '#007A3D' },
   { id: 'suara_muhammadiyah', name: 'Suara Muhammadiyah', color: '#b90014' },
   { id: 'ums', name: 'UMS News', color: '#002660' },
   { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000' },

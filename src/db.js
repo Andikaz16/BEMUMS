@@ -125,10 +125,10 @@ const DEFAULT_DATA = {
       id: 1, 
       title: "Volunteer Kepanitiaan Silatnas BEM UMS 2026", 
       isOpen: true, 
-      requirements: "Terbuka untuk seluruh mahasiswa aktif UMS. Wajib mengunduh, mengisi, dan menandatangani Pakta Integritas Silatnas 2026.", 
+      requirements: "Terbuka untuk seluruh mahasiswa aktif UMS. Wajib mengunduh, mengetik di komputer/laptop, dan menandatangani Pakta Integritas Silatnas 2026 (Word / DOCX).", 
       jobdesc: "Berpartisipasi aktif sebagai Liaison Officer (LO), Panitia Konsolidasi, Acara, & Logistik dalam menyukseskan agenda Silaturahmi Nasional BEM se-Indonesia 2026 di Kampus UMS Surakarta.", 
       schedule: "Agustus - September 2026", 
-      templateUrl: "/dokument_volunter/Pakta Integritas Silatnas 2026.pdf",
+      templateUrl: "/dokument_volunter/Pakta Integritas Silatnas 2026.docx",
       applicants: [] 
     },
     { 

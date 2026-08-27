@@ -33,6 +33,7 @@ export default async function handler(req, res) {
           return [];
         }
       }),
+      fetchLensaMu(),
       fetchSuaraMuhammadiyah()
     ];
 
@@ -53,6 +54,48 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     return res.status(500).json({ status: 'error', message: err.message });
+  }
+}
+
+async function fetchLensaMu() {
+  const source = { id: 'lensamu', name: 'LensaMu', color: '#007A3D' };
+  try {
+    const response = await fetch('https://muhammadiyah.or.id/wp-json/wp/v2/posts?_embed&per_page=15', {
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
+      }
+    });
+    if (!response.ok) return [];
+    const posts = await response.json();
+
+    return posts.map((post, idx) => {
+      let thumbnail = null;
+      const embedded = post._embedded || {};
+      const media = embedded['wp:featuredmedia'] || [];
+      if (media.length > 0) {
+        const mediaObj = media[0];
+        const sizes = mediaObj.media_details?.sizes || {};
+        thumbnail = sizes.medium_large?.source_url || sizes.medium?.source_url || sizes.full?.source_url || mediaObj.source_url;
+      }
+
+      const rawExcerpt = post.excerpt?.rendered || post.content?.rendered || '';
+      const description = cleanText(rawExcerpt).substring(0, 200);
+
+      return {
+        id: `${source.id}-${idx}`,
+        source: source.id,
+        sourceName: source.name,
+        sourceColor: source.color,
+        title: cleanText(post.title?.rendered || ''),
+        description,
+        link: post.link,
+        thumbnail,
+        pubDate: post.date ? new Date(post.date).toISOString() : new Date().toISOString()
+      };
+    });
+  } catch (err) {
+    console.error('Failed to fetch LensaMu:', err.message);
+    return [];
   }
 }
 
