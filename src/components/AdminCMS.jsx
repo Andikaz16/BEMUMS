@@ -1898,7 +1898,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <span className="text-xs text-neutral-400">{v.schedule}</span>
                       </div>
                       <h4 className="font-display text-lg uppercase">{v.title}</h4>
-                      {v.location && <p className="text-xs text-neutral-500 mt-0.5">📍 {v.location}</p>}
+                      {v.location && <p className="text-xs text-neutral-500 mt-0.5">Lokasi: {v.location}</p>}
                       {v.extraFields && v.extraFields.length > 0 && (
                         <p className="text-[10px] text-primary mt-1">+ {v.extraFields.length} kolom tambahan: {v.extraFields.map(f => f.label).join(', ')}</p>
                       )}
@@ -2289,8 +2289,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <h4 className="text-sm font-bold text-white mt-1">{item.title}</h4>
                         <p className="text-xs text-neutral-400 mt-0.5 font-body leading-relaxed">{item.desc || item.description}</p>
                         <div className="flex gap-4 mt-1 text-[10px] text-neutral-500 font-mono">
-                          <span>📍 {item.highlight || 'Field Trip'}</span>
-                          <span>🏛️ {item.location || 'Surakarta'}</span>
+                          <span>Highlight: {item.highlight || 'Field Trip'}</span>
+                          <span>Lokasi: {item.location || 'Surakarta'}</span>
                         </div>
                       </div>
                       <div className="flex gap-1 ml-4 shrink-0">
@@ -2418,7 +2418,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                           <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/30">{item.delegates || 2} Delegasi</span>
                         </div>
                         <h4 className="text-sm font-bold text-white mt-1">{item.name}</h4>
-                        <p className="text-xs text-neutral-400 mt-0.5 font-body">📍 {item.city || item.region}</p>
+                        <p className="text-xs text-neutral-400 mt-0.5 font-body">Kota/Wilayah: {item.city || item.region}</p>
                       </div>
                       <div className="flex gap-1 ml-4 shrink-0">
                         <button onClick={() => handleEditSilatnasCampus(idx)} className="p-2 hover:text-[#38BDF8] text-neutral-400">

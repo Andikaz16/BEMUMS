@@ -5,7 +5,7 @@ import {
   Download, Phone, HelpCircle, FileText, ChevronDown, 
   Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
   Compass, Utensils, Landmark, Camera, Heart,
-  Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map
+  Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star
 } from 'lucide-react';
 import { addSilatnasApplicant } from '../db';
 
@@ -94,14 +94,14 @@ export default function Silatnas({ db }) {
 
   const handleShuttleSubmit = (e) => {
     e.preventDefault();
-    const text = `Halo LO Silatnas BEM UMS 2026! 👋\n\nKami mengonfirmasi kedatangan delegasi kontingen:\n- *Kampus/BEM:* ${shuttleForm.campus}\n- *Jumlah Delegasi:* ${shuttleForm.count} Orang\n- *Titik Penjemputan:* ${shuttleForm.point}\n- *Tanggal & Waktu Tiba:* ${shuttleForm.date} jam ${shuttleForm.time} WIB\n- *Koordinator Kontingen:* ${shuttleForm.leaderName} (${shuttleForm.phone})\n\nMohon pendampingan penjemputan shuttle LO. Terima kasih!`;
+    const text = `Halo LO Silatnas BEM UMS 2026!\n\nKami mengonfirmasi kedatangan delegasi kontingen:\n- *Kampus/BEM:* ${shuttleForm.campus}\n- *Jumlah Delegasi:* ${shuttleForm.count} Orang\n- *Titik Penjemputan:* ${shuttleForm.point}\n- *Tanggal & Waktu Tiba:* ${shuttleForm.date} jam ${shuttleForm.time} WIB\n- *Koordinator Kontingen:* ${shuttleForm.leaderName} (${shuttleForm.phone})\n\nMohon pendampingan penjemputan shuttle LO. Terima kasih!`;
     const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(text)}`;
     window.open(waUrl, '_blank');
   };
 
 
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
-  const frames = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const frames = [1, 2, 5, 6, 7, 8, 9];
 
   // Preload and animate mascot frames smoothly
   useEffect(() => {
@@ -367,7 +367,7 @@ export default function Silatnas({ db }) {
             y: [-5, 5, -5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full h-full object-contain opacity-10 lg:opacity-15 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-[0.45] transform-gpu will-change-transform" 
         />
       </div>
       {/* 2. Left Wayang (Front Layer - Facing Inward/Right) */}
@@ -383,7 +383,7 @@ export default function Silatnas({ db }) {
             y: [5, -5, 5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="w-full h-full object-contain opacity-15 lg:opacity-25 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-[0.45] transform-gpu will-change-transform" 
         />
       </div>
       
@@ -401,7 +401,7 @@ export default function Silatnas({ db }) {
             y: [-5, 5, -5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full h-full object-contain opacity-10 lg:opacity-15 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-[0.45] transform-gpu will-change-transform" 
         />
       </div>
       
@@ -418,7 +418,7 @@ export default function Silatnas({ db }) {
             y: [5, -5, 5]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="w-full h-full object-contain opacity-15 lg:opacity-25 transform-gpu will-change-transform" 
+          className="w-full h-full object-contain opacity-[0.45] transform-gpu will-change-transform" 
         />
       </div>
       
@@ -755,37 +755,8 @@ export default function Silatnas({ db }) {
             </div>
           </div>
 
-          {/* Region Tabs */}
-          <div className="max-w-5xl mx-auto flex flex-wrap gap-1.5 justify-center items-center">
-            <button
-              onClick={() => { setSelectedZone('Semua'); setHoveredZone(null); }}
-              className={`text-[10px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl border transition duration-200 ${
-                selectedZone === 'Semua'
-                  ? 'bg-[#0EA5E9] text-white border-[#38BDF8] shadow-[0_0_12px_rgba(14,165,233,0.4)]'
-                  : 'bg-black/40 text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
-              }`}
-            >
-              Semua Zona
-            </button>
-            {silatnasZones.map((z) => (
-              <button
-                key={z.id}
-                onClick={() => { setSelectedZone(z.id); setHoveredZone(z); }}
-                className={`text-[10px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl border transition duration-200 ${
-                  selectedZone === z.id
-                    ? z.isHost
-                      ? 'bg-amber-400 text-black border-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.5)] font-black'
-                      : 'bg-[#0EA5E9] text-white border-[#38BDF8] shadow-[0_0_12px_rgba(14,165,233,0.4)]'
-                    : 'bg-black/40 text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
-                }`}
-              >
-                {z.isHost ? `⭐ ${z.name}` : z.name}
-              </button>
-            ))}
-          </div>
-
           {/* ================= INTERACTIVE INDONESIA MAP CANVAS (7 ZONES) ================= */}
-          <div className="max-w-5xl mx-auto bg-black/50 backdrop-blur-2xl border border-white/15 rounded-3xl p-4 md:p-8 shadow-2xl relative overflow-hidden">
+          <div className="max-w-5xl mx-auto bg-black/50 backdrop-blur-2xl border border-white/15 rounded-3xl p-4 md:p-8 shadow-2xl relative overflow-x-auto scrollbar-thin">
             {/* Background Grid Pattern & Compass Decor */}
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#38BDF8_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
             <div className="absolute top-4 right-4 text-white/20 font-mono text-[9px] uppercase tracking-widest hidden md:block">
@@ -793,7 +764,7 @@ export default function Silatnas({ db }) {
             </div>
 
             {/* Map Canvas with exact 748/301 Aspect Ratio Container */}
-            <div className="relative w-full max-w-4xl mx-auto aspect-[748/301] flex items-center justify-center select-none">
+            <div className="relative w-full min-w-[760px] md:min-w-0 max-w-4xl mx-auto aspect-[748/301] flex items-center justify-center select-none shrink-0">
               
               {/* Authentic Island Image from /assets/artefak/pulau.png */}
               <img 
@@ -854,7 +825,14 @@ export default function Silatnas({ db }) {
                             ? 'bg-[#38BDF8] text-black border-white scale-110 z-30 shadow-[0_0_15px_rgba(56,189,248,0.6)]'
                             : 'bg-black/90 text-[#BAE6FD] border-white/20 backdrop-blur-sm group-hover:border-[#38BDF8] group-hover:text-white'
                       }`}>
-                        {isHost ? `⭐ ${z.zoneNumber}: ${z.name} (HOST)` : `${z.zoneNumber}: ${z.name}`}
+                        {isHost ? (
+                          <span className="flex items-center gap-1">
+                            <Star className="w-2.5 h-2.5 fill-black text-black shrink-0" />
+                            {z.zoneNumber}: {z.name} (HOST)
+                          </span>
+                        ) : (
+                          `${z.zoneNumber}: ${z.name}`
+                        )}
                       </div>
                     </div>
                   </div>
@@ -888,39 +866,13 @@ export default function Silatnas({ db }) {
                     </div>
                   </div>
                   <button 
-                    onClick={() => setHoveredZone(null)}
+                    onClick={() => { setHoveredZone(null); setSelectedZone('Semua'); }}
                     className="text-neutral-400 hover:text-white p-1"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               )}
-            </div>
-
-            {/* Quick 7 Zones Pills Footer Bar */}
-            <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono uppercase text-neutral-400 shrink-0">
-                  Daftar 7 Zona:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {silatnasZones.map((z) => (
-                    <button
-                      key={z.id}
-                      onClick={() => { setSelectedZone(z.id); setHoveredZone(z); }}
-                      className={`text-[9px] font-heading font-bold px-2.5 py-1 rounded-lg border transition ${
-                        (hoveredZone && hoveredZone.id === z.id) || selectedZone === z.id
-                          ? z.isHost
-                            ? 'bg-amber-400 text-black border-amber-200 shadow-sm font-black'
-                            : 'bg-[#38BDF8] text-black border-white shadow-sm'
-                          : 'bg-white/5 text-neutral-300 border-white/10 hover:border-[#38BDF8]/40 hover:text-white'
-                      }`}
-                    >
-                      {z.isHost ? `⭐ ${z.zoneNumber} (${z.name})` : `${z.zoneNumber} (${z.name})`}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1418,7 +1370,7 @@ export default function Silatnas({ db }) {
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-3 max-w-2xl">
                     <span className="bg-amber-500/20 text-amber-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-amber-500/40 inline-flex items-center gap-1.5">
-                      ⭐ PENGINAPAN RESMI KONTINGEN SILATNAS 2026
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> PENGINAPAN RESMI KONTINGEN SILATNAS 2026
                     </span>
                     <h3 className="text-2xl md:text-3xl font-heading font-black text-white uppercase tracking-tight">
                       Wisma Pesantren Mahasiswa — Kampus 4 UMS
@@ -1457,8 +1409,8 @@ export default function Silatnas({ db }) {
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
                     Terletak di Kompleks Kampus 4 UMS (Jl. KH. Ahmad Dahlan, Gonilan / Kartasura). Berdampingan dengan Fakultas Kedokteran, RSGM, dan Pesantren Mahasiswa KH. Mas Mansur UMS.
                   </p>
-                  <div className="pt-2 text-[11px] font-mono text-amber-400 font-bold">
-                    📍 ~3-5 Menit ke Edutorium UMS
+                  <div className="pt-2 text-[11px] font-mono text-amber-400 font-bold flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> ~3-5 Menit ke Edutorium UMS
                   </div>
                 </div>
 
@@ -1470,8 +1422,8 @@ export default function Silatnas({ db }) {
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
                     Kamar tidur representatif, ranjang & kasur bersih, pendingin ruangan (AC), kamar mandi bersih, akses Wi-Fi kencang UMS, musala/masjid, serta area parkir luas untuk armada kontingen.
                   </p>
-                  <div className="pt-2 text-[11px] font-mono text-[#38BDF8] font-bold">
-                    ✨ Nyaman & Siap Huni Delegasi
+                  <div className="pt-2 text-[11px] font-mono text-[#38BDF8] font-bold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" /> Nyaman & Siap Huni Delegasi
                   </div>
                 </div>
 
@@ -1483,8 +1435,8 @@ export default function Silatnas({ db }) {
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
                     Layanan armada shuttle bus khusus antar-jemput dari Wisma Pesantren Mahasiswa Kampus 4 ke Edutorium UMS selama rangkaian acara berlangsung, didukung posko keamanan & LO 24 jam penuh.
                   </p>
-                  <div className="pt-2 text-[11px] font-mono text-emerald-400 font-bold">
-                    🛡️ Standby Pendampingan LO
+                  <div className="pt-2 text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Standby Pendampingan LO
                   </div>
                 </div>
               </div>
@@ -1506,17 +1458,23 @@ export default function Silatnas({ db }) {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div className="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl space-y-2">
-                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest block">🏥 Posko Utama Venue</span>
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <Heart className="w-3.5 h-3.5 fill-red-500/20 text-red-400" /> Posko Utama Venue
+                  </span>
                   <h4 className="text-sm font-heading font-bold text-white uppercase">Posko Medis Edutorium UMS</h4>
                   <p className="text-xs text-neutral-400 font-body">Dokter, Perawat & Obat-obatan gratis di lantai 1 venue utama.</p>
                 </div>
                 <div className="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl space-y-2">
-                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest block">🚑 Rumah Sakit Rujukan</span>
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <Car className="w-3.5 h-3.5 text-red-400" /> Rumah Sakit Rujukan
+                  </span>
                   <h4 className="text-sm font-heading font-bold text-white uppercase">RS PKU Muhammadiyah & RS UMS</h4>
                   <p className="text-xs text-neutral-400 font-body">Penanganan emergensi tingkat lanjut & unit gawat darurat (IGD 24 Jam).</p>
                 </div>
                 <div className="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl space-y-2">
-                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest block">👮 Keamanan Kampus</span>
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-red-400" /> Keamanan Kampus
+                  </span>
                   <h4 className="text-sm font-heading font-bold text-white uppercase">Security Patrol UMS</h4>
                   <p className="text-xs text-neutral-400 font-body">Pengawalan rute & keamanan barang bawaan kontingen di lokasi venue.</p>
                 </div>
@@ -1635,7 +1593,7 @@ export default function Silatnas({ db }) {
               animate={{ rotate: [-14, -10, -14], y: [0, -2, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               style={{ x: "-50%", rotate: -12 }}
-              className="absolute bottom-[-48px] sm:bottom-[-78px] md:bottom-[-110px] left-[18%] sm:left-[22%] md:left-[25%] w-[160px] sm:w-[240px] md:w-[320px] h-auto object-contain opacity-25 origin-bottom transform-gpu z-[5]"
+              className="absolute bottom-[-48px] sm:bottom-[-78px] md:bottom-[-110px] left-[18%] sm:left-[22%] md:left-[25%] w-[160px] sm:w-[240px] md:w-[320px] h-auto object-contain opacity-[0.45] origin-bottom transform-gpu z-[5]"
             />
 
             {/* Right Gunungan (Tilted Right) */}
@@ -1645,7 +1603,7 @@ export default function Silatnas({ db }) {
               animate={{ rotate: [10, 14, 10], y: [0, -2, 0] }}
               transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
               style={{ x: "50%", rotate: 12 }}
-              className="absolute bottom-[-48px] sm:bottom-[-78px] md:bottom-[-110px] right-[18%] sm:right-[22%] md:right-[25%] w-[160px] sm:w-[240px] md:w-[320px] h-auto object-contain opacity-25 origin-bottom transform-gpu z-[5]"
+              className="absolute bottom-[-48px] sm:bottom-[-78px] md:bottom-[-110px] right-[18%] sm:right-[22%] md:right-[25%] w-[160px] sm:w-[240px] md:w-[320px] h-auto object-contain opacity-[0.45] origin-bottom transform-gpu z-[5]"
             />
 
             {/* Center Gunungan (Big, Straight) */}
@@ -1655,7 +1613,7 @@ export default function Silatnas({ db }) {
               animate={{ rotate: [-2, 2, -2], y: [0, -3, 0] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               style={{ x: "-50%", rotate: 0 }}
-              className="absolute bottom-[-42px] sm:bottom-[-72px] md:bottom-[-95px] left-1/2 w-[240px] sm:w-[340px] md:w-[460px] h-auto object-contain opacity-[0.5] origin-bottom transform-gpu z-[5]"
+              className="absolute bottom-[-42px] sm:bottom-[-72px] md:bottom-[-95px] left-1/2 w-[240px] sm:w-[340px] md:w-[460px] h-auto object-contain opacity-[0.45] origin-bottom transform-gpu z-[5]"
             />
 
             {/* Balai Kota Building in Front */}

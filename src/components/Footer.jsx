@@ -91,9 +91,21 @@ export default function Footer({ setActivePage }) {
         </motion.div>
         
         {/* Bottom Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left pt-8 border-t border-white/10 text-neutral-500">
-          <div className="font-body text-[10px] sm:text-xs uppercase tracking-widest">
-            © 2026 BEM UNIVERSITAS MUHAMMADIYAH SURAKARTA. ALL RIGHTS RESERVED.
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left pt-8 border-t border-white/10 text-neutral-500 font-body text-[10px] sm:text-xs uppercase tracking-widest">
+          <div className="flex flex-col items-center md:items-start gap-1.5">
+            <div>© 2026 BEM UNIVERSITAS MUHAMMADIYAH SURAKARTA. ALL RIGHTS RESERVED.</div>
+            <div>
+              DEVELOPED BY{' '}
+              <a 
+                href="https://wa.me/6285747273409?text=Halo%20Andika,%20saya%20menghubungi%20melalui%20Website%20BEM%20UMS" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-neutral-500 hover:text-neutral-300 transition-colors"
+                title="Hubungi Andika / L200240229 via WhatsApp (085747273409)"
+              >
+                ANDIKA / L200240229
+              </a>
+            </div>
           </div>
           <div className="font-display text-xs uppercase text-primary tracking-wider flex items-center gap-4">
             <span className="cursor-pointer hover:text-white transition-colors" onClick={() => setActivePage('admin')}>JAJARAN KABINET 2026</span>
