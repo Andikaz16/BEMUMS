@@ -24,11 +24,16 @@ function createGuitarDistortion(amount = 75) {
 function playSplashAudio() {
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
+    if (!AudioContextClass) return false;
 
     const ctx = new AudioContextClass();
     if (ctx.state === 'suspended') {
       ctx.resume();
+    }
+
+    if (ctx.state === 'suspended') {
+      ctx.close();
+      return false;
     }
 
     const now = ctx.currentTime;
@@ -190,8 +195,10 @@ function playSplashAudio() {
     lfo.stop(now + 2.4);
     squealOsc.stop(now + 2.4);
 
+    return true;
   } catch (err) {
     console.debug('Audio error:', err);
+    return false;
   }
 }
 
@@ -202,14 +209,18 @@ export default function SplashScreen({ onComplete }) {
   useEffect(() => {
     // Initial audio trigger
     if (!audioPlayedRef.current) {
-      playSplashAudio();
-      audioPlayedRef.current = true;
+      const played = playSplashAudio();
+      if (played) {
+        audioPlayedRef.current = true;
+      }
     }
 
     const handleFirstInteraction = () => {
       if (!audioPlayedRef.current) {
-        playSplashAudio();
-        audioPlayedRef.current = true;
+        const played = playSplashAudio();
+        if (played) {
+          audioPlayedRef.current = true;
+        }
       }
     };
 
@@ -242,8 +253,10 @@ export default function SplashScreen({ onComplete }) {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           onClick={() => {
             if (!audioPlayedRef.current) {
-              playSplashAudio();
-              audioPlayedRef.current = true;
+              const played = playSplashAudio();
+              if (played) {
+                audioPlayedRef.current = true;
+              }
             }
           }}
           className="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center pointer-events-auto select-none overflow-hidden cursor-pointer"
