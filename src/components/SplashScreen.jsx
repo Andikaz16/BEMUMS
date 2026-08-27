@@ -21,7 +21,7 @@ function createGuitarDistortion(amount = 75) {
  * Layer 2: Distorted double-tracked guitar power chord (E chord) (0.22s - 2.5s)
  * Layer 3: High-frequency guitar feedback squeal with vibrato (0.6s - 2.3s)
  */
-function playSplashAudio() {
+function playSplashAudio(isUserGesture = false) {
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return false;
@@ -31,7 +31,7 @@ function playSplashAudio() {
       ctx.resume();
     }
 
-    if (ctx.state === 'suspended') {
+    if (ctx.state === 'suspended' && !isUserGesture) {
       ctx.close();
       return false;
     }
@@ -209,7 +209,7 @@ export default function SplashScreen({ onComplete }) {
   useEffect(() => {
     // Initial audio trigger
     if (!audioPlayedRef.current) {
-      const played = playSplashAudio();
+      const played = playSplashAudio(false);
       if (played) {
         audioPlayedRef.current = true;
       }
@@ -217,7 +217,7 @@ export default function SplashScreen({ onComplete }) {
 
     const handleFirstInteraction = () => {
       if (!audioPlayedRef.current) {
-        const played = playSplashAudio();
+        const played = playSplashAudio(true);
         if (played) {
           audioPlayedRef.current = true;
         }
@@ -253,7 +253,7 @@ export default function SplashScreen({ onComplete }) {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           onClick={() => {
             if (!audioPlayedRef.current) {
-              const played = playSplashAudio();
+              const played = playSplashAudio(true);
               if (played) {
                 audioPlayedRef.current = true;
               }
