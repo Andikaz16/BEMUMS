@@ -35,6 +35,8 @@ export default function Silatnas({ db }) {
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
+
+
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const frames = [1, 2, 5, 6, 7, 8, 9];
 
@@ -114,7 +116,7 @@ export default function Silatnas({ db }) {
   };
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#082F49] via-[#0369A1] to-[#0EA5E9]">
+    <div className="min-h-screen pt-28 pb-0 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden bg-gradient-to-br from-[#082F49] via-[#0369A1] to-[#0EA5E9]">
       {/* ================= BACKGROUND BANNERS (PEEKING PARALLAX) ================= */}
       {/* LEFT SIDE BANNERS */}
       {/* 1. Left Gunungan (Back Layer) */}
@@ -730,6 +732,69 @@ export default function Silatnas({ db }) {
             </a>
           </div>
         </div>
+
+        {/* 9. BALAI KOTA SURAKARTA SKYLINE */}
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative w-full h-[150px] sm:h-[220px] md:h-[300px] mt-32 md:mt-40 pointer-events-none"
+        >
+          {/* Edutorium UMS (Far Left, deepest layer, viewport-bound) */}
+          <img 
+            src="/assets/artefak/edutorium.png" 
+            alt="Edutorium UMS" 
+            className="hidden md:block absolute left-[-28%] lg:left-[-22%] xl:left-[-16%] bottom-[-25px] md:bottom-[-42px] w-[320px] md:w-[460px] lg:w-[580px] xl:w-[660px] h-auto object-contain z-0 opacity-80"
+          />
+
+          {/* Siti Walidah UMS (Far Right, deepest layer, viewport-bound) */}
+          <img 
+            src="/assets/artefak/sitiwalidah.png" 
+            alt="Siti Walidah UMS" 
+            className="hidden md:block absolute right-[-28%] lg:right-[-22%] xl:right-[-16%] bottom-[-25px] md:bottom-[-42px] w-[320px] md:w-[460px] lg:w-[580px] xl:w-[660px] h-auto object-contain z-0 opacity-80"
+          />
+
+          {/* Centered Composition Wrapper (Balai Kota & Gunungan Jawa) */}
+          <div className="absolute inset-x-0 bottom-0 h-full max-w-5xl mx-auto flex items-end justify-center z-10">
+            {/* Left Gunungan (Tilted Left) */}
+            <motion.img 
+              src="/assets/artefak/gunungan_jawa.png" 
+              alt="" 
+              animate={{ rotate: [-14, -10, -14], y: [0, -2, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              style={{ x: "-50%", rotate: -12 }}
+              className="absolute bottom-[-48px] sm:bottom-[-78px] md:bottom-[-110px] left-[18%] sm:left-[22%] md:left-[25%] w-[160px] sm:w-[240px] md:w-[320px] h-auto object-contain opacity-25 origin-bottom transform-gpu z-[5]"
+            />
+
+            {/* Right Gunungan (Tilted Right) */}
+            <motion.img 
+              src="/assets/artefak/gunungan_jawa.png" 
+              alt="" 
+              animate={{ rotate: [10, 14, 10], y: [0, -2, 0] }}
+              transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              style={{ x: "50%", rotate: 12 }}
+              className="absolute bottom-[-48px] sm:bottom-[-78px] md:bottom-[-110px] right-[18%] sm:right-[22%] md:right-[25%] w-[160px] sm:w-[240px] md:w-[320px] h-auto object-contain opacity-25 origin-bottom transform-gpu z-[5]"
+            />
+
+            {/* Center Gunungan (Big, Straight) */}
+            <motion.img 
+              src="/assets/artefak/gunungan_jawa.png" 
+              alt="" 
+              animate={{ rotate: [-2, 2, -2], y: [0, -3, 0] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              style={{ x: "-50%", rotate: 0 }}
+              className="absolute bottom-[-42px] sm:bottom-[-72px] md:bottom-[-95px] left-1/2 w-[240px] sm:w-[340px] md:w-[460px] h-auto object-contain opacity-[0.5] origin-bottom transform-gpu z-[5]"
+            />
+
+            {/* Balai Kota Building in Front */}
+            <img 
+              src="/assets/artefak/balaikota solo.png" 
+              alt="Balai Kota Surakarta" 
+              className="absolute bottom-[-30px] sm:bottom-[-50px] md:bottom-[-80px] left-1/2 -translate-x-1/2 w-full max-w-4xl h-auto object-contain z-10 opacity-95"
+            />
+          </div>
+        </motion.div>
 
       </div>
 

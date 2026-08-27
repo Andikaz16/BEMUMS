@@ -189,20 +189,32 @@ const DEFAULT_DATA = {
   ]
 };
 
-import { doc, setDoc, onSnapshot, writeBatch, increment, collection, getDocs } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, writeBatch, increment, collection, getDocs, runTransaction } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
 export const initDB = (setDb, setIsFirebaseLoaded) => {
+  // STEP 1: Instant render from localStorage cache (fast startup)
   const localData = localStorage.getItem("bem_ums_db");
+  let cachedData = null;
   if (localData) {
-    try { setDb(JSON.parse(localData)); } catch(e) { setDb(DEFAULT_DATA); }
+    try { 
+      cachedData = JSON.parse(localData); 
+      setDb(cachedData); 
+    } catch(e) { 
+      console.warn("localStorage cache corrupt, using defaults for initial render.");
+      setDb(DEFAULT_DATA); 
+    }
   } else {
     setDb(DEFAULT_DATA);
   }
 
+  // STEP 2: Listen to Firestore for real-time sync
   const unsubscribe = onSnapshot(collection(firestore, "cms"), (snapshot) => {
     let combinedData = { ...DEFAULT_DATA };
     let hasCore = false;
+    let hasArticles = false;
+    let hasAlbums = false;
+    let hasKegiatan = false;
     let oldLegacyData = null;
 
     snapshot.forEach((docSnap) => {
@@ -212,10 +224,13 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         hasCore = true;
         combinedData = { ...combinedData, ...docSnap.data() };
       } else if (docSnap.id === 'articles') {
+        hasArticles = true;
         combinedData.articles = docSnap.data().data || [];
       } else if (docSnap.id === 'albums') {
+        hasAlbums = true;
         combinedData.albums = docSnap.data().data || [];
       } else if (docSnap.id === 'kegiatan') {
+        hasKegiatan = true;
         const kData = docSnap.data();
         combinedData.kegiatan = kData.kegiatan || [];
         combinedData.volunteerCatalog = kData.volunteerCatalog || [];
@@ -224,6 +239,7 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
     });
 
     if (hasCore) {
+      // ✅ NORMAL PATH: Firestore has data, use it
       if (combinedData.kegiatan) {
         const eventsToAdd = [
           { id: 'kuliah-1-2026', title: "Masa Kuliah Hari Pertama", desc: "Awal perkuliahan Semester Ganjil TA 2026/2027.", date: "2026-09-07" },
@@ -238,12 +254,50 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
       localStorage.setItem("bem_ums_db", JSON.stringify(combinedData));
       setDb(combinedData);
       if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
+    } else if (oldLegacyData && oldLegacyData.lastUpdated) {
+      // 🔄 MIGRATION PATH: Old legacy 'data' doc exists, migrate it to new split format
+      console.warn("Migrating legacy Firestore data to split format...");
+      saveDB(oldLegacyData).then(() => {
+        console.log("Legacy data migrated successfully.");
+      }).catch(err => {
+        console.error("Failed to migrate legacy data:", err);
+      });
+      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
+    } else if (cachedData && cachedData.lastUpdated) {
+      // 🛡️ PROTECTION PATH: Firestore is empty but we have real data in localStorage
+      // This means Firestore was accidentally wiped. Restore from localStorage backup.
+      console.warn("Firestore appears empty but localStorage has saved data. Restoring from local backup...");
+      saveDB(cachedData).then(() => {
+        console.log("Data restored to Firestore from localStorage backup.");
+      }).catch(err => {
+        console.error("Failed to restore data to Firestore:", err);
+      });
+      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     } else {
-      saveDB(oldLegacyData || DEFAULT_DATA);
+      // 🆕 LAST RESORT: Check localStorage backup, then initialize with defaults.
+      const backupData = localStorage.getItem("bem_ums_db_backup");
+      let dataToSeed = DEFAULT_DATA;
+      if (backupData) {
+        try {
+          const parsed = JSON.parse(backupData);
+          if (parsed.lastUpdated) {
+            console.warn("Recovering data from localStorage backup...");
+            dataToSeed = parsed;
+          }
+        } catch(e) { /* ignore corrupt backup */ }
+      }
+      
+      if (dataToSeed === DEFAULT_DATA) {
+        console.log("First-time initialization: seeding Firestore with default data.");
+      }
+      saveDB(dataToSeed).catch(err => {
+        console.error("Failed to seed/restore data:", err);
+      });
       if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     }
   }, (error) => {
     console.error("Firebase sync error: ", error);
+    // On error, keep using whatever data we already have (localStorage or defaults)
     if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
   });
 
@@ -252,6 +306,19 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
 
 export const saveDB = async (data) => {
   data.lastUpdated = Date.now();
+  
+  // 🛡️ AUTO-BACKUP: Save a copy of the previous data before overwriting
+  const previousData = localStorage.getItem("bem_ums_db");
+  if (previousData) {
+    try {
+      const parsed = JSON.parse(previousData);
+      // Only backup if it has real data (has lastUpdated = was saved by admin before)
+      if (parsed.lastUpdated) {
+        localStorage.setItem("bem_ums_db_backup", previousData);
+      }
+    } catch(e) { /* ignore corrupt data */ }
+  }
+  
   localStorage.setItem("bem_ums_db", JSON.stringify(data));
   
   const jsonString = JSON.stringify(data);
