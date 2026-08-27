@@ -169,6 +169,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [newSilatnasCulture, setNewSilatnasCulture] = useState({ category: '', title: '', desc: '', highlight: '', location: '', image: '' });
   const [editingSilatnasCultureIndex, setEditingSilatnasCultureIndex] = useState(null);
 
+  const [silatnasCampusesList, setSilatnasCampusesList] = useState(db.silatnasCampuses || []);
+  const [newSilatnasCampus, setNewSilatnasCampus] = useState({ name: '', shortName: '', region: 'Jawa & DIY', city: '', status: 'Terkonfirmasi', delegates: 2, confirmed: true });
+  const [editingSilatnasCampusIndex, setEditingSilatnasCampusIndex] = useState(null);
+
   // Sync forms when database receives an update from Firebase
   useEffect(() => {
     if (db.contact) setContactForm(db.contact);
@@ -197,6 +201,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (db.silatnasTimeline) setSilatnasTimelineList(db.silatnasTimeline);
     if (db.silatnasDocs) setSilatnasDocsList(db.silatnasDocs);
     if (db.silatnasCulture) setSilatnasCultureList(db.silatnasCulture);
+    if (db.silatnasCampuses) setSilatnasCampusesList(db.silatnasCampuses);
   }, [db.lastUpdated]);
 
   const kegiatanList = db.kegiatan || [];
@@ -673,6 +678,39 @@ export default function AdminCMS({ db, onUpdateDB }) {
       if (editingSilatnasCultureIndex === idx) {
         setEditingSilatnasCultureIndex(null);
         setNewSilatnasCulture({ category: '', title: '', desc: '', highlight: '', location: '', image: '' });
+      }
+    });
+  };
+
+  const handleSaveSilatnasCampus = (e) => {
+    e.preventDefault();
+    if (!newSilatnasCampus.name) return;
+    let updated;
+    if (editingSilatnasCampusIndex !== null) {
+      updated = [...silatnasCampusesList];
+      updated[editingSilatnasCampusIndex] = newSilatnasCampus;
+      setEditingSilatnasCampusIndex(null);
+    } else {
+      updated = [...silatnasCampusesList, { ...newSilatnasCampus, id: Date.now() }];
+    }
+    setSilatnasCampusesList(updated);
+    setNewSilatnasCampus({ name: '', shortName: '', region: 'Jawa & DIY', city: '', status: 'Terkonfirmasi', delegates: 2, confirmed: true });
+    save({ silatnasCampuses: updated });
+  };
+
+  const handleEditSilatnasCampus = (idx) => {
+    setNewSilatnasCampus(silatnasCampusesList[idx]);
+    setEditingSilatnasCampusIndex(idx);
+  };
+
+  const handleDeleteSilatnasCampus = (idx) => {
+    confirmAction("Hapus data kampus ini dari daftar roll-call Silatnas?", () => {
+      const updated = silatnasCampusesList.filter((_, i) => i !== idx);
+      setSilatnasCampusesList(updated);
+      save({ silatnasCampuses: updated });
+      if (editingSilatnasCampusIndex === idx) {
+        setEditingSilatnasCampusIndex(null);
+        setNewSilatnasCampus({ name: '', shortName: '', region: 'Jawa & DIY', city: '', status: 'Terkonfirmasi', delegates: 2, confirmed: true });
       }
     });
   };
@@ -2260,6 +2298,133 @@ export default function AdminCMS({ db, onUpdateDB }) {
                           <Edit3 size={14} />
                         </button>
                         <button onClick={() => handleDeleteSilatnasCulture(idx)} className="p-2 hover:text-red-400 text-neutral-400">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SECTION 7: DAFTAR KAMPUS DELEGASI SILATNAS (LIVE ROLL-CALL) */}
+              <div className="bg-black/30 border border-white/10 rounded-2xl p-6 space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
+                  <div>
+                    <h3 className="text-xl font-bold uppercase text-[#38BDF8]">
+                      7. Daftar Kampus Delegasi Silatnas (Live Roll-Call)
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-body">
+                      Kelola daftar perguruan tinggi terkonfirmasi yang tampil pada sebaran roll-call interaktif ({silatnasCampusesList.length} kampus terdata).
+                    </p>
+                  </div>
+                </div>
+
+                {/* Form Add / Edit Campus */}
+                <div className="bg-white/5 p-4 rounded-xl space-y-4 border border-white/5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                    {editingSilatnasCampusIndex !== null ? '✏️ Edit Data Kampus' : '➕ Tambah Kampus Terkonfirmasi'}
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="md:col-span-2">
+                      <label className="text-[10px] font-bold uppercase text-neutral-400 block mb-1">Nama Perguruan Tinggi *</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Universitas Muhammadiyah Surakarta"
+                        value={newSilatnasCampus.name}
+                        onChange={(e) => setNewSilatnasCampus({ ...newSilatnasCampus, name: e.target.value })}
+                        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#38BDF8]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-neutral-400 block mb-1">Singkatan / Inisial</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: UMS"
+                        value={newSilatnasCampus.shortName}
+                        onChange={(e) => setNewSilatnasCampus({ ...newSilatnasCampus, shortName: e.target.value })}
+                        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#38BDF8]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-neutral-400 block mb-1">Zona Wilayah *</label>
+                      <select
+                        value={newSilatnasCampus.region}
+                        onChange={(e) => setNewSilatnasCampus({ ...newSilatnasCampus, region: e.target.value })}
+                        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#38BDF8]"
+                      >
+                        <option value="Jawa & DIY">Jawa & DIY</option>
+                        <option value="Sumatera">Sumatera</option>
+                        <option value="Kalimantan">Kalimantan</option>
+                        <option value="Sulawesi">Sulawesi</option>
+                        <option value="Bali & Nusa Tenggara">Bali & Nusa Tenggara</option>
+                        <option value="Maluku & Papua">Maluku & Papua</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-neutral-400 block mb-1">Kota / Provinsi</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Surakarta, Jawa Tengah"
+                        value={newSilatnasCampus.city}
+                        onChange={(e) => setNewSilatnasCampus({ ...newSilatnasCampus, city: e.target.value })}
+                        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#38BDF8]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold uppercase text-neutral-400 block mb-1">Jumlah Delegasi</label>
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="2"
+                        value={newSilatnasCampus.delegates || 2}
+                        onChange={(e) => setNewSilatnasCampus({ ...newSilatnasCampus, delegates: parseInt(e.target.value) || 1 })}
+                        className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#38BDF8]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveSilatnasCampus}
+                      className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold text-xs px-5 py-2.5 rounded-lg transition-colors shadow-md"
+                    >
+                      {editingSilatnasCampusIndex !== null ? 'Simpan Perubahan' : 'Tambahkan Kampus'}
+                    </button>
+                    {editingSilatnasCampusIndex !== null && (
+                      <button
+                        onClick={() => {
+                          setEditingSilatnasCampusIndex(null);
+                          setNewSilatnasCampus({ name: '', shortName: '', region: 'Jawa & DIY', city: '', status: 'Terkonfirmasi', delegates: 2, confirmed: true });
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors border border-white/10"
+                      >
+                        Batal
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* List Campuses */}
+                <div className="space-y-2 pt-2 max-h-[420px] overflow-y-auto pr-1">
+                  {silatnasCampusesList.map((item, idx) => (
+                    <div key={item.id || idx} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] bg-sky-950/40 text-[#38BDF8] border border-sky-900/30 px-2 py-0.5 rounded-md font-bold">{item.shortName || 'BEM'}</span>
+                          <span className="text-[10px] text-neutral-400 font-mono">Zona {item.region}</span>
+                          <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-900/30">{item.delegates || 2} Delegasi</span>
+                        </div>
+                        <h4 className="text-sm font-bold text-white mt-1">{item.name}</h4>
+                        <p className="text-xs text-neutral-400 mt-0.5 font-body">📍 {item.city || item.region}</p>
+                      </div>
+                      <div className="flex gap-1 ml-4 shrink-0">
+                        <button onClick={() => handleEditSilatnasCampus(idx)} className="p-2 hover:text-[#38BDF8] text-neutral-400">
+                          <Edit3 size={14} />
+                        </button>
+                        <button onClick={() => handleDeleteSilatnasCampus(idx)} className="p-2 hover:text-red-400 text-neutral-400">
                           <Trash2 size={14} />
                         </button>
                       </div>

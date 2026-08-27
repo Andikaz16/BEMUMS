@@ -163,7 +163,17 @@ const DEFAULT_DATA = {
     "/assets/foto_presiden.jpg",
     "/assets/foto_wakil.jpg"
   ],
-  silatnasCatalog: [],
+  silatnasCatalog: [
+    {
+      id: 1,
+      title: "Pendaftaran Delegasi Silatnas BEM PTMAI 2026",
+      schedule: "30 September - 3 Oktober 2026",
+      isOpen: true,
+      location: "Edutorium & Kampus UMS Surakarta",
+      description: "Pendaftaran resmi delegasi pimpinan BEM (Presma, Wapresma, Menteri) dari Perguruan Tinggi Muhammadiyah 'Aisyiyah dan mitra kampus se-Indonesia.",
+      applicants: []
+    }
+  ],
   silatnasVisiMisi: {
     visiTitle: "Visi Kolaboratif",
     visiDesc: "Menciptakan ruang dialog nasional yang terbuka dan konstruktif guna merumuskan rekomendasi kritis terhadap arah kebijakan nasional demi memperjuangkan hak-hak kesejahteraan masyarakat umum.",
@@ -238,6 +248,31 @@ const DEFAULT_DATA = {
       badgeColor: "sky",
       image: "/assets/artefak/edutorium.png"
     }
+  ],
+  silatnasCampuses: [
+    { id: 1, name: "Universitas Muhammadiyah Surakarta", shortName: "UMS", region: "Jawa & DIY", city: "Surakarta, Jawa Tengah", status: "Host Silatnas", delegates: 12, confirmed: true },
+    { id: 2, name: "Universitas Muhammadiyah Yogyakarta", shortName: "UMY", region: "Jawa & DIY", city: "Yogyakarta, DIY", status: "Terkonfirmasi", delegates: 4, confirmed: true },
+    { id: 3, name: "Universitas Muhammadiyah Jakarta", shortName: "UMJ", region: "Jawa & DIY", city: "Jakarta Selatan, DKI Jakarta", status: "Terkonfirmasi", delegates: 5, confirmed: true },
+    { id: 4, name: "Universitas Muhammadiyah Prof. Dr. HAMKA", shortName: "UHAMKA", region: "Jawa & DIY", city: "Jakarta Timur, DKI Jakarta", status: "Terkonfirmasi", delegates: 4, confirmed: true },
+    { id: 5, name: "Universitas Ahmad Dahlan", shortName: "UAD", region: "Jawa & DIY", city: "Yogyakarta, DIY", status: "Terkonfirmasi", delegates: 4, confirmed: true },
+    { id: 6, name: "Universitas Muhammadiyah Malang", shortName: "UMM", region: "Jawa & DIY", city: "Malang, Jawa Timur", status: "Terkonfirmasi", delegates: 5, confirmed: true },
+    { id: 7, name: "Universitas Muhammadiyah Sumatera Utara", shortName: "UMSU", region: "Sumatera", city: "Medan, Sumatera Utara", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 8, name: "Universitas Muhammadiyah Sumatera Barat", shortName: "UMSB", region: "Sumatera", city: "Padang, Sumatera Barat", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 9, name: "Universitas Muhammadiyah Palembang", shortName: "UM Palembang", region: "Sumatera", city: "Palembang, Sumatera Selatan", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 10, name: "Universitas Muhammadiyah Aceh", shortName: "UNMUHA", region: "Sumatera", city: "Banda Aceh, Aceh", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 11, name: "Universitas Muhammadiyah Pontianak", shortName: "UM Pontianak", region: "Kalimantan", city: "Pontianak, Kalimantan Barat", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 12, name: "Universitas Muhammadiyah Kalimantan Timur", shortName: "UMKT", region: "Kalimantan", city: "Samarinda, Kalimantan Timur", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 13, name: "Universitas Muhammadiyah Palangkaraya", shortName: "UMPR", region: "Kalimantan", city: "Palangkaraya, Kalimantan Tengah", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 14, name: "Universitas Muhammadiyah Banjarmasin", shortName: "UM Banjarmasin", region: "Kalimantan", city: "Banjarmasin, Kalimantan Selatan", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 15, name: "Universitas Muhammadiyah Makassar", shortName: "Unismuh Makassar", region: "Sulawesi", city: "Makassar, Sulawesi Selatan", status: "Terkonfirmasi", delegates: 4, confirmed: true },
+    { id: 16, name: "Universitas Muhammadiyah Kendari", shortName: "UM Kendari", region: "Sulawesi", city: "Kendari, Sulawesi Tenggara", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 17, name: "Universitas Muhammadiyah Palu", shortName: "Unismuh Palu", region: "Sulawesi", city: "Palu, Sulawesi Tengah", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 18, name: "Universitas Muhammadiyah Gorontalo", shortName: "UMGO", region: "Sulawesi", city: "Gorontalo", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 19, name: "Universitas Muhammadiyah Mataram", shortName: "UMMAT", region: "Bali & Nusa Tenggara", city: "Mataram, NTB", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 20, name: "Universitas Muhammadiyah Kupang", shortName: "UM Kupang", region: "Bali & Nusa Tenggara", city: "Kupang, NTT", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 21, name: "Universitas Pendidikan Muhammadiyah Sorong", shortName: "UNIMUDA Sorong", region: "Maluku & Papua", city: "Sorong, Papua Barat Daya", status: "Terkonfirmasi", delegates: 3, confirmed: true },
+    { id: 22, name: "Universitas Muhammadiyah Maluku Utara", shortName: "UMMU Ternate", region: "Maluku & Papua", city: "Ternate, Maluku Utara", status: "Terkonfirmasi", delegates: 2, confirmed: true },
+    { id: 23, name: "Universitas Muhammadiyah Papua", shortName: "UM Papua", region: "Maluku & Papua", city: "Jayapura, Papua", status: "Terkonfirmasi", delegates: 2, confirmed: true },
   ],
   kegiatan: [
     {
