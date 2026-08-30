@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD1GZwecQgGuUSHpar-EysDr-H6SS06T-8",
@@ -12,4 +12,4 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, { experimentalForceLongPolling: true });

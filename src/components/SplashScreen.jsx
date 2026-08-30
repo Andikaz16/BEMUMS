@@ -207,14 +207,6 @@ export default function SplashScreen({ onComplete }) {
   const audioPlayedRef = useRef(false);
 
   useEffect(() => {
-    // Initial audio trigger
-    if (!audioPlayedRef.current) {
-      const played = playSplashAudio(false);
-      if (played) {
-        audioPlayedRef.current = true;
-      }
-    }
-
     const handleFirstInteraction = () => {
       if (!audioPlayedRef.current) {
         const played = playSplashAudio(true);
