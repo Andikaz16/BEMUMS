@@ -302,6 +302,22 @@ export default function SplashScreen({ onComplete }) {
               </motion.p>
             </div>
           </div>
+
+          {/* Klik di mana saja prompt (Bottom positioned) */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.5 }}
+            className="absolute bottom-12 left-0 right-0 flex flex-col items-center justify-center gap-2 pointer-events-none"
+          >
+            <motion.p 
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="text-white/40 text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase"
+            >
+              Klik Di Mana Saja
+            </motion.p>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
