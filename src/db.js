@@ -370,35 +370,33 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
       });
       if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     } else if (cachedData && cachedData.lastUpdated) {
-      // 🛡️ PROTECTION PATH: Firestore is empty but we have real data in localStorage
-      // This means Firestore was accidentally wiped. Restore from localStorage backup.
-      console.warn("Firestore appears empty but localStorage has saved data. Restoring from local backup...");
-      saveDB(cachedData).then(() => {
-        console.log("Data restored to Firestore from localStorage backup.");
-      }).catch(err => {
-        console.error("Failed to restore data to Firestore:", err);
-      });
+      // PERBAIKAN: Jika Firestore kosong tapi ada cache, JANGAN otomatis saveDB() ke Firebase.
+      // Cukup tampilkan data cache di layar, biarkan Admin yang menentukan untuk klik 'Simpan' secara manual.
+      console.warn("Firestore appears empty but localStorage has saved data. Using local cache...");
+      setDb(cachedData);
       if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     } else {
-      // 🆕 LAST RESORT: Check localStorage backup, then initialize with defaults.
+      // PERBAIKAN: Jika database kosong, KITA TIDAK BOLEH MENIMPA FIREBASE OTOMATIS.
+      // Hanya gunakan data backup lokal atau default untuk ditampilkan di layar saja,
+      // agar data asli di Firebase tidak ter-reset secara tidak sengaja oleh pengunjung acak.
       const backupData = localStorage.getItem("bem_ums_db_backup");
       let dataToSeed = DEFAULT_DATA;
       if (backupData) {
         try {
           const parsed = JSON.parse(backupData);
           if (parsed.lastUpdated) {
-            console.warn("Recovering data from localStorage backup...");
+            console.warn("Recovering data from localStorage backup untuk ditampilkan lokal...");
             dataToSeed = parsed;
           }
         } catch(e) { /* ignore corrupt backup */ }
       }
       
       if (dataToSeed === DEFAULT_DATA) {
-        console.log("First-time initialization: seeding Firestore with default data.");
+        console.log("Database kosong: menggunakan default data (TIDAK disimpan ke server otomatis).");
       }
-      saveDB(dataToSeed).catch(err => {
-        console.error("Failed to seed/restore data:", err);
-      });
+      
+      // HANYA UPDATE STATE LOKAL, JANGAN PANGGIL saveDB() DI SINI!
+      setDb(dataToSeed);
       if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     }
   }, (error) => {
