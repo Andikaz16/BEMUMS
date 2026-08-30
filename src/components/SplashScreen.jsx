@@ -214,19 +214,13 @@ export default function SplashScreen({ onComplete }) {
           audioPlayedRef.current = true;
         }
       }
+      setShow(false);
+      setTimeout(onComplete, 800);
     };
 
-    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
     window.addEventListener('keydown', handleFirstInteraction, { once: true });
 
-    const timer = setTimeout(() => {
-      setShow(false);
-      setTimeout(onComplete, 800); // Beri waktu untuk animasi fade out
-    }, 2800); // Tayang selama ~2.8 detik
-
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener('pointerdown', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
     };
   }, [onComplete]);
@@ -250,6 +244,7 @@ export default function SplashScreen({ onComplete }) {
                 audioPlayedRef.current = true;
               }
             }
+            handleDismiss();
           }}
           className="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center pointer-events-auto select-none overflow-hidden cursor-pointer"
         >
