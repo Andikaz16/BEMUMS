@@ -1482,12 +1482,12 @@ export default function Silatnas({ db }) {
 
               <div className="pt-2 text-center">
                 <a
-                  href="https://wa.me/6281234567890?text=HALO%20TIM%20MEDIS%20SILATNAS%20BEM%20UMS%20DARURAT"
+                  href="https://wa.me/6281234567891"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-xs px-8 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+                  className="inline-flex justify-center items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-xs px-8 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(220,38,38,0.4)] w-full md:w-auto text-center"
                 >
-                  <Phone className="w-4 h-4" /> Hubungi Posko Medis / Emergency Call Center
+                  <Phone className="w-4 h-4 shrink-0" /> Hubungi Posko Medis / Emergency Call
                 </a>
               </div>
             </div>
@@ -1552,12 +1552,12 @@ export default function Silatnas({ db }) {
           </p>
           <div className="pt-4">
             <a 
-              href="https://wa.me/628123456789" 
+              href="https://wa.me/6281234567890" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="inline-flex items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-8 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
+              className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-8 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
             >
-              <Phone className="w-4 h-4" /> Hubungi WhatsApp Panitia
+              <Phone className="w-4 h-4 shrink-0" /> Hubungi WhatsApp Panitia
             </a>
           </div>
         </div>

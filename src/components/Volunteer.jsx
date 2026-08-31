@@ -336,7 +336,7 @@ export default function Volunteer({ db, onUpdateDB }) {
 
                       {/* Download Template Pakta Integritas / Komitmen */}
                       <div className="space-y-2 bg-neutral-900/80 border border-neutral-700/80 rounded-2xl p-5 shadow-lg">
-                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div>
                             <label className="block text-xs font-bold uppercase tracking-widest text-primary">Unduh Berkas Pakta Integritas (Word / DOCX)</label>
                             <p className="text-xs font-body text-neutral-400 leading-relaxed mt-1">
@@ -347,7 +347,7 @@ export default function Volunteer({ db, onUpdateDB }) {
                             href={selectedVol.templateUrl || '/dokument_volunter/Pakta Integritas Silatnas 2026.docx'} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-widest text-xs px-5 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] shrink-0"
+                            className="inline-flex justify-center items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold uppercase tracking-widest text-xs px-5 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] w-full md:w-auto shrink-0 text-center"
                           >
                             <Download className="w-4 h-4" /> Download Pakta Integritas (Word)
                           </a>
