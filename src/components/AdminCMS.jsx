@@ -2902,11 +2902,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       </label>
                     </div>
 
-                    </div>
-
                     {/* Auto Backup History UI */}
                     {autoBackups.length > 0 && (
-                      <div className="mt-8 border-t border-white/10 pt-6">
+                      <div className="mt-8 border-t border-white/10 pt-6 md:col-span-2">
                         <div className="flex items-center gap-2 mb-4">
                           <h3 className="font-bold text-white text-lg">Riwayat Auto-Backup (Otomatis per 12 Jam)</h3>
                           <span className="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-500/30">LOKAL LENGKAP</span>
