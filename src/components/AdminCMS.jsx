@@ -2912,12 +2912,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <p className="text-xs text-neutral-400 mb-4">
                           Sistem otomatis membackup data ke memori laptop ini setiap kali Anda mengakses halaman admin (maksimal 2x sehari). File-file di bawah ini bisa didownload jika dibutuhkan.
                         </p>
-                        <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="flex flex-nowrap overflow-x-auto gap-4 pb-4 custom-scrollbar">
                           {autoBackups.map((backup, idx) => (
-                            <div key={idx} className="flex items-center justify-between bg-black/40 border border-white/5 p-4 rounded-xl hover:border-white/10 transition-colors">
+                            <div key={idx} className="flex-shrink-0 w-72 bg-black/40 border border-white/5 p-5 rounded-2xl hover:border-white/20 transition-all flex flex-col gap-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-neutral-900 rounded-full flex items-center justify-center text-neutral-400">
-                                  <Download size={16} />
+                                <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400">
+                                  <Download size={20} />
                                 </div>
                                 <div>
                                   <p className="text-white font-bold text-sm">{backup.dateString}</p>
@@ -2926,9 +2926,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
                               </div>
                               <button
                                 onClick={() => handleDownloadAutoBackup(backup)}
-                                className="bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors border border-white/5 hover:border-white/20"
+                                className="w-full bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors border border-white/5 hover:border-white/20"
                               >
-                                Download
+                                Download (.json)
                               </button>
                             </div>
                           ))}
