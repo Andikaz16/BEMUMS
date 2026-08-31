@@ -2912,23 +2912,23 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <p className="text-xs text-neutral-400 mb-4">
                           Sistem otomatis membackup data ke memori laptop ini setiap kali Anda mengakses halaman admin (maksimal 2x sehari). File-file di bawah ini bisa didownload jika dibutuhkan.
                         </p>
-                        <div className="flex flex-nowrap overflow-x-auto gap-4 pb-4 custom-scrollbar">
+                        <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                           {autoBackups.map((backup, idx) => (
-                            <div key={idx} className="flex-shrink-0 w-72 bg-black/40 border border-white/5 p-5 rounded-2xl hover:border-white/20 transition-all flex flex-col gap-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400">
+                            <div key={idx} className="flex items-center justify-between bg-black/40 border border-white/5 p-4 rounded-xl hover:border-white/10 transition-colors">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-400 shrink-0">
                                   <Download size={20} />
                                 </div>
                                 <div>
-                                  <p className="text-white font-bold text-sm">{backup.dateString}</p>
-                                  <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Lokal Memori Browser</p>
+                                  <p className="text-white font-bold text-sm md:text-base">{backup.dateString}</p>
+                                  <p className="text-[10px] md:text-xs text-neutral-500 uppercase tracking-wider">Penyimpanan Lokal Browser</p>
                                 </div>
                               </div>
                               <button
                                 onClick={() => handleDownloadAutoBackup(backup)}
-                                className="w-full bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors border border-white/5 hover:border-white/20"
+                                className="bg-neutral-800 hover:bg-neutral-700 text-white text-xs md:text-sm font-bold py-2.5 px-6 rounded-xl transition-colors border border-white/5 hover:border-white/20 shrink-0"
                               >
-                                Download (.json)
+                                Download
                               </button>
                             </div>
                           ))}
