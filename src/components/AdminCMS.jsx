@@ -2902,6 +2902,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       </label>
                     </div>
 
+                    </div>
+
                     {/* Auto Backup History UI */}
                     {autoBackups.length > 0 && (
                       <div className="mt-8 border-t border-white/10 pt-6">
