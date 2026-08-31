@@ -11,6 +11,45 @@ import StatistikAdmin from './StatistikAdmin.jsx';
 export default function AdminCMS({ db, onUpdateDB }) {
   const [activeTab, setActiveTab] = useState('struktural');
   const quillRef = React.useRef(null);
+  
+  const [autoBackups, setAutoBackups] = useState([]);
+
+  // --- Auto Backup System ---
+  React.useEffect(() => {
+    if (!db) return;
+    try {
+      const stored = localStorage.getItem("bem_ums_auto_backups");
+      let backups = stored ? JSON.parse(stored) : [];
+      
+      const now = Date.now();
+      const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+      
+      let shouldBackup = false;
+      if (backups.length === 0) {
+        shouldBackup = true;
+      } else {
+        const lastBackupTime = backups[0].timestamp;
+        if (now - lastBackupTime >= TWELVE_HOURS) {
+          shouldBackup = true;
+        }
+      }
+      
+      if (shouldBackup) {
+        const newBackup = {
+          timestamp: now,
+          dateString: new Date(now).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
+          data: db
+        };
+        backups.unshift(newBackup);
+        if (backups.length > 14) backups.pop(); // Simpan max 14 backup (7 hari terakhir)
+        localStorage.setItem("bem_ums_auto_backups", JSON.stringify(backups));
+      }
+      
+      setAutoBackups(backups);
+    } catch(e) {
+      console.error("Gagal memproses auto backup", e);
+    }
+  }, [db]);
 
   // --- Custom Alert State ---
   const [alertState, setAlertState] = useState({ isOpen: false, message: '', type: 'success' });
@@ -35,6 +74,16 @@ export default function AdminCMS({ db, onUpdateDB }) {
     dlAnchorElem.setAttribute("download", `backup_bemums_${new Date().toISOString().split('T')[0]}.json`);
     dlAnchorElem.click();
     showCustomAlert("Database berhasil didownload! Simpan file ini baik-baik.");
+  };
+
+  const handleDownloadAutoBackup = (backup) => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup.data, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    const safeDate = backup.dateString.replace(/[,:\s]+/g, '_').toLowerCase();
+    dlAnchorElem.setAttribute("download", `auto_backup_bemums_${safeDate}.json`);
+    dlAnchorElem.click();
+    showCustomAlert(`Auto-Backup (${backup.dateString}) berhasil didownload!`);
   };
 
   const handleRestoreBackup = (e) => {
@@ -2852,6 +2901,40 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         />
                       </label>
                     </div>
+
+                    {/* Auto Backup History UI */}
+                    {autoBackups.length > 0 && (
+                      <div className="mt-8 border-t border-white/10 pt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <h3 className="font-bold text-white text-lg">Riwayat Auto-Backup (Otomatis per 12 Jam)</h3>
+                          <span className="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-500/30">LOKAL LENGKAP</span>
+                        </div>
+                        <p className="text-xs text-neutral-400 mb-4">
+                          Sistem otomatis membackup data ke memori laptop ini setiap kali Anda mengakses halaman admin (maksimal 2x sehari). File-file di bawah ini bisa didownload jika dibutuhkan.
+                        </p>
+                        <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                          {autoBackups.map((backup, idx) => (
+                            <div key={idx} className="flex items-center justify-between bg-black/40 border border-white/5 p-4 rounded-xl hover:border-white/10 transition-colors">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-neutral-900 rounded-full flex items-center justify-center text-neutral-400">
+                                  <Download size={16} />
+                                </div>
+                                <div>
+                                  <p className="text-white font-bold text-sm">{backup.dateString}</p>
+                                  <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Lokal Memori Browser</p>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleDownloadAutoBackup(backup)}
+                                className="bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors border border-white/5 hover:border-white/20"
+                              >
+                                Download
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
