@@ -204,31 +204,15 @@ function playSplashAudio(isUserGesture = false) {
 
 export default function SplashScreen({ onComplete }) {
   const [show, setShow] = useState(true);
-  const audioPlayedRef = useRef(false);
 
   useEffect(() => {
-    const handleFirstInteraction = () => {
-      if (!audioPlayedRef.current) {
-        const played = playSplashAudio(true);
-        if (played) {
-          audioPlayedRef.current = true;
-        }
-      }
+    const timer = setTimeout(() => {
       setShow(false);
-      setTimeout(onComplete, 800);
-    };
+      setTimeout(onComplete, 800); // Beri waktu untuk animasi fade out
+    }, 3000); // Tayang selama 3 detik
 
-    window.addEventListener('keydown', handleFirstInteraction, { once: true });
-
-    return () => {
-      window.removeEventListener('keydown', handleFirstInteraction);
-    };
+    return () => clearTimeout(timer);
   }, [onComplete]);
-
-  const handleDismiss = () => {
-    setShow(false);
-    setTimeout(onComplete, 800);
-  };
 
   return (
     <AnimatePresence>
@@ -237,16 +221,7 @@ export default function SplashScreen({ onComplete }) {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          onClick={() => {
-            if (!audioPlayedRef.current) {
-              const played = playSplashAudio(true);
-              if (played) {
-                audioPlayedRef.current = true;
-              }
-            }
-            handleDismiss();
-          }}
-          className="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center pointer-events-auto select-none overflow-hidden cursor-pointer"
+          className="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center pointer-events-none select-none overflow-hidden"
         >
           {/* Center Branding Area */}
           <div className="flex flex-col items-center gap-6">
@@ -297,22 +272,6 @@ export default function SplashScreen({ onComplete }) {
               </motion.p>
             </div>
           </div>
-
-          {/* Klik di mana saja prompt (Bottom positioned) */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.5 }}
-            className="absolute bottom-12 left-0 right-0 flex flex-col items-center justify-center gap-2 pointer-events-none"
-          >
-            <motion.p 
-              animate={{ opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="text-white/40 text-[10px] md:text-xs font-mono tracking-[0.3em] uppercase"
-            >
-              Klik Di Mana Saja
-            </motion.p>
-          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
