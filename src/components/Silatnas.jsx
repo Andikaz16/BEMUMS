@@ -1144,7 +1144,7 @@ export default function Silatnas({ db }) {
               </div>
                 <div className="shrink-0 w-full md:w-auto">
                   <a 
-                    href="https://wa.me/6281234567890?text=Halo%20Panitia%20Silatnas%20BEM%20UMS%202026%2C%20saya%20calon%20peserta%20ingin%20bertanya%20seputar%20kegiatan%20ini..." 
+                    href="https://wa.me/6281234567890?text=Halo%20LO%20Silatnas%20BEM%20UMS%202026!%20Saya%20peserta%20Silatnas%2C%20boleh%20minta%20rekomendasi%20tempat%20wisata%20atau%20eksplorasi%20budaya%20yang%20bagus%20di%20Kota%20Solo%3F" 
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
@@ -1550,7 +1550,7 @@ export default function Silatnas({ db }) {
           </p>
           <div className="pt-4">
             <a 
-              href="https://wa.me/6281234567890" 
+              href="https://wa.me/6281234567890?text=Halo%20Panitia%20Silatnas%20BEM%20UMS%202026%2C%20saya%20calon%20peserta%20ingin%20bertanya%20seputar%20kegiatan%20ini..." 
               target="_blank" 
               rel="noopener noreferrer" 
               className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-8 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
