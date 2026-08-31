@@ -49,7 +49,11 @@ export default function Navbar({ db, activePage, setActivePage }) {
   ];
 
   return (
-    <header className="fixed top-4 left-4 right-4 lg:left-1/2 lg:-translate-x-1/2 lg:w-[96%] lg:max-w-7xl z-50 bg-gradient-to-r from-black via-black to-[#3B0505] text-white rounded-full shadow-lg border border-neutral-800 transition-all">
+    <header className={`fixed top-4 left-4 right-4 lg:left-1/2 lg:-translate-x-1/2 lg:w-[96%] lg:max-w-7xl z-50 text-white rounded-full shadow-lg transition-all duration-500 ${
+      activePage === 'silatnas' 
+        ? 'bg-gradient-to-r from-[#082f49] via-[#0369a1] to-[#082f49] border border-sky-900/50 shadow-sky-900/20' 
+        : 'bg-gradient-to-r from-black via-black to-[#3B0505] border border-neutral-800'
+    }`}>
       <div className="h-14 md:h-16 w-full px-6 md:px-10 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActivePage('beranda')}>
