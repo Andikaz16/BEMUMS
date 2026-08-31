@@ -1142,18 +1142,16 @@ export default function Silatnas({ db }) {
                   Panitia Silatnas BEM UMS 2026 berkomitmen penuh memberikan pelayanan terbaik, pendampingan Liaison Officer (LO) 24 jam, serta akomodasi terbaik demi kenyamanan seluruh saudara mahasiswa dari Sabang sampai Merauke.
                 </p>
               </div>
-              <div className="shrink-0">
-                <a 
-                  href="#helpdesk" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('helpdesk-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="inline-flex items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
-                >
-                  <Phone className="w-4 h-4" /> Tanya Panitia / LO
-                </a>
-              </div>
+                <div className="shrink-0 w-full md:w-auto">
+                  <a 
+                    href="https://wa.me/6281234567890?text=Halo%20Panitia%20Silatnas%20BEM%20UMS%202026%2C%20saya%20calon%20peserta%20ingin%20bertanya%20seputar%20kegiatan%20ini..." 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
+                  >
+                    <Phone className="w-4 h-4 shrink-0" /> Tanya Panitia / LO
+                  </a>
+                </div>
             </div>
           </div>
         </div>
