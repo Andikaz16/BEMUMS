@@ -348,7 +348,7 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
       // ✅ NORMAL PATH: Firestore has data, use it
       if (combinedData.kegiatan) {
         const eventsToAdd = [
-          { id: 'kuliah-1-2026', title: "Masa Kuliah Hari Pertama", desc: "Awal perkuliahan Semester Ganjil TA 2026/2027.", date: "2026-09-07" },
+          { id: 'kuliah-1-2026', title: "Masa Kuliah Hari Pertama", desc: "Awal perkuliahan Semester Ganjil TA 2026/2027.", date: "2026-09-14" },
           { id: 'uts-2026', title: "Ujian Tengah Semester (UTS)", desc: "UTS Semester Ganjil TA 2026/2027.", date: "2026-11-02", endDate: "2026-11-14" },
           { id: 'uas-2027', title: "Ujian Akhir Semester (UAS)", desc: "UAS Semester Ganjil TA 2026/2027.", date: "2027-01-04", endDate: "2027-01-16" },
         ];

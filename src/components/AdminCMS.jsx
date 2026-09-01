@@ -38,10 +38,17 @@ export default function AdminCMS({ db, onUpdateDB }) {
         const newBackup = {
           timestamp: now,
           dateString: new Date(now).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
+          lastSynced: now,
           data: db
         };
         backups.unshift(newBackup);
         if (backups.length > 14) backups.pop(); // Simpan max 14 backup (7 hari terakhir)
+        localStorage.setItem("bem_ums_auto_backups", JSON.stringify(backups));
+      } else if (backups.length > 0) {
+        // SINKRONISASI OTOMATIS: Jika admin menambah/mengedit data di sesi ini,
+        // perbarui isi file backup teratas agar SELALU membawa data paling baru!
+        backups[0].data = db;
+        backups[0].lastSynced = now;
         localStorage.setItem("bem_ums_auto_backups", JSON.stringify(backups));
       }
       
@@ -2920,8 +2927,17 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                   <Download size={20} />
                                 </div>
                                 <div>
-                                  <p className="text-white font-bold text-sm md:text-base">{backup.dateString}</p>
-                                  <p className="text-[10px] md:text-xs text-neutral-500 uppercase tracking-wider">Penyimpanan Lokal Browser</p>
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-white font-bold text-sm md:text-base">{backup.dateString}</p>
+                                    {idx === 0 && (
+                                      <span className="bg-emerald-500/20 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+                                        TERKINI & OTOMATIS TERSINKRON
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-[10px] md:text-xs text-neutral-500 uppercase tracking-wider">
+                                    {idx === 0 ? "Penyimpanan Lokal Browser • Selalu Mengikuti Data Terbaru" : "Penyimpanan Lokal Browser"}
+                                  </p>
                                 </div>
                               </div>
                               <button
