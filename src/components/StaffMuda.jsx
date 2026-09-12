@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function StaffMuda({ db }) {
@@ -8,16 +8,9 @@ export default function StaffMuda({ db }) {
   return (
     <div className="relative min-h-screen text-white pt-32 pb-20 px-6 sm:px-12 md:px-24 flex flex-col overflow-hidden">
       
-      {/* Background Image Similar to Hero */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0" 
-        style={{ 
-          backgroundImage: "url('/assets/background.png')",
-          WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
-          maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)"
-        }}
-      ></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.7)_0%,_rgba(0,0,0,0.2)_100%)] z-0"></div>
+      {/* Background Elements */}
+      <div className="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none -z-10 mix-blend-screen" />
+      <div className="absolute bottom-0 -left-1/4 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full pointer-events-none -z-10 mix-blend-screen" />
 
       <div className="relative z-10 max-w-4xl mx-auto space-y-16 w-full">
         
