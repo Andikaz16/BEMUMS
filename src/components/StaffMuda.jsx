@@ -47,7 +47,7 @@ export default function StaffMuda({ db }) {
         >
           <div className="flex justify-center mb-10">
              <span className="inline-block bg-primary/20 text-primary text-xs font-display uppercase tracking-widest px-4 py-2 rounded-full border border-primary/30 shadow-[0_0_15px_rgba(220,20,20,0.3)]">
-                SUSUNAN JAJARAN
+                STAFF MUDA KOLEKTIVA
              </span>
           </div>
 
