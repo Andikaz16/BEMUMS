@@ -61,7 +61,7 @@ export default function StaffMuda({ db }) {
               </p>
             </div>
           ) : (
-            <div className="space-y-4 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
               {members.map((member, index) => (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
@@ -69,7 +69,7 @@ export default function StaffMuda({ db }) {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
                   key={index}
-                  className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-black/50 backdrop-blur-md border border-white/10 p-5 rounded-2xl hover:border-primary/40 hover:bg-black/70 transition-all shadow-lg"
+                  className="flex flex-col gap-3 bg-black/50 backdrop-blur-md border border-white/10 p-5 rounded-2xl hover:border-primary/40 hover:bg-black/70 transition-all shadow-lg"
                 >
                   <div className="flex items-center gap-4">
                     {member.photo ? (
@@ -79,14 +79,14 @@ export default function StaffMuda({ db }) {
                         className="w-12 h-12 rounded-full object-cover border border-white/10 shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
                         <span className="text-lg text-neutral-400 font-bold">{member.name.charAt(0).toUpperCase()}</span>
                       </div>
                     )}
-                    <span className="font-bold text-base text-white">{member.name}</span>
+                    <span className="font-bold text-sm text-white">{member.name}</span>
                   </div>
                   {member.role && (
-                    <span className="bg-primary/10 text-primary text-[11px] font-display uppercase tracking-wider px-3 py-1.5 rounded-md border border-primary/20 text-center shrink-0">
+                    <span className="bg-primary/10 text-primary text-[10px] font-display uppercase tracking-wider px-2.5 py-1.5 rounded-md border border-primary/20 inline-block w-fit">
                       {member.role}
                     </span>
                   )}
