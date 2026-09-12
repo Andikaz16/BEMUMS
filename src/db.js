@@ -82,6 +82,13 @@ const DEFAULT_DATA = {
       { id: 1, name: "Kementerian Keorganisasian", desc: "Mengatur administrasi organisasi internal.", members: [{ name: "Taufik Hidayat", title: "Menteri" }]}
     ]
   },
+  
+  // 1.5 Staff Muda
+  staffMuda: {
+    "2026": [
+      // Nama-nama akan ditambahkan oleh admin nanti
+    ]
+  },
 
   // 2. Artikel & Kegiatan
   categories: ["Semua", "Berita", "Opini", "Kegiatan"],

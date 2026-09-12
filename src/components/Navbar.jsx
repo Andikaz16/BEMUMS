@@ -35,6 +35,7 @@ export default function Navbar({ db, activePage, setActivePage }) {
     { id: 'visimisi', label: 'Visi & Misi' },
     { id: 'kementerian', label: 'Kementerian' },
     { id: 'struktural', label: 'Struktural' },
+    { id: 'staffmuda', label: 'Staff Muda' },
     { id: 'kalender', label: 'Kalender Kegiatan' }
   ];
 

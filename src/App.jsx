@@ -14,6 +14,7 @@ import BeritaNasional from './components/BeritaNasional.jsx';
 import AdminCMS from './components/AdminCMS.jsx';
 import AdminLogin from './components/AdminLogin.jsx';
 import Kementerian from './components/Kementerian.jsx';
+import StaffMuda from './components/StaffMuda.jsx';
 import HalamanKalender from './components/HalamanKalender.jsx';
 import AnimatedBackground from './components/AnimatedBackground.jsx';
 import SplashScreen from './components/SplashScreen.jsx';
@@ -55,7 +56,7 @@ export default function App() {
       const hash = window.location.hash.substring(1);
       if (hash === 'admin') {
         setActivePage('admin');
-      } else if (hash && ['beranda', 'struktural', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(hash)) {
+      } else if (hash && ['beranda', 'struktural', 'staffmuda', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(hash)) {
         setActivePage(hash);
       } else {
         // Fallback or default
@@ -121,6 +122,9 @@ export default function App() {
         )}
         {activePage === 'struktural' && (
           <Struktural db={db} />
+        )}
+        {activePage === 'staffmuda' && (
+          <StaffMuda db={db} />
         )}
         {activePage === 'kementerian' && (
           <Kementerian db={db} />

@@ -148,6 +148,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [memberForm, setMemberForm] = useState({ id: null, name: '', role: '', photo: '', bio: '' });
   const [isEditingMember, setIsEditingMember] = useState(false);
 
+  // Staff Muda Form
+  const [staffMudaForm, setStaffMudaForm] = useState({ id: null, name: '', role: '', photo: '' });
+  const [isEditingStaffMuda, setIsEditingStaffMuda] = useState(false);
+
   // Department Form
   const [deptForm, setDeptForm] = useState({ id: null, name: '', desc: '', members: [] });
   const [isEditingDept, setIsEditingDept] = useState(false);
@@ -864,6 +868,47 @@ export default function AdminCMS({ db, onUpdateDB }) {
     URL.revokeObjectURL(url);
   };
 
+  // --- STAFF MUDA HANDLERS ---
+  const handleSaveStaffMuda = () => {
+    if (!staffMudaForm.name) {
+      showCustomAlert("Nama Staff Muda wajib diisi!", "warning");
+      return;
+    }
+    
+    const staffList = db.staffMuda?.[selectedPeriod] || [];
+    let updatedList;
+    if (isEditingStaffMuda) {
+      updatedList = staffList.map(s => s.id === staffMudaForm.id ? staffMudaForm : s);
+    } else {
+      updatedList = [...staffList, { ...staffMudaForm, id: Date.now() }];
+    }
+    
+    onUpdateDB({
+      ...db,
+      staffMuda: { ...db.staffMuda, [selectedPeriod]: updatedList }
+    });
+    
+    setStaffMudaForm({ id: null, name: '', role: '', photo: '' });
+    setIsEditingStaffMuda(false);
+    showCustomAlert("Data Staff Muda berhasil disimpan!", "success");
+  };
+
+  const handleDeleteStaffMuda = (id) => {
+    setConfirmState({
+      isOpen: true,
+      message: "Yakin ingin menghapus nama ini?",
+      onConfirm: () => {
+        const staffList = db.staffMuda?.[selectedPeriod] || [];
+        const updatedList = staffList.filter(s => s.id !== id);
+        onUpdateDB({
+          ...db,
+          staffMuda: { ...db.staffMuda, [selectedPeriod]: updatedList }
+        });
+        showCustomAlert("Nama Staff Muda dihapus!", "success");
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen text-white relative overflow-hidden pt-24 pb-16 px-6 md:px-12">
       {/* Newspaper style header */}
@@ -881,6 +926,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-2">
           {[
             { id: 'struktural', name: '1. Struktural', icon: Users },
+            { id: 'staffmuda', name: '1.5. Staff Muda', icon: Users },
             { id: 'artikel', name: '2. Artikel & Berita', icon: FileText },
             { id: 'dokumentasi', name: '3. Dokumentasi', icon: Image },
             { id: 'hubungi', name: '4. Hubungi Kami', icon: Phone },
