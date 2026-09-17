@@ -320,9 +320,26 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
   // --- Handler Functions ---
   const handleImageUpload = async (e, callback) => {
-    const file = e.target.files[0];
+    let file = e.target.files[0];
     if (!file) return;
     
+    // Konversi HEIC (iPhone) jika diperlukan
+    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
+      showCustomAlert("Mengonversi format HEIC (iPhone) ke JPG...", "warning", 0);
+      try {
+        const heic2any = (await import('heic2any')).default;
+        const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
+        // Jika blob adalah array, ambil yang pertama (bisa terjadi jika gambar burst/live photo)
+        const finalBlob = Array.isArray(blob) ? blob[0] : blob;
+        file = new File([finalBlob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+      } catch (err) {
+        console.error("HEIC Convert Error:", err);
+        showCustomAlert("Gagal mengonversi file HEIC. Gunakan format JPG/PNG.", "error");
+        if (e.target) e.target.value = null;
+        return;
+      }
+    }
+
     // Cek ukuran file (Max 15MB untuk mencegah browser nge-freeze)
     if (file.size > 15 * 1024 * 1024) {
       showCustomAlert("Ukuran file terlalu besar (Maksimal 15 MB).", "error");
