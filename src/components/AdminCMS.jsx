@@ -323,18 +323,20 @@ export default function AdminCMS({ db, onUpdateDB }) {
     let file = e.target.files[0];
     if (!file) return;
     
-    // Konversi HEIC (iPhone) jika diperlukan
-    if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
-      showCustomAlert("Mengonversi format HEIC (iPhone) ke JPG...", "warning", 0);
+    // Konversi HEIC/HEIF (iPhone) jika diperlukan
+    const fileName = file.name.toLowerCase();
+    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif') {
+      showCustomAlert("Mengonversi format HEIC (iPhone) ke JPG... (Mungkin butuh waktu)", "warning", 0);
       try {
         const heic2any = (await import('heic2any')).default;
         const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
         // Jika blob adalah array, ambil yang pertama (bisa terjadi jika gambar burst/live photo)
         const finalBlob = Array.isArray(blob) ? blob[0] : blob;
-        file = new File([finalBlob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+        file = new File([finalBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+        showCustomAlert("Konversi berhasil! Memulai kompresi & upload...", "info", 2000);
       } catch (err) {
         console.error("HEIC Convert Error:", err);
-        showCustomAlert("Gagal mengonversi file HEIC. Gunakan format JPG/PNG.", "error");
+        showCustomAlert("Gagal mengonversi file HEIC. Cobalah convert secara manual di hp ke JPG.", "error");
         if (e.target) e.target.value = null;
         return;
       }
@@ -403,7 +405,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
       };
       
       img.onerror = () => {
-        showCustomAlert("Format gambar tidak didukung (contoh: HEIC/iPhone). Gunakan JPG/PNG.", "error");
+        if (file.type === 'image/jpeg' && file.name.endsWith('.jpg')) {
+           // Jika ini adalah hasil konversi HEIC yang gagal di-load browser
+           showCustomAlert("Konversi HEIC berhasil tetapi file corrupt/tidak terbaca. Gunakan JPG asli.", "error");
+        } else {
+           showCustomAlert("Format gambar tidak didukung (contoh: HEIC/iPhone). Gunakan JPG/PNG.", "error");
+        }
       };
       
       img.src = reader.result;
