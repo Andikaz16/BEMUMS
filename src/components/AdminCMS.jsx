@@ -332,95 +332,33 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
     // Deteksi file HEIC/HEIF (iPhone)
     const fileName = file.name.toLowerCase();
-    const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
+    let isHeicFile = fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
     
-    if (isHeic) {
-      showCustomAlert("Mengonversi file HEIC (iPhone)... Mohon Tunggu.", "warning", 0);
-      
-      // Strategi 1: Coba konversi via browser-native createImageBitmap (jika OS punya codec HEIC)
-      let convertedBase64 = null;
+    if (!isHeicFile) {
       try {
-        const bitmap = await createImageBitmap(file);
-        const MAX_WIDTH = 1280;
-        let w = bitmap.width, h = bitmap.height;
-        if (w > MAX_WIDTH) { h = Math.round((h * MAX_WIDTH) / w); w = MAX_WIDTH; }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(bitmap, 0, 0, w, h);
-        bitmap.close();
-        convertedBase64 = canvas.toDataURL('image/jpeg', 0.80).split(',')[1];
-      } catch (bitmapErr) {
-        console.log("createImageBitmap gagal, mencoba server-side...", bitmapErr);
+        const { isHeic } = await import('heic-to');
+        isHeicFile = await isHeic(file);
+      } catch (checkErr) {
+        // ignore check error
       }
+    }
 
-      // Strategi 2: Jika browser tidak bisa, kirim ke server Vercel untuk dikonversi pakai sharp
-      if (!convertedBase64) {
-        try {
-          showCustomAlert("Mengonversi HEIC di server... Mohon Tunggu.", "warning", 0);
-          
-          // Gunakan FileReader untuk encoding base64 yang andal
-          const base64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = () => reject(new Error("Gagal membaca file"));
-            reader.readAsDataURL(file);
-          });
-          
-          const serverRes = await fetch('/api/convert-heic', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageBase64: base64 }),
-          });
-          
-          const serverData = await serverRes.json();
-          
-          if (serverData.success) {
-            showCustomAlert("Upload HEIC berhasil!", "success");
-            callback(serverData.link);
-            if (e.target) e.target.value = null;
-            return;
-          } else {
-            showCustomAlert("Gagal konversi HEIC di server: " + (serverData.error || "Error"), "error");
-            if (e.target) e.target.value = null;
-            return;
-          }
-        } catch (serverErr) {
-          console.error("Server HEIC convert error:", serverErr);
-          showCustomAlert("Gagal konversi HEIC: " + serverErr.message, "error");
-          if (e.target) e.target.value = null;
-          return;
-        }
+    if (isHeicFile) {
+      showCustomAlert("Mengonversi foto HEIC/iPhone ke JPG... Mohon Tunggu.", "warning", 0);
+      try {
+        const { heicTo } = await import('heic-to');
+        const jpegBlob = await heicTo({
+          blob: file,
+          type: "image/jpeg",
+          quality: 0.85
+        });
+        file = new File([jpegBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+      } catch (err) {
+        console.error("heic-to conversion error:", err);
+        showCustomAlert("Gagal mengonversi file HEIC: " + (err.message || "Format tidak didukung"), "error");
+        if (e.target) e.target.value = null;
+        return;
       }
-
-      // Jika berhasil via createImageBitmap, upload base64 ke Imgur
-      if (convertedBase64) {
-        try {
-          showCustomAlert("Mengupload foto ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
-          const formData = new FormData();
-          formData.append('image', convertedBase64);
-          
-          const res = await fetch('https://api.imgur.com/3/image', {
-            method: 'POST',
-            headers: { 'Authorization': 'Client-ID 546c25a59c58ad7' },
-            body: formData,
-          });
-          const data = await res.json();
-          
-          if (data.success) {
-            showCustomAlert("Upload HEIC berhasil!", "success");
-            callback(data.data.link);
-          } else {
-            showCustomAlert("Gagal upload: " + (data.data?.error || "Ditolak oleh Imgur."), "error");
-          }
-        } catch (err) {
-          console.error("Imgur upload error:", err);
-          showCustomAlert("Gagal upload: " + err.message, "error");
-        }
-      }
-      
-      if (e.target) e.target.value = null;
-      return;
     }
     
     // Untuk file non-HEIC (JPG/PNG), kompres via Canvas lalu upload
