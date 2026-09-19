@@ -2,11 +2,15 @@
   "functions": {
     "api/upload.js": {
       "maxDuration": 30
+    },
+    "api/convert-heic.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
     { "source": "/api/news", "destination": "/api/news" },
     { "source": "/api/upload", "destination": "/api/upload" },
+    { "source": "/api/convert-heic", "destination": "/api/convert-heic" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

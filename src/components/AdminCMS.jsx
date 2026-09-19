@@ -330,36 +330,95 @@ export default function AdminCMS({ db, onUpdateDB }) {
       return;
     }
 
-    // Deteksi file HEIC/HEIF (iPhone) — upload langsung ke Imgur sebagai binary
+    // Deteksi file HEIC/HEIF (iPhone)
     const fileName = file.name.toLowerCase();
     const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
     
     if (isHeic) {
-      showCustomAlert("Mengupload file HEIC langsung ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
+      showCustomAlert("Mengonversi file HEIC (iPhone)... Mohon Tunggu.", "warning", 0);
+      
+      // Strategi 1: Coba konversi via browser-native createImageBitmap (jika OS punya codec HEIC)
+      let convertedBase64 = null;
       try {
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const res = await fetch('https://api.imgur.com/3/image', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Client-ID 546c25a59c58ad7'
-          },
-          body: formData
-        });
-        
-        const data = await res.json();
-        
-        if (data.success) {
-          showCustomAlert("Upload HEIC berhasil! Imgur mengonversi otomatis.", "success");
-          callback(data.data.link);
-        } else {
-          showCustomAlert("Gagal upload HEIC: " + (data.data?.error || "Ditolak oleh Imgur."), "error");
-        }
-      } catch (err) {
-        console.error("HEIC Upload Error:", err);
-        showCustomAlert("Gagal upload HEIC: " + err.message, "error");
+        const bitmap = await createImageBitmap(file);
+        const MAX_WIDTH = 1280;
+        let w = bitmap.width, h = bitmap.height;
+        if (w > MAX_WIDTH) { h = Math.round((h * MAX_WIDTH) / w); w = MAX_WIDTH; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(bitmap, 0, 0, w, h);
+        bitmap.close();
+        convertedBase64 = canvas.toDataURL('image/jpeg', 0.80).split(',')[1];
+      } catch (bitmapErr) {
+        console.log("createImageBitmap gagal, mencoba server-side...", bitmapErr);
       }
+
+      // Strategi 2: Jika browser tidak bisa, kirim ke server Vercel untuk dikonversi pakai sharp
+      if (!convertedBase64) {
+        try {
+          showCustomAlert("Mengonversi HEIC di server... Mohon Tunggu.", "warning", 0);
+          const arrayBuffer = await file.arrayBuffer();
+          const bytes = new Uint8Array(arrayBuffer);
+          let binary = '';
+          const chunkSize = 8192;
+          for (let i = 0; i < bytes.length; i += chunkSize) {
+            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+          }
+          const base64 = btoa(binary);
+          
+          const serverRes = await fetch('/api/convert-heic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64: base64 }),
+          });
+          
+          const serverData = await serverRes.json();
+          
+          if (serverData.success) {
+            showCustomAlert("Upload HEIC berhasil!", "success");
+            callback(serverData.link);
+            if (e.target) e.target.value = null;
+            return;
+          } else {
+            showCustomAlert("Gagal konversi HEIC di server: " + (serverData.error || "Error"), "error");
+            if (e.target) e.target.value = null;
+            return;
+          }
+        } catch (serverErr) {
+          console.error("Server HEIC convert error:", serverErr);
+          showCustomAlert("Gagal konversi HEIC: " + serverErr.message, "error");
+          if (e.target) e.target.value = null;
+          return;
+        }
+      }
+
+      // Jika berhasil via createImageBitmap, upload base64 ke Imgur
+      if (convertedBase64) {
+        try {
+          showCustomAlert("Mengupload foto ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
+          const formData = new FormData();
+          formData.append('image', convertedBase64);
+          
+          const res = await fetch('https://api.imgur.com/3/image', {
+            method: 'POST',
+            headers: { 'Authorization': 'Client-ID 546c25a59c58ad7' },
+            body: formData,
+          });
+          const data = await res.json();
+          
+          if (data.success) {
+            showCustomAlert("Upload HEIC berhasil!", "success");
+            callback(data.data.link);
+          } else {
+            showCustomAlert("Gagal upload: " + (data.data?.error || "Ditolak oleh Imgur."), "error");
+          }
+        } catch (err) {
+          console.error("Imgur upload error:", err);
+          showCustomAlert("Gagal upload: " + err.message, "error");
+        }
+      }
+      
       if (e.target) e.target.value = null;
       return;
     }
