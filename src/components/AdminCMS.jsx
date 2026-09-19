@@ -358,14 +358,14 @@ export default function AdminCMS({ db, onUpdateDB }) {
       if (!convertedBase64) {
         try {
           showCustomAlert("Mengonversi HEIC di server... Mohon Tunggu.", "warning", 0);
-          const arrayBuffer = await file.arrayBuffer();
-          const bytes = new Uint8Array(arrayBuffer);
-          let binary = '';
-          const chunkSize = 8192;
-          for (let i = 0; i < bytes.length; i += chunkSize) {
-            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-          }
-          const base64 = btoa(binary);
+          
+          // Gunakan FileReader untuk encoding base64 yang andal
+          const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = () => reject(new Error("Gagal membaca file"));
+            reader.readAsDataURL(file);
+          });
           
           const serverRes = await fetch('/api/convert-heic', {
             method: 'POST',
