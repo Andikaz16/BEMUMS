@@ -323,41 +323,55 @@ export default function AdminCMS({ db, onUpdateDB }) {
     let file = e.target.files[0];
     if (!file) return;
     
-    // Konversi HEIC/HEIF (iPhone) jika diperlukan
-    const fileName = file.name.toLowerCase();
-    if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif') {
-      showCustomAlert("Mengonversi format HEIC (iPhone) ke JPG... (Mungkin butuh waktu)", "warning", 0);
-      try {
-        const heic2anyModule = await import('heic2any');
-        const heic2any = heic2anyModule.default || heic2anyModule;
-        const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
-        // Jika blob adalah array, ambil yang pertama (bisa terjadi jika gambar burst/live photo)
-        const finalBlob = Array.isArray(blob) ? blob[0] : blob;
-        file = new File([finalBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
-        showCustomAlert("Konversi berhasil! Memulai kompresi & upload...", "info", 2000);
-      } catch (err) {
-        console.error("HEIC Convert Error:", err);
-        showCustomAlert("Gagal konversi HEIC: " + (err.message || "Error tidak diketahui"), "error");
-        if (e.target) e.target.value = null;
-        return;
-      }
-    }
-
     // Cek ukuran file (Max 15MB untuk mencegah browser nge-freeze)
     if (file.size > 15 * 1024 * 1024) {
       showCustomAlert("Ukuran file terlalu besar (Maksimal 15 MB).", "error");
       if (e.target) e.target.value = null;
       return;
     }
+
+    // Deteksi file HEIC/HEIF (iPhone) — upload langsung ke Imgur sebagai binary
+    const fileName = file.name.toLowerCase();
+    const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
     
-    // Alert loading tanpa timeout (persistent)
+    if (isHeic) {
+      showCustomAlert("Mengupload file HEIC langsung ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const res = await fetch('https://api.imgur.com/3/image', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Client-ID 546c25a59c58ad7'
+          },
+          body: formData
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showCustomAlert("Upload HEIC berhasil! Imgur mengonversi otomatis.", "success");
+          callback(data.data.link);
+        } else {
+          showCustomAlert("Gagal upload HEIC: " + (data.data?.error || "Ditolak oleh Imgur."), "error");
+        }
+      } catch (err) {
+        console.error("HEIC Upload Error:", err);
+        showCustomAlert("Gagal upload HEIC: " + err.message, "error");
+      }
+      if (e.target) e.target.value = null;
+      return;
+    }
+    
+    // Untuk file non-HEIC (JPG/PNG), kompres via Canvas lalu upload
     showCustomAlert("Mengompres & Mengupload foto HD ke Imgur Cloud... Mohon Tunggu.", "warning", 0);
     const reader = new FileReader();
     reader.onloadend = () => {
       const img = new window.Image();
       img.onload = async () => {
         try {
-          const MAX_WIDTH = 1280; // Standar web HD (sangat cepat diproses & diupload)
+          const MAX_WIDTH = 1280;
           let width = img.width;
           let height = img.height;
 
@@ -372,7 +386,6 @@ export default function AdminCMS({ db, onUpdateDB }) {
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           
-          // Selalu gunakan JPEG kecuali ukurannya sangat kecil (logo), untuk mencegah Vercel 4.5MB limit payload
           const format = (file.type === 'image/png' && file.size < 1024 * 1024) ? 'image/png' : 'image/jpeg';
           const quality = format === 'image/jpeg' ? 0.80 : undefined;
           
@@ -406,12 +419,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       };
       
       img.onerror = () => {
-        if (file.type === 'image/jpeg' && file.name.endsWith('.jpg')) {
-           // Jika ini adalah hasil konversi HEIC yang gagal di-load browser
-           showCustomAlert("Konversi HEIC berhasil tetapi file corrupt/tidak terbaca. Gunakan JPG asli.", "error");
-        } else {
-           showCustomAlert("Format gambar tidak didukung (contoh: HEIC/iPhone). Gunakan JPG/PNG.", "error");
-        }
+        showCustomAlert("Format gambar tidak didukung. Gunakan JPG/PNG.", "error");
       };
       
       img.src = reader.result;
