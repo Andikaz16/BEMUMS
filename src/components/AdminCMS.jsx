@@ -328,7 +328,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif') {
       showCustomAlert("Mengonversi format HEIC (iPhone) ke JPG... (Mungkin butuh waktu)", "warning", 0);
       try {
-        const heic2any = (await import('heic2any')).default;
+        const heic2anyModule = await import('heic2any');
+        const heic2any = heic2anyModule.default || heic2anyModule;
         const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
         // Jika blob adalah array, ambil yang pertama (bisa terjadi jika gambar burst/live photo)
         const finalBlob = Array.isArray(blob) ? blob[0] : blob;
@@ -336,7 +337,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
         showCustomAlert("Konversi berhasil! Memulai kompresi & upload...", "info", 2000);
       } catch (err) {
         console.error("HEIC Convert Error:", err);
-        showCustomAlert("Gagal mengonversi file HEIC. Cobalah convert secara manual di hp ke JPG.", "error");
+        showCustomAlert("Gagal konversi HEIC: " + (err.message || "Error tidak diketahui"), "error");
         if (e.target) e.target.value = null;
         return;
       }
