@@ -103,14 +103,24 @@ export default function Kementerian({ db }) {
                   {kem.members.map((member, mIdx) => (
                     <div 
                       key={mIdx}
-                      className="bg-black/40 border border-neutral-800/80 rounded-xl p-5 hover:bg-neutral-900/80 transition-colors duration-300 flex flex-col justify-center"
+                      className="bg-black/40 border border-neutral-800/80 rounded-2xl p-6 hover:bg-neutral-900/80 hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group shadow-lg"
                     >
-                      <span className="text-primary text-xs font-bold uppercase tracking-widest mb-1 block">
-                        {member.title}
-                      </span>
-                      <span className="text-white font-body text-lg font-medium block">
-                        {member.name}
-                      </span>
+                      <div>
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-neutral-900/80 shadow-md group-hover:border-primary/50 group-hover:scale-105 transition-all duration-300">
+                          <img 
+                            src={member.photo || '/assets/default-avatar.png'} 
+                            alt={member.name} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.target.src = '/assets/default-avatar.png'; }}
+                          />
+                        </div>
+                        <span className="text-primary text-xs font-bold uppercase tracking-widest mb-1.5 block">
+                          {member.title}
+                        </span>
+                        <span className="text-white font-body text-base md:text-lg font-medium block">
+                          {member.name}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

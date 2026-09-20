@@ -157,6 +157,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [isEditingDept, setIsEditingDept] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberTitle, setNewMemberTitle] = useState('');
+  const [newMemberPhoto, setNewMemberPhoto] = useState('');
+  const [editingMemberIndex, setEditingMemberIndex] = useState(null);
 
   // Article Form
   const [articleForm, setArticleForm] = useState({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
@@ -519,20 +521,59 @@ export default function AdminCMS({ db, onUpdateDB }) {
     const updatedKementerian = { ...db.kementerian, [selectedPeriod]: updatedList };
     onUpdateDB({ ...db, kementerian: updatedKementerian });
     setDeptForm({ id: null, name: '', desc: '', members: [] });
+    setNewMemberName('');
+    setNewMemberTitle('');
+    setNewMemberPhoto('');
+    setEditingMemberIndex(null);
     setIsEditingDept(false);
   };
 
   const handleAddMemberToDept = () => {
     if (!newMemberName.trim()) return;
-    const updatedMembers = [...deptForm.members, { name: newMemberName.trim(), title: newMemberTitle.trim() || 'Anggota' }];
-    setDeptForm({ ...deptForm, members: updatedMembers });
+    if (editingMemberIndex !== null) {
+      const updatedMembers = [...deptForm.members];
+      updatedMembers[editingMemberIndex] = {
+        ...updatedMembers[editingMemberIndex],
+        name: newMemberName.trim(),
+        title: newMemberTitle.trim() || 'Anggota',
+        photo: newMemberPhoto.trim()
+      };
+      setDeptForm({ ...deptForm, members: updatedMembers });
+      setEditingMemberIndex(null);
+    } else {
+      const updatedMembers = [...deptForm.members, { 
+        name: newMemberName.trim(), 
+        title: newMemberTitle.trim() || 'Anggota',
+        photo: newMemberPhoto.trim()
+      }];
+      setDeptForm({ ...deptForm, members: updatedMembers });
+    }
     setNewMemberName('');
     setNewMemberTitle('');
+    setNewMemberPhoto('');
+  };
+
+  const handleEditMemberInDept = (idx) => {
+    const m = deptForm.members[idx];
+    setNewMemberName(m.name || '');
+    setNewMemberTitle(m.title || '');
+    setNewMemberPhoto(m.photo || '');
+    setEditingMemberIndex(idx);
+  };
+
+  const handleCancelEditMember = () => {
+    setNewMemberName('');
+    setNewMemberTitle('');
+    setNewMemberPhoto('');
+    setEditingMemberIndex(null);
   };
 
   const handleRemoveMemberFromDept = (idx) => {
     const updatedMembers = deptForm.members.filter((_, i) => i !== idx);
     setDeptForm({ ...deptForm, members: updatedMembers });
+    if (editingMemberIndex === idx) {
+      handleCancelEditMember();
+    }
   };
 
   const handleDeleteDept = (id) => {
@@ -1137,33 +1178,133 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 w-full text-sm h-32"
                       />
                       
-                      {/* Sub Form Add Members to Dept */}
-                      <div className="p-3 border border-white/10 rounded-xl bg-neutral-800/40 overflow-hidden bg-neutral-800/40 text-white space-y-2">
-                        <h5 className="font-display text-xs uppercase">Anggota Jajaran Kementerian</h5>
-                        <div className="flex flex-wrap gap-1 mb-2">
+                      {/* Sub Form Add/Edit Members to Dept */}
+                      <div className="p-4 border border-white/10 rounded-xl bg-neutral-900/60 text-white space-y-4">
+                        <div className="flex justify-between items-center">
+                          <h5 className="font-display text-xs uppercase text-neutral-300 font-bold tracking-wider">
+                            Anggota Jajaran Kementerian ({deptForm.members.length})
+                          </h5>
+                          <span className="text-[11px] text-neutral-500">Foto otomatis default jika belum diunggah</span>
+                        </div>
+
+                        {/* Member List Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-60 overflow-y-auto pr-1">
                           {deptForm.members.map((member, i) => (
-                            <span key={i} className="inline-flex items-center gap-1 bg-white/10 text-white border border-white/10 rounded-xl bg-neutral-800/40 overflow-hidden text-xs px-2 py-0.5">
-                              {member.name} ({member.title})
-                              <button onClick={() => handleRemoveMemberFromDept(i)} className="hover:text-primary font-bold">×</button>
-                            </span>
+                            <div 
+                              key={i} 
+                              className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
+                                editingMemberIndex === i 
+                                  ? 'bg-primary/20 border-primary shadow-[0_0_15px_rgba(220,20,20,0.2)]' 
+                                  : 'bg-black/50 border-white/10 hover:border-white/20'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                <img 
+                                  src={member.photo || '/assets/default-avatar.png'} 
+                                  alt={member.name} 
+                                  className="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0 bg-neutral-800"
+                                  onError={(e) => { e.target.src = '/assets/default-avatar.png'; }}
+                                />
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-xs font-bold text-white truncate">{member.name}</p>
+                                  <p className="text-[10px] text-primary truncate uppercase tracking-wider">{member.title}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0 ml-2">
+                                <button 
+                                  type="button"
+                                  onClick={() => handleEditMemberInDept(i)} 
+                                  className="p-1 text-neutral-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                                  title="Edit Anggota & Foto"
+                                >
+                                  <Edit3 size={13} />
+                                </button>
+                                <button 
+                                  type="button"
+                                  onClick={() => handleRemoveMemberFromDept(i)} 
+                                  className="p-1 text-red-400 hover:text-red-300 rounded hover:bg-red-500/20 transition-colors"
+                                  title="Hapus Anggota"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </div>
                           ))}
                         </div>
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            placeholder="Nama Jajaran" 
-                            value={newMemberName} 
-                            onChange={e => setNewMemberName(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-xs flex-1"
-                          />
-                          <input 
-                            type="text" 
-                            placeholder="Jabatan (cth: Dirjen)" 
-                            value={newMemberTitle} 
-                            onChange={e => setNewMemberTitle(e.target.value)}
-                            className="px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 transition-colors focus:ring-1 focus:ring-primary/50 placeholder-neutral-500 text-xs w-32"
-                          />
-                          <button onClick={handleAddMemberToDept} className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-3 py-1 text-xs">Tambah</button>
+
+                        {/* Subform: Add / Edit Member */}
+                        <div className="pt-3 border-t border-white/10 space-y-3 bg-black/30 p-3.5 rounded-xl">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
+                              {editingMemberIndex !== null ? '✏️ Edit Anggota & Foto' : '➕ Tambah Anggota Baru'}
+                            </span>
+                            {editingMemberIndex !== null && (
+                              <button 
+                                type="button" 
+                                onClick={handleCancelEditMember}
+                                className="text-xs text-neutral-400 hover:text-white underline"
+                              >
+                                Batal Edit
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <input 
+                              type="text" 
+                              placeholder="Nama Lengkap Jajaran" 
+                              value={newMemberName} 
+                              onChange={e => setNewMemberName(e.target.value)}
+                              className="px-3.5 py-2.5 bg-black/60 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-xs w-full"
+                            />
+                            <input 
+                              type="text" 
+                              placeholder="Jabatan (cth: Menteri / Staff)" 
+                              value={newMemberTitle} 
+                              onChange={e => setNewMemberTitle(e.target.value)}
+                              className="px-3.5 py-2.5 bg-black/60 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-xs w-full"
+                            />
+                          </div>
+
+                          {/* Upload Foto Anggota */}
+                          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                            <div className="flex items-center gap-3 flex-1 w-full">
+                              <img 
+                                src={newMemberPhoto || '/assets/default-avatar.png'} 
+                                alt="Preview" 
+                                className="w-10 h-10 rounded-lg object-cover border border-white/20 shrink-0 bg-neutral-800"
+                                onError={(e) => { e.target.src = '/assets/default-avatar.png'; }}
+                              />
+                              <div className="flex-1 min-w-0">
+                                <label className="block text-[10px] text-neutral-400 uppercase tracking-wider mb-1">
+                                  Upload Foto Anggota (Opsional)
+                                </label>
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  onChange={e => handleImageUpload(e, setNewMemberPhoto)}
+                                  className="w-full text-xs text-neutral-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-white/10 file:text-white hover:file:bg-primary file:transition-colors cursor-pointer"
+                                />
+                              </div>
+                              {newMemberPhoto && (
+                                <button
+                                  type="button"
+                                  onClick={() => setNewMemberPhoto('')}
+                                  className="text-[11px] text-red-400 hover:text-red-300 underline shrink-0"
+                                >
+                                  Hapus Foto
+                                </button>
+                              )}
+                            </div>
+
+                            <button 
+                              type="button"
+                              onClick={handleAddMemberToDept} 
+                              className="bg-primary hover:bg-primary/80 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(185,0,20,0.3)] hover:shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-primary/50 font-bold px-4 py-2 text-xs shrink-0 w-full sm:w-auto"
+                            >
+                              {editingMemberIndex !== null ? 'Simpan Perubahan' : 'Tambah ke Jajaran'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
