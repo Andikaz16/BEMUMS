@@ -306,11 +306,28 @@ import { db as firestore } from "./firebase";
 
 export const initDB = (setDb, setIsFirebaseLoaded) => {
   // STEP 1: Instant render from localStorage cache (fast startup)
+  const ADVOKES_DESC = "Kementerian Advokasi dan Kesejahteraan Mahasiswa (Advokesma) merupakan perangkat organisasi mahasiswa yang berfungsi sebagai ruang representasi, pengawalan, dan perjuangan kepentingan mahasiswa, khususnya dalam persoalan yang berkaitan dengan hak, layanan, kebijakan, serta kesejahteraan mahasiswa. Advokesma tidak hanya berperan sebagai tempat menerima pengaduan, tetapi juga menjadi jembatan komunikasi antara mahasiswa dengan pihak kampus maupun stakeholder terkait. Dengan demikian, keberadaan Advokesma diarahkan untuk memastikan persoalan mahasiswa dapat diidentifikasi, dikaji, ditindaklanjuti, dan dikawal secara bertanggung jawab.";
+
+  const updateAdvokesDesc = (targetData) => {
+    if (targetData && targetData.kementerian) {
+      Object.keys(targetData.kementerian).forEach(period => {
+        const list = targetData.kementerian[period];
+        if (Array.isArray(list)) {
+          const advokes = list.find(k => k.id === 3 || (k.name && k.name.includes('Advokasi')));
+          if (advokes) {
+            advokes.desc = ADVOKES_DESC;
+          }
+        }
+      });
+    }
+  };
+
   const localData = localStorage.getItem("bem_ums_db");
   let cachedData = null;
   if (localData) {
     try { 
       cachedData = JSON.parse(localData); 
+      updateAdvokesDesc(cachedData);
       setDb(cachedData); 
     } catch(e) { 
       console.warn("localStorage cache corrupt, using defaults for initial render.");
@@ -353,6 +370,7 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
 
     if (hasCore) {
       // ✅ NORMAL PATH: Firestore has data, use it
+      updateAdvokesDesc(combinedData);
       if (combinedData.kegiatan) {
         const eventsToAdd = [
           { id: 'kuliah-1-2026', title: "Masa Kuliah Hari Pertama", desc: "Awal perkuliahan Semester Ganjil TA 2026/2027.", date: "2026-09-14" },
