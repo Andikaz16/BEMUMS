@@ -207,53 +207,6 @@ export default function StaffMuda({ db }) {
           )}
         </div>
 
-        {/* ================= PROGRAM PILLARS / VALUES ================= */}
-        <div className="pt-10 border-t border-white/10">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-primary text-xs font-display uppercase tracking-widest font-bold">
-              Kaderisasi & Kapasitas
-            </span>
-            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase text-white mt-1">
-              Ruang Gerak Staff Muda
-            </h2>
-            <p className="text-neutral-400 font-body text-sm mt-2">
-              Tiga pilar utama proses pembelajaran dan kontribusi kader muda di BEM UMS.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-neutral-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-7 hover:border-primary/40 transition-all space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary">
-                <Award size={24} />
-              </div>
-              <h3 className="text-xl font-heading font-bold text-white uppercase">Inkubator Kepemimpinan</h3>
-              <p className="text-neutral-400 font-body text-sm leading-relaxed">
-                Pelatihan soft-skill intensif, pemahaman dinamika kampus, serta pengasahan daya kritis untuk mencetak pemimpin mahasiswa berintegritas.
-              </p>
-            </div>
-
-            <div className="bg-neutral-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-7 hover:border-primary/40 transition-all space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary">
-                <Compass size={24} />
-              </div>
-              <h3 className="text-xl font-heading font-bold text-white uppercase">Keterlibatan Proker Nyata</h3>
-              <p className="text-neutral-400 font-body text-sm leading-relaxed">
-                Terjun langsung mendampingi kementerian dalam merancang, mengeksekusi, dan mengawal program kerja berdampak bagi mahasiswa.
-              </p>
-            </div>
-
-            <div className="bg-neutral-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-7 hover:border-primary/40 transition-all space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary">
-                <HeartHandshake size={24} />
-              </div>
-              <h3 className="text-xl font-heading font-bold text-white uppercase">Solidaritas Kolektif</h3>
-              <p className="text-neutral-400 font-body text-sm leading-relaxed">
-                Membangun persaudaraan yang erat antar-fakultas dalam iklim organisasi yang kolaboratif, suportif, dan kekeluargaan.
-              </p>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   );
