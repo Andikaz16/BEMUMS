@@ -23,7 +23,7 @@ const DEFAULT_DATA = {
       { id: 'ben', name: "Bendahara Kabinet", logo: "/assets/Bendahara.png", desc: "Mengelola arus kas, transparansi finansial, dan penganggaran kegiatan BEM UMS.", members: [
         { name: "Nisa Hidayanti Putri", title: "Bendahara Kabinet" }
       ]},
-      { id: 3, name: "Kementerian Advokasi & Kesejahteraan Mahasiswa", logo: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png", desc: "Kementerian yang menjadi representasi BEM UMS dalam hubungan eksternal, baik dengan BEM/organisasi mahasiswa kampus lain, aliansi mahasiswa, maupun mitra di luar kampus.", members: [
+      { id: 3, name: "Kementerian Advokasi & Kesejahteraan Mahasiswa", logo: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png", desc: "Kementerian Advokasi dan Kesejahteraan Mahasiswa (Advokesma) merupakan perangkat organisasi mahasiswa yang berfungsi sebagai ruang representasi, pengawalan, dan perjuangan kepentingan mahasiswa, khususnya dalam persoalan yang berkaitan dengan hak, layanan, kebijakan, serta kesejahteraan mahasiswa. Advokesma tidak hanya berperan sebagai tempat menerima pengaduan, tetapi juga menjadi jembatan komunikasi antara mahasiswa dengan pihak kampus maupun stakeholder terkait. Dengan demikian, keberadaan Advokesma diarahkan untuk memastikan persoalan mahasiswa dapat diidentifikasi, dikaji, ditindaklanjuti, dan dikawal secara bertanggung jawab.", members: [
         { name: "Anggris Bagus Eka Saputra", title: "Menteri" },
         { name: "Pinkan Nuraini", title: "Sekretaris Menteri" },
         { name: "Abdullah Tsaqif Imtiyazi", title: "Staff Menteri" },
