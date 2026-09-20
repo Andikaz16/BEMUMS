@@ -392,24 +392,57 @@ export default function AdminCMS({ db, onUpdateDB }) {
           
           if (!base64Data) throw new Error("Gagal mengompres gambar (Canvas Error)");
 
-          const formData = new FormData();
-          formData.append('image', base64Data);
+          let uploadSuccess = false;
+          let uploadedUrl = null;
 
-          const res = await fetch('https://api.imgur.com/3/image', {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Client-ID 546c25a59c58ad7'
-            },
-            body: formData
-          });
-          
-          const data = await res.json();
-          
-          if (data.success) {
-            showCustomAlert("Upload HD berhasil!", "success");
-            callback(data.data.link);
+          // 1. Coba upload langsung ke Imgur
+          try {
+            const formData = new FormData();
+            formData.append('image', base64Data);
+
+            const res = await fetch('https://api.imgur.com/3/image', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Client-ID 546c25a59c58ad7'
+              },
+              body: formData
+            });
+            
+            const data = await res.json();
+            if (data.success && data.data?.link) {
+              uploadSuccess = true;
+              uploadedUrl = data.data.link;
+            } else {
+              console.warn("Imgur response error, will use fallback:", data.data?.error || data);
+            }
+          } catch (imgurErr) {
+            console.warn("Direct Imgur failed, trying fallback...", imgurErr);
+          }
+
+          // 2. Fallback ke /api/upload (Catbox) jika Imgur over capacity atau gagal
+          if (!uploadSuccess) {
+            try {
+              showCustomAlert("Server Imgur sibuk, mengalihkan ke server cadangan...", "warning", 0);
+              const fallbackRes = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64Data })
+              });
+              const fallbackData = await fallbackRes.json();
+              if (fallbackData.success && fallbackData.url) {
+                uploadSuccess = true;
+                uploadedUrl = fallbackData.url;
+              }
+            } catch (fallbackErr) {
+              console.error("Fallback upload error:", fallbackErr);
+            }
+          }
+
+          if (uploadSuccess && uploadedUrl) {
+            showCustomAlert("Upload foto berhasil!", "success");
+            callback(uploadedUrl);
           } else {
-            showCustomAlert("Gagal upload gambar: " + (data.data?.error || "Ditolak oleh Imgur."), "error");
+            showCustomAlert("Gagal upload gambar: Server cloud sedang sibuk. Silakan coba sesaat lagi.", "error");
           }
         } catch (err) {
           console.error("Upload Error:", err);
