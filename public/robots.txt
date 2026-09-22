@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bemums-three.vercel.app/sitemap.xml
+Sitemap: https://bem.ums.ac.id/sitemap.xml
