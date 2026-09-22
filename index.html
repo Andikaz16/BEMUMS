@@ -12,31 +12,41 @@
     <meta property="og:title" content="BEM UMS 2026 — Badan Eksekutif Mahasiswa Universitas Muhammadiyah Surakarta" />
     <meta property="og:description" content="Website Resmi BEM UMS Kabinet Kolektiva." />
     <meta property="og:url" content="https://bem.ums.ac.id/" />
-    <meta property="og:image" content="https://bem.ums.ac.id/assets/logo_bem_baru.png" />
+    <meta property="og:image" content="https://bem.ums.ac.id/assets/kolektiva_app_icon_512.png" />
     <meta name="application-name" content="BEM UMS" />
     <meta name="apple-mobile-web-app-title" content="BEM UMS" />
     <title>BEM UMS 2026 — Badan Eksekutif Mahasiswa Universitas Muhammadiyah Surakarta</title>
     <link rel="canonical" href="https://bem.ums.ac.id/" />
-    <link rel="shortcut icon" href="/assets/logo_bem_baru.png" />
-    <link rel="icon" href="/assets/logo_bem_baru.png" />
-    <link rel="icon" type="image/png" href="/assets/logo_bem_baru.png" sizes="48x48" />
-    <link rel="icon" type="image/png" href="/assets/logo_bem_baru.png" sizes="192x192" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/kolektiva_app_icon_192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/kolektiva_app_icon_512.png" />
     <link rel="apple-touch-icon" href="/assets/kolektiva_app_icon_192.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#b90014" />
     
-    <!-- JSON-LD untuk merubah Site Name di Google Search menjadi BEM UMS -->
+    <!-- JSON-LD untuk merubah Site Name dan Logo di Google Search menjadi BEM UMS -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "BEM UMS",
-      "alternateName": [
-        "BEM Universitas Muhammadiyah Surakarta",
-        "BEM UMS 2026",
-        "Badan Eksekutif Mahasiswa UMS"
-      ],
-      "url": "https://bem.ums.ac.id/"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "BEM UMS",
+          "alternateName": [
+            "BEM Universitas Muhammadiyah Surakarta",
+            "BEM UMS 2026",
+            "Badan Eksekutif Mahasiswa UMS"
+          ],
+          "url": "https://bem.ums.ac.id/"
+        },
+        {
+          "@type": "Organization",
+          "name": "BEM UMS",
+          "url": "https://bem.ums.ac.id/",
+          "logo": "https://bem.ums.ac.id/assets/kolektiva_app_icon_512.png"
+        }
+      ]
     }
     </script>
 
