@@ -304,6 +304,19 @@ const DEFAULT_DATA = {
 import { doc, setDoc, onSnapshot, writeBatch, increment, collection, getDocs, runTransaction } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
+// Utility to sort articles or albums by date/id descending (newest first)
+export const sortItemsByDateDesc = (items = []) => {
+  if (!Array.isArray(items)) return [];
+  return [...items].sort((a, b) => {
+    const timeA = a?.date ? new Date(a.date).getTime() : 0;
+    const timeB = b?.date ? new Date(b.date).getTime() : 0;
+    if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB) {
+      return timeB - timeA;
+    }
+    return (Number(b?.id) || 0) - (Number(a?.id) || 0);
+  });
+};
+
 export const initDB = (setDb, setIsFirebaseLoaded) => {
   // STEP 1: Instant render from localStorage cache (fast startup)
   const ADVOKES_DESC = "Kementerian Advokasi dan Kesejahteraan Mahasiswa (Advokesma) merupakan perangkat organisasi mahasiswa yang berfungsi sebagai ruang representasi, pengawalan, dan perjuangan kepentingan mahasiswa, khususnya dalam persoalan yang berkaitan dengan hak, layanan, kebijakan, serta kesejahteraan mahasiswa. Advokesma tidak hanya berperan sebagai tempat menerima pengaduan, tetapi juga menjadi jembatan komunikasi antara mahasiswa dengan pihak kampus maupun stakeholder terkait. Dengan demikian, keberadaan Advokesma diarahkan untuk memastikan persoalan mahasiswa dapat diidentifikasi, dikaji, ditindaklanjuti, dan dikawal secara bertanggung jawab.";
@@ -328,6 +341,8 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
     try { 
       cachedData = JSON.parse(localData); 
       updateAdvokesDesc(cachedData);
+      if (cachedData.articles) cachedData.articles = sortItemsByDateDesc(cachedData.articles);
+      if (cachedData.albums) cachedData.albums = sortItemsByDateDesc(cachedData.albums);
       setDb(cachedData); 
     } catch(e) { 
       console.warn("localStorage cache corrupt, using defaults for initial render.");
@@ -354,10 +369,10 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         combinedData = { ...combinedData, ...docSnap.data() };
       } else if (docSnap.id === 'articles') {
         hasArticles = true;
-        combinedData.articles = docSnap.data().data || [];
+        combinedData.articles = sortItemsByDateDesc(docSnap.data().data || []);
       } else if (docSnap.id === 'albums') {
         hasAlbums = true;
-        combinedData.albums = docSnap.data().data || [];
+        combinedData.albums = sortItemsByDateDesc(docSnap.data().data || []);
       } else if (docSnap.id === 'kegiatan') {
         hasKegiatan = true;
         const kData = docSnap.data();
@@ -463,8 +478,8 @@ export const saveDB = async (data) => {
     const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, silatnasCulture, ...coreData } = data;
     
     batch.set(doc(firestore, "cms", "core"), coreData);
-    batch.set(doc(firestore, "cms", "articles"), { data: articles || [], lastUpdated: data.lastUpdated });
-    batch.set(doc(firestore, "cms", "albums"), { data: albums || [], lastUpdated: data.lastUpdated });
+    batch.set(doc(firestore, "cms", "articles"), { data: sortItemsByDateDesc(articles || []), lastUpdated: data.lastUpdated });
+    batch.set(doc(firestore, "cms", "albums"), { data: sortItemsByDateDesc(albums || []), lastUpdated: data.lastUpdated });
     batch.set(doc(firestore, "cms", "kegiatan"), { 
       kegiatan: kegiatan || [], 
       volunteerCatalog: volunteerCatalog || [], 

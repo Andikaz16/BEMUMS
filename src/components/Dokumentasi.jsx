@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image as ImageIcon, Camera, Calendar, X, Maximize2, ExternalLink } from 'lucide-react';
+import { sortItemsByDateDesc } from '../db.js';
 
 export default function Dokumentasi({ db }) {
   const [activeAlbum, setActiveAlbum] = useState(null);
   const [fullscreenImage, setFullscreenImage] = useState(null);
-  const albums = db.albums || [];
+  const albums = sortItemsByDateDesc(db.albums || []);
 
   const containerVariants = {
     hidden: { opacity: 0 },

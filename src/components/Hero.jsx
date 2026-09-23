@@ -3,11 +3,12 @@ import { ArrowRight, Sparkles, AlertTriangle, Layers, UserCheck } from 'lucide-r
 import { motion } from 'framer-motion';
 import KalenderWidget from './KalenderWidget.jsx';
 import BeritaWidget from './BeritaWidget.jsx';
+import { sortItemsByDateDesc } from '../db.js';
 
 export default function Hero({ db, setActivePage }) {
   const oprec = db.oprec || {};
   const currentPeriod = db.currentPeriod;
-  const recentArticles = (db.articles || []).slice(0, 3);
+  const recentArticles = sortItemsByDateDesc(db.articles || []).slice(0, 3);
   const leaders = db.pimpinan[currentPeriod] || [];
   const president = leaders.find(l => l.id === 1 || l.role.toLowerCase().includes('ketua'));
   const presidentPhoto = president?.photo || '';

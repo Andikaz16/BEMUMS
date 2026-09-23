@@ -7,6 +7,7 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import StatistikAdmin from './StatistikAdmin.jsx';
+import { sortItemsByDateDesc } from '../db.js';
 
 export default function AdminCMS({ db, onUpdateDB }) {
   const [activeTab, setActiveTab] = useState('struktural');
@@ -623,8 +624,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (isEditingArticle) {
       updatedList = db.articles.map(a => a.id === articleForm.id ? { ...a, ...articleForm } : a);
     } else {
-      updatedList = [...db.articles, { ...articleForm, id: Date.now(), likes: 0, comments: [] }];
+      updatedList = [{ ...articleForm, id: Date.now(), likes: 0, comments: [] }, ...(db.articles || [])];
     }
+    updatedList = sortItemsByDateDesc(updatedList);
     onUpdateDB({ ...db, articles: updatedList });
     setArticleForm({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
     setIsEditingArticle(false);
@@ -650,8 +652,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (isEditingAlbum) {
       updatedList = db.albums.map(a => a.id === albumForm.id ? { ...albumForm } : a);
     } else {
-      updatedList = [...db.albums, { ...albumForm, id: Date.now() }];
+      updatedList = [{ ...albumForm, id: Date.now() }, ...(db.albums || [])];
     }
+    updatedList = sortItemsByDateDesc(updatedList);
     onUpdateDB({ ...db, albums: updatedList });
     setAlbumForm({ id: null, title: '', date: '', desc: '', driveUrl: '', photos: [] });
     setIsEditingAlbum(false);
@@ -1621,7 +1624,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
                 {/* List Artikel */}
                 <div className="space-y-3">
-                  {db.articles.map(a => (
+                  {sortItemsByDateDesc(db.articles || []).map(a => (
                     <div key={a.id} className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden bg-neutral-800/40 text-white flex justify-between items-center">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -1762,7 +1765,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
               {/* List Albums */}
               <div className="space-y-4">
-                {db.albums.map(a => (
+                {sortItemsByDateDesc(db.albums || []).map(a => (
                   <div key={a.id} className="p-4 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white overflow-hidden bg-neutral-800/40 text-white flex justify-between items-start">
                     <div>
                       <h4 className="font-display text-lg uppercase">{a.title}</h4>

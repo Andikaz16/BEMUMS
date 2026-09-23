@@ -4,7 +4,7 @@ import {
   Calendar, ChevronRight, X, Heart, MessageCircle, 
   MessageSquare, Share2, Send, Check, Copy, User, Clock 
 } from 'lucide-react';
-import { toggleArticleLike, addArticleComment } from '../db.js';
+import { toggleArticleLike, addArticleComment, sortItemsByDateDesc } from '../db.js';
 
 export default function Artikel({ db, onUpdateDB }) {
   const [selectedCategory, setSelectedCategory] = useState('Semua');
@@ -27,7 +27,7 @@ export default function Artikel({ db, onUpdateDB }) {
   const commentSectionRef = useRef(null);
 
   const categories = db?.categories || ["Semua"];
-  const articles = db?.articles || [];
+  const articles = sortItemsByDateDesc(db?.articles || []);
 
   // Filter articles based on selected label/category
   const filteredArticles = selectedCategory === 'Semua' 
