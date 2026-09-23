@@ -56,8 +56,8 @@ export default function App() {
       const hash = window.location.hash.substring(1);
       if (hash === 'admin') {
         setActivePage('admin');
-      } else if (hash && ['beranda', 'struktural', 'staffmuda', 'kementerian', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(hash)) {
-        setActivePage(hash);
+      } else if (hash && ['beranda', 'struktural', 'staffmuda', 'kementerian', 'kabinet', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(hash)) {
+        setActivePage(hash === 'kabinet' ? 'kementerian' : hash);
       } else {
         // Fallback or default
         setActivePage('beranda');

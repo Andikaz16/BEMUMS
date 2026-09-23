@@ -33,7 +33,7 @@ export default function Navbar({ db, activePage, setActivePage }) {
 
   const tentangItems = [
     { id: 'visimisi', label: 'Visi & Misi' },
-    { id: 'kementerian', label: 'Kementerian' },
+    { id: 'kementerian', label: 'Kabinet' },
     { id: 'struktural', label: 'Struktural' },
     { id: 'staffmuda', label: 'Staff Muda' },
     { id: 'kalender', label: 'Kalender Kegiatan' }

@@ -3,8 +3,24 @@ import { motion } from 'framer-motion';
 import { Users, BookOpen } from 'lucide-react';
 
 export default function Kementerian({ db }) {
-  const currentPeriod = db.currentPeriod;
-  const kementerianData = db.kementerian[currentPeriod] || [];
+  const currentPeriod = db?.currentPeriod || "2026";
+  const kementerianData = db?.kementerian?.[currentPeriod] || [];
+  const pimpinanData = db?.pimpinan?.[currentPeriod] || [];
+
+  // Pimpinan Presma & Wapresma
+  const presma = pimpinanData.find(l => l.role?.toLowerCase().includes('presiden') && !l.role?.toLowerCase().includes('wakil')) || {
+    id: 1,
+    name: "Muh. Naufal Aulia Darojat",
+    role: "Presiden Mahasiswa",
+    photo: "/assets/foto_presiden.jpg"
+  };
+
+  const wapresma = pimpinanData.find(l => l.role?.toLowerCase().includes('wakil')) || {
+    id: 2,
+    name: "Muh. Faris Abid Muwaffaq",
+    role: "Wakil Presiden Mahasiswa",
+    photo: "/assets/foto_wakil.jpg"
+  };
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -39,15 +55,15 @@ export default function Kementerian({ db }) {
       >
         <div>
           <h1 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg">
-            Profil <span className="text-primary">Kementerian</span>
+            Profil <span className="text-primary">Kabinet</span>
           </h1>
           <p className="font-body text-neutral-400 mt-4 max-w-2xl text-lg md:text-xl">
-            Mengenal lebih dekat arah gerak, tugas, dan susunan fungsionaris dari setiap kementerian Kabinet KOLEKTIVA BEM UMS {currentPeriod}.
+            Mengenal lebih dekat jajaran pimpinan umum, pengurus inti, dan kementerian Kabinet KOLEKTIVA BEM UMS {currentPeriod}.
           </p>
         </div>
       </motion.div>
 
-      {/* Ministry Cards List */}
+      {/* Cards List */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
@@ -55,6 +71,95 @@ export default function Kementerian({ db }) {
         viewport={{ once: true, margin: "-100px" }}
         className="max-w-7xl mx-auto space-y-12 md:space-y-24"
       >
+        
+        {/* ========================================================================= */}
+        {/* CARD 0: PIMPINAN UMUM (PRESMA & WAPRESMA - DI ATAS SEKRETARIS KABINET)   */}
+        {/* ========================================================================= */}
+        <motion.div 
+          variants={cardVariants}
+          className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 md:p-12 overflow-hidden hover:border-primary/50 transition-colors duration-500 shadow-2xl"
+        >
+          {/* Subtle glow effect behind the card */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/10 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-colors duration-700"></div>
+          
+          <div className="relative z-10 flex flex-col xl:flex-row gap-12 xl:gap-16">
+            
+            {/* Left Column: Info Pimpinan */}
+            <div className="xl:w-1/3 flex flex-col">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="w-32 h-32 md:w-48 md:h-48 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
+                  <img 
+                    src="/assets/kolektiva_app_icon_192.png" 
+                    alt="Kabinet Kolektiva" 
+                    className="w-28 h-28 md:w-40 md:h-40 object-contain rounded-3xl shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-white/10" 
+                  />
+                </div>
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white mb-4">
+                Presiden & Wakil Presiden Mahasiswa
+              </h2>
+              
+              <div className="flex items-start gap-3 mt-2 mb-8 xl:mb-0">
+                <BookOpen className="w-6 h-6 text-primary shrink-0 mt-1" />
+                <p className="font-body text-neutral-400 text-lg leading-relaxed">
+                  Nakhoda kepengurusan BEM UMS Kabinet Kolektiva, memimpin arah gerak strategis, merawat marwah kelembagaan, serta memperjuangkan hak dan aspirasi kemahasiswaan demi kemaslahatan civitas akademika UMS.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column: Foto & Nama Presma/Wapresma */}
+            <div className="xl:w-2/3 border-t xl:border-t-0 xl:border-l border-neutral-800/60 pt-8 xl:pt-0 xl:pl-16">
+              <div className="flex items-center gap-3 mb-8">
+                <Users className="w-6 h-6 text-neutral-500" />
+                <h3 className="font-heading font-bold text-xl uppercase tracking-widest text-neutral-300">Susunan Jajaran Pimpinan</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {/* Presma */}
+                <div className="bg-black/40 border border-neutral-800/80 rounded-2xl p-6 sm:p-7 hover:bg-neutral-900/80 hover:border-primary/40 transition-all duration-300 flex flex-col items-center text-center group shadow-lg">
+                  <div className="w-36 h-36 sm:w-48 sm:h-48 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-neutral-900/80 shadow-md group-hover:border-primary/50 group-hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                    <img 
+                      src={presma.photo || '/assets/foto_presiden.jpg'} 
+                      alt={presma.name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.src = '/assets/foto_presiden.jpg'; }}
+                    />
+                  </div>
+                  <span className="text-primary text-xs font-bold uppercase tracking-widest mb-1.5 block">
+                    {presma.role || "Presiden Mahasiswa"}
+                  </span>
+                  <span className="text-white font-body text-base md:text-lg font-medium block">
+                    {presma.name}
+                  </span>
+                </div>
+
+                {/* Wapresma */}
+                <div className="bg-black/40 border border-neutral-800/80 rounded-2xl p-6 sm:p-7 hover:bg-neutral-900/80 hover:border-primary/40 transition-all duration-300 flex flex-col items-center text-center group shadow-lg">
+                  <div className="w-36 h-36 sm:w-48 sm:h-48 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-neutral-900/80 shadow-md group-hover:border-primary/50 group-hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                    <img 
+                      src={wapresma.photo || '/assets/foto_wakil.jpg'} 
+                      alt={wapresma.name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.src = '/assets/foto_wakil.jpg'; }}
+                    />
+                  </div>
+                  <span className="text-primary text-xs font-bold uppercase tracking-widest mb-1.5 block">
+                    {wapresma.role || "Wakil Presiden Mahasiswa"}
+                  </span>
+                  <span className="text-white font-body text-base md:text-lg font-medium block">
+                    {wapresma.name}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
+
+        {/* ========================================================================= */}
+        {/* CARDS 1+: JAJARAN KEMENTERIAN & BPH (DIMULAI DARI SEKRETARIS KABINET)     */}
+        {/* ========================================================================= */}
         {kementerianData.map((kem, index) => (
           <motion.div 
             key={kem.id}
@@ -100,7 +205,7 @@ export default function Kementerian({ db }) {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  {kem.members.map((member, mIdx) => (
+                  {kem.members?.map((member, mIdx) => (
                     <div 
                       key={mIdx}
                       className="bg-black/40 border border-neutral-800/80 rounded-2xl p-6 sm:p-7 hover:bg-neutral-900/80 hover:border-primary/40 transition-all duration-300 flex flex-col items-center text-center group shadow-lg"
