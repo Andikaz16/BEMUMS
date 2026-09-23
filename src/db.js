@@ -535,6 +535,121 @@ export const addSilatnasApplicant = async (eventId, applicantData) => {
   });
 };
 
+// --- ARTICLE INTERACTIONS (LIKE & COMMENTS) ---
+export const toggleArticleLike = async (articleId, shouldLike) => {
+  const DOC_REF = doc(firestore, "cms", "articles");
+
+  // 1. Update local storage cache immediately
+  try {
+    const local = localStorage.getItem("bem_ums_db");
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (Array.isArray(parsed.articles)) {
+        parsed.articles = parsed.articles.map(a => {
+          if (String(a.id) === String(articleId)) {
+            const currentLikes = typeof a.likes === 'number' ? a.likes : 0;
+            return { ...a, likes: Math.max(0, currentLikes + (shouldLike ? 1 : -1)) };
+          }
+          return a;
+        });
+        localStorage.setItem("bem_ums_db", JSON.stringify(parsed));
+      }
+    }
+  } catch (e) {
+    console.warn("Local storage like update error:", e);
+  }
+
+  // 2. Safe transaction in Firestore
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      const docSnap = await transaction.get(DOC_REF);
+      if (!docSnap.exists()) return;
+      const currentData = docSnap.data();
+      const articlesList = currentData.data || [];
+      const updatedList = articlesList.map(a => {
+        if (String(a.id) === String(articleId)) {
+          const currentLikes = typeof a.likes === 'number' ? a.likes : 0;
+          return { ...a, likes: Math.max(0, currentLikes + (shouldLike ? 1 : -1)) };
+        }
+        return a;
+      });
+      transaction.update(DOC_REF, { data: updatedList, lastUpdated: Date.now() });
+    });
+  } catch (err) {
+    console.warn("Firestore like sync error:", err);
+  }
+};
+
+export const addArticleComment = async (articleId, commentData) => {
+  const DOC_REF = doc(firestore, "cms", "articles");
+
+  // 1. Update local storage cache immediately
+  try {
+    const local = localStorage.getItem("bem_ums_db");
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (Array.isArray(parsed.articles)) {
+        parsed.articles = parsed.articles.map(a => {
+          if (String(a.id) === String(articleId)) {
+            const currentComments = Array.isArray(a.comments) ? a.comments : [];
+            return { ...a, comments: [commentData, ...currentComments] };
+          }
+          return a;
+        });
+        localStorage.setItem("bem_ums_db", JSON.stringify(parsed));
+      }
+    }
+  } catch (e) {
+    console.warn("Local storage comment update error:", e);
+  }
+
+  // 2. Safe transaction in Firestore
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      const docSnap = await transaction.get(DOC_REF);
+      if (!docSnap.exists()) {
+        await setDoc(DOC_REF, { data: [], lastUpdated: Date.now() });
+        return;
+      }
+      const currentData = docSnap.data();
+      const articlesList = currentData.data || [];
+      const updatedList = articlesList.map(a => {
+        if (String(a.id) === String(articleId)) {
+          const currentComments = Array.isArray(a.comments) ? a.comments : [];
+          return { ...a, comments: [commentData, ...currentComments] };
+        }
+        return a;
+      });
+      transaction.update(DOC_REF, { data: updatedList, lastUpdated: Date.now() });
+    });
+  } catch (err) {
+    console.error("Firestore comment sync error:", err);
+    throw err;
+  }
+};
+
+export const deleteArticleComment = async (articleId, commentId) => {
+  const DOC_REF = doc(firestore, "cms", "articles");
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      const docSnap = await transaction.get(DOC_REF);
+      if (!docSnap.exists()) return;
+      const currentData = docSnap.data();
+      const articlesList = currentData.data || [];
+      const updatedList = articlesList.map(a => {
+        if (String(a.id) === String(articleId)) {
+          const currentComments = Array.isArray(a.comments) ? a.comments : [];
+          return { ...a, comments: currentComments.filter(c => String(c.id) !== String(commentId)) };
+        }
+        return a;
+      });
+      transaction.update(DOC_REF, { data: updatedList, lastUpdated: Date.now() });
+    });
+  } catch (err) {
+    console.warn("Firestore comment delete error:", err);
+  }
+};
+
 // --- WEB ANALYTICS ---
 export const incrementPageView = async (pageName) => {
   if (pageName === 'admin' || !pageName) return;

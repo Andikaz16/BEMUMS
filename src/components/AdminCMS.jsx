@@ -621,9 +621,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const handleSaveArticle = () => {
     let updatedList;
     if (isEditingArticle) {
-      updatedList = db.articles.map(a => a.id === articleForm.id ? { ...articleForm } : a);
+      updatedList = db.articles.map(a => a.id === articleForm.id ? { ...a, ...articleForm } : a);
     } else {
-      updatedList = [...db.articles, { ...articleForm, id: Date.now() }];
+      updatedList = [...db.articles, { ...articleForm, id: Date.now(), likes: 0, comments: [] }];
     }
     onUpdateDB({ ...db, articles: updatedList });
     setArticleForm({ id: null, title: '', category: 'Berita', date: '', thumbnail: '', desc: '', content: '' });
@@ -1627,6 +1627,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="bg-black/80 text-white border-white/10 px-2 py-0.5 text-[10px] uppercase font-bold">{a.category}</span>
                           <span className="text-xs text-neutral-400">{a.date}</span>
+                          <span className="text-xs text-rose-400 font-bold ml-2">❤️ {a.likes || 0}</span>
+                          <span className="text-xs text-sky-400 font-bold">💬 {(a.comments || []).length}</span>
                         </div>
                         <h4 className="font-display text-lg uppercase">{a.title}</h4>
                         <p className="text-xs text-neutral-400 line-clamp-2">{a.desc}</p>

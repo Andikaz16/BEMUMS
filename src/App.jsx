@@ -130,7 +130,7 @@ export default function App() {
           <Kementerian db={db} />
         )}
         {activePage === 'artikel' && (
-          <Artikel db={db} />
+          <Artikel db={db} onUpdateDB={handleUpdateDB} />
         )}
         {activePage === 'dokumentasi' && (
           <Dokumentasi db={db} />
