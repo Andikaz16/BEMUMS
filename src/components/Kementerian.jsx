@@ -87,12 +87,21 @@ export default function Kementerian({ db }) {
             {/* Left Column: Info Pimpinan */}
             <div className="xl:w-1/3 flex flex-col">
               <div className="flex items-center gap-6 mb-8">
-                <div className="w-32 h-32 md:w-48 md:h-48 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500">
-                  <img 
-                    src="/assets/kolektiva_app_icon_192.png" 
-                    alt="Kabinet Kolektiva" 
-                    className="w-28 h-28 md:w-40 md:h-40 object-contain rounded-3xl shadow-[0_0_25px_rgba(185,0,20,0.5)] border border-white/10" 
-                  />
+                <div className="w-32 h-32 md:w-48 md:h-48 relative flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                  <div className="absolute inset-0 bg-primary/20 rounded-full filter blur-2xl opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" />
+                  <svg 
+                    viewBox="0 0 100 100" 
+                    className="w-28 h-28 md:w-40 md:h-40 relative z-10 drop-shadow-[0_0_20px_rgba(185,0,20,0.8)]" 
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <polygon 
+                      points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" 
+                      fill="#b90014" 
+                      stroke="white" 
+                      strokeWidth="4" 
+                      strokeLinejoin="round" 
+                    />
+                  </svg>
                 </div>
               </div>
               
