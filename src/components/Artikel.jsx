@@ -147,8 +147,8 @@ export default function Artikel({ db, onUpdateDB }) {
   // Handle Share Click & dynamic article URL
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://bem.ums.ac.id';
   const currentUrl = activeArticle 
-    ? `${origin}/#artikel?id=${activeArticle.id}` 
-    : `${origin}/#artikel`;
+    ? `${origin}/artikel?id=${activeArticle.id}` 
+    : `${origin}/`;
   const shareTitle = activeArticle?.title || 'Artikel BEM UMS 2026';
   const shareText = `Baca "${shareTitle}" di Website Resmi BEM UMS:`;
 

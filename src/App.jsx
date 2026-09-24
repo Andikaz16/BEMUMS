@@ -53,6 +53,18 @@ export default function App() {
     });
 
     const handleHashChange = () => {
+      // If user landed on /artikel or /artikel?id=... via direct URL, seamlessly transition to SPA hash route
+      if (typeof window !== 'undefined') {
+        const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+        if (path === 'artikel') {
+          const searchParams = new URLSearchParams(window.location.search);
+          const articleId = searchParams.get('id');
+          const targetHash = articleId ? `artikel?id=${articleId}` : 'artikel';
+          window.location.replace(`/#${targetHash}`);
+          return;
+        }
+      }
+
       const rawHash = window.location.hash.substring(1);
       // Support query parameters or sub-routes (e.g. #artikel?id=123 or #artikel/123)
       const [pageRoute] = rawHash.split(/[/?]/);

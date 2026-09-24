@@ -2,11 +2,15 @@
   "functions": {
     "api/upload.js": {
       "maxDuration": 30
+    },
+    "api/artikel.js": {
+      "maxDuration": 15
     }
   },
   "rewrites": [
     { "source": "/api/news", "destination": "/api/news" },
     { "source": "/api/upload", "destination": "/api/upload" },
+    { "source": "/artikel", "destination": "/api/artikel" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
