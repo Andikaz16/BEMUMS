@@ -34,8 +34,29 @@ export default function Artikel({ db, onUpdateDB }) {
     ? articles 
     : articles.filter(a => a.category?.toLowerCase() === selectedCategory.toLowerCase());
 
+  // Helper to extract article id from hash (#artikel?id=xxx or #artikel/xxx)
+  const getArticleIdFromHash = () => {
+    if (typeof window === 'undefined') return null;
+    const hash = window.location.hash.substring(1);
+    if (!hash.startsWith('artikel')) return null;
+
+    const searchPart = hash.includes('?') ? hash.split('?')[1] : null;
+    if (searchPart) {
+      const params = new URLSearchParams(searchPart);
+      const id = params.get('id');
+      if (id) return id;
+    }
+
+    const slashParts = hash.split('/');
+    if (slashParts.length > 1 && slashParts[1]) {
+      return slashParts[1];
+    }
+
+    return null;
+  };
+
   // Handle opening an article
-  const handleOpenArticle = (article) => {
+  const handleOpenArticle = (article, updateHash = true) => {
     setActiveArticle(article);
     setLikesCount(typeof article.likes === 'number' ? article.likes : 0);
     setComments(Array.isArray(article.comments) ? article.comments : []);
@@ -45,7 +66,50 @@ export default function Artikel({ db, onUpdateDB }) {
     setCommentAuthor('');
     setCommentText('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (updateHash && typeof window !== 'undefined') {
+      window.location.hash = `artikel?id=${article.id}`;
+    }
   };
+
+  // Handle back to article listing
+  const handleBackToList = () => {
+    setActiveArticle(null);
+    if (typeof window !== 'undefined') {
+      window.location.hash = 'artikel';
+    }
+  };
+
+  // Synchronize activeArticle with URL hash (?id=...)
+  useEffect(() => {
+    const syncArticleFromHash = () => {
+      const targetId = getArticleIdFromHash();
+      if (targetId && articles.length > 0) {
+        const found = articles.find(a => String(a.id) === String(targetId));
+        if (found) {
+          setActiveArticle(prev => {
+            if (prev && String(prev.id) === String(found.id)) {
+              return prev;
+            }
+            setLikesCount(typeof found.likes === 'number' ? found.likes : 0);
+            setComments(Array.isArray(found.comments) ? found.comments : []);
+            setIsLiked(localStorage.getItem(`bem_article_liked_${found.id}`) === 'true');
+            setCommentSuccess(false);
+            setShowShareModal(false);
+            setCommentAuthor('');
+            setCommentText('');
+            return found;
+          });
+        }
+      } else if (!targetId) {
+        setActiveArticle(null);
+      }
+    };
+
+    syncArticleFromHash();
+    window.addEventListener('hashchange', syncArticleFromHash);
+    return () => window.removeEventListener('hashchange', syncArticleFromHash);
+  }, [articles]);
 
   // Sync likes and comments if db updates in real-time
   useEffect(() => {
@@ -80,8 +144,11 @@ export default function Artikel({ db, onUpdateDB }) {
     }
   };
 
-  // Handle Share Click
-  const currentUrl = typeof window !== 'undefined' ? `${window.location.origin}/#artikel` : 'https://bem.ums.ac.id/#artikel';
+  // Handle Share Click & dynamic article URL
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://bem.ums.ac.id';
+  const currentUrl = activeArticle 
+    ? `${origin}/#artikel?id=${activeArticle.id}` 
+    : `${origin}/#artikel`;
   const shareTitle = activeArticle?.title || 'Artikel BEM UMS 2026';
   const shareText = `Baca "${shareTitle}" di Website Resmi BEM UMS:`;
 
@@ -90,7 +157,7 @@ export default function Artikel({ db, onUpdateDB }) {
       try {
         await navigator.share({
           title: shareTitle,
-          text: shareText,
+          text: `${shareText}\n${currentUrl}`,
           url: currentUrl,
         });
         return;
@@ -105,9 +172,20 @@ export default function Artikel({ db, onUpdateDB }) {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(currentUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(currentUrl);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = currentUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
   };
 
   // Scroll and focus to comment input
@@ -205,7 +283,7 @@ export default function Artikel({ db, onUpdateDB }) {
             )}
             
             <button 
-              onClick={() => setActiveArticle(null)}
+              onClick={handleBackToList}
               className="absolute top-6 left-6 z-10 px-4 py-2 bg-black/60 hover:bg-primary text-white rounded-full flex items-center gap-2 transition-all border border-neutral-700 hover:border-transparent backdrop-blur-md text-sm font-bold uppercase tracking-wider shadow-lg"
             >
               <ChevronRight className="w-4 h-4 rotate-180" /> Kembali
@@ -319,7 +397,7 @@ export default function Artikel({ db, onUpdateDB }) {
                         </button>
 
                         <a
-                          href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`}
+                          href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + '\n\n' + currentUrl)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full px-3.5 py-2.5 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 text-left flex items-center gap-3 text-sm text-[#25D366] transition-colors border border-[#25D366]/20 font-medium"
@@ -525,7 +603,8 @@ export default function Artikel({ db, onUpdateDB }) {
                 <motion.article 
                   variants={itemVariants}
                   key={a.id} 
-                  className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500 flex flex-col h-full"
+                  onClick={() => handleOpenArticle(a)}
+                  className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500 flex flex-col h-full cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_10px_30px_-10px_rgba(220,20,20,0.2)]"
                 >
                   {/* Glow Effect */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors duration-700"></div>
@@ -575,7 +654,10 @@ export default function Artikel({ db, onUpdateDB }) {
                     </p>
                     
                     <button 
-                      onClick={() => handleOpenArticle(a)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenArticle(a);
+                      }}
                       className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-sm group/btn mt-auto w-max"
                     >
                       <span>Baca Selengkapnya</span>

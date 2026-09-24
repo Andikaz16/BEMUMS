@@ -53,11 +53,13 @@ export default function App() {
     });
 
     const handleHashChange = () => {
-      const hash = window.location.hash.substring(1);
-      if (hash === 'admin') {
+      const rawHash = window.location.hash.substring(1);
+      // Support query parameters or sub-routes (e.g. #artikel?id=123 or #artikel/123)
+      const [pageRoute] = rawHash.split(/[/?]/);
+      if (pageRoute === 'admin') {
         setActivePage('admin');
-      } else if (hash && ['beranda', 'struktural', 'staffmuda', 'kementerian', 'kabinet', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(hash)) {
-        setActivePage(hash === 'kabinet' ? 'kementerian' : hash);
+      } else if (pageRoute && ['beranda', 'struktural', 'staffmuda', 'kementerian', 'kabinet', 'artikel', 'dokumentasi', 'visimisi', 'kalender', 'hubungi', 'oprec', 'lapor', 'volunteer', 'silatnas', 'berita'].includes(pageRoute)) {
+        setActivePage(pageRoute === 'kabinet' ? 'kementerian' : pageRoute);
       } else {
         // Fallback or default
         setActivePage('beranda');
@@ -77,7 +79,9 @@ export default function App() {
 
   // Wrap navigation changes to also update hash location
   const handlePageChange = (page) => {
-    setActivePage(page);
+    const [pageRoute] = (page || '').split(/[/?]/);
+    const targetPage = pageRoute === 'kabinet' ? 'kementerian' : pageRoute;
+    setActivePage(targetPage || 'beranda');
     window.location.hash = page === 'beranda' ? '' : page;
   };
 

@@ -178,7 +178,7 @@ export default function Hero({ db, setActivePage }) {
           {/* Main Featured Article (Col Span 8) */}
           {recentArticles[0] && (
             <article 
-              onClick={() => setActivePage('artikel')}
+              onClick={() => setActivePage(`artikel?id=${recentArticles[0].id}`)}
               className="lg:col-span-8 bg-black/40 backdrop-blur-sm border border-white/10 rounded-[2rem] overflow-hidden hover:-translate-y-2 hover:shadow-[0_0_50px_-10px_rgba(220,20,20,0.4)] hover:border-primary/50 transition-all duration-500 cursor-pointer group flex flex-col"
             >
               <div className="aspect-video md:aspect-[21/9] bg-neutral-900 relative overflow-hidden shrink-0">
@@ -209,7 +209,7 @@ export default function Hero({ db, setActivePage }) {
             {recentArticles.slice(1, 3).map(a => (
               <article 
                 key={a.id} 
-                onClick={() => setActivePage('artikel')}
+                onClick={() => setActivePage(`artikel?id=${a.id}`)}
                 className="flex-1 bg-black/40 backdrop-blur-sm border border-white/10 rounded-[2rem] p-6 md:p-8 flex flex-col justify-between hover:-translate-y-2 hover:shadow-[0_0_40px_-10px_rgba(220,20,20,0.3)] hover:border-primary/50 transition-all duration-500 cursor-pointer group"
               >
                 <div>
