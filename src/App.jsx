@@ -45,12 +45,22 @@ export default function App() {
 
   // Handle URL hash routing (?admin or #admin)
   useEffect(() => {
-    // Initialize Lenis for smooth scrolling
-    const lenis = new Lenis({
-      autoRaf: true,
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-like easing
-    });
+    // Only initialize Lenis smooth scrolling on desktop/non-touch devices.
+    // On touch devices, native mobile hardware-accelerated momentum scrolling (120Hz) is vastly superior and prevents touch lag.
+    const isTouch = typeof window !== 'undefined' && (
+      'ontouchstart' in window || 
+      navigator.maxTouchPoints > 0 || 
+      window.innerWidth < 768
+    );
+
+    let lenis = null;
+    if (!isTouch) {
+      lenis = new Lenis({
+        autoRaf: true,
+        duration: 1.0,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+    }
 
     const handleHashChange = () => {
       // If user landed on /artikel or /artikel?id=... via direct URL, seamlessly transition to SPA hash route
@@ -85,7 +95,7 @@ export default function App() {
 
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
-      lenis.destroy();
+      if (lenis) lenis.destroy();
     };
   }, []);
 
@@ -120,14 +130,16 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#3B0505] to-black text-[#1a1c1c] overflow-x-hidden font-body relative">
+    <div className={`flex flex-col min-h-screen text-[#1a1c1c] overflow-x-hidden font-body relative transition-colors duration-300 ${
+      activePage === 'silatnas' ? 'bg-[#082F49]' : 'bg-gradient-to-br from-[#3B0505] to-black'
+    }`}>
       {(!isSplashComplete || !db) && (
         <SplashScreen onComplete={() => setIsSplashComplete(true)} />
       )}
 
       {db && (
         <>
-          <AnimatedBackground />
+          {activePage !== 'silatnas' && <AnimatedBackground />}
           <div className="relative z-10 flex flex-col flex-grow">
             <Navbar db={db} activePage={activePage} setActivePage={handlePageChange} />
 

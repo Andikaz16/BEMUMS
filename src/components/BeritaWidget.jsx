@@ -74,13 +74,15 @@ export default function BeritaWidget({ setActivePage }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="group relative bg-neutral-900/60 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl flex flex-col"
+              className="group relative bg-neutral-900/90 md:bg-neutral-900/60 md:backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl flex flex-col"
             >
               {article.thumbnail && (
                 <div className="relative w-full h-40 overflow-hidden">
                   <img 
                     src={article.thumbnail} 
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     onError={(e) => { e.target.parentElement.style.display = 'none'; }}
                   />

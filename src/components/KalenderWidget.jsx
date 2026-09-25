@@ -101,7 +101,7 @@ export default function KalenderWidget({ db, setActivePage }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Side: Calendar Grid */}
-        <div className="lg:col-span-8 bg-black/40 backdrop-blur-md border border-white/10 rounded-[2rem] p-6 md:p-8 flex flex-col justify-between">
+        <div className="lg:col-span-8 bg-[#0a0a0a]/90 md:bg-black/40 md:backdrop-blur-md border border-white/10 rounded-[2rem] p-6 md:p-8 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-8">
             <h3 className="font-display text-2xl md:text-3xl text-white">
               {monthNames[month]} <span className="text-primary">{year}</span>
@@ -128,7 +128,7 @@ export default function KalenderWidget({ db, setActivePage }) {
         </div>
 
         {/* Right Side: Details View */}
-        <div className="lg:col-span-4 bg-black/40 backdrop-blur-md border border-white/10 border-dashed rounded-[2rem] p-6 md:p-8 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="lg:col-span-4 bg-[#0a0a0a]/90 md:bg-black/40 md:backdrop-blur-md border border-white/10 border-dashed rounded-[2rem] p-6 md:p-8 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
           <AnimatePresence mode="wait">
             {!selectedDate || selectedEvents.length === 0 ? (
               <motion.div 
@@ -138,7 +138,7 @@ export default function KalenderWidget({ db, setActivePage }) {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="flex flex-col items-center text-center space-y-4"
               >
-                <img src="/assets/maskot_bem.png" alt="BEM Mascot" className="w-72 h-72 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] -mt-4" />
+                <img src="/assets/maskot_bem.png" alt="BEM Mascot" loading="lazy" decoding="async" className="w-72 h-72 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] -mt-4" />
                 <div>
                   <h4 className="font-display text-xl text-white">Pilih Tanggal</h4>
                   <p className="font-body text-xs text-neutral-400 mt-2 max-w-[200px] leading-relaxed mx-auto">

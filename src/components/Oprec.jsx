@@ -44,8 +44,8 @@ export default function Oprec({ db, onUpdateDB }) {
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 md:px-12 text-white relative overflow-hidden">
       {/* Background Decorators */}
-      <div className="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none -z-10 mix-blend-screen" />
-      <div className="absolute bottom-0 -left-1/4 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full pointer-events-none -z-10 mix-blend-screen" />
+      <div className="absolute top-1/4 -right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-primary/15 blur-3xl md:blur-[120px] rounded-full pointer-events-none -z-10" />
+      <div className="hidden md:block absolute bottom-0 -left-1/4 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full pointer-events-none -z-10" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         
@@ -69,7 +69,7 @@ export default function Oprec({ db, onUpdateDB }) {
         </div>
 
         {submitted ? (
-          <div className="bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-[2rem] p-10 text-center space-y-6 shadow-2xl">
+          <div className="bg-neutral-900/90 md:bg-neutral-900/50 md:backdrop-blur-xl border border-white/10 rounded-[2rem] p-10 text-center space-y-6 shadow-2xl">
             <div className="inline-block bg-emerald-500/20 p-4 rounded-full border border-emerald-500/30 mb-2">
               <span className="material-symbols-outlined text-5xl text-emerald-500">check_circle</span>
             </div>
@@ -90,9 +90,9 @@ export default function Oprec({ db, onUpdateDB }) {
             </button>
           </div>
         ) : (
-          <div className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 md:p-12 shadow-2xl hover:border-primary/50 transition-colors duration-500">
+          <div className="group relative bg-neutral-900/90 md:bg-neutral-900/50 md:backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 md:p-12 shadow-2xl hover:border-primary/50 transition-colors duration-500">
             {/* Subtle glow effect behind the card */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors duration-700"></div>
+            <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors duration-700"></div>
             
             <div className="relative z-10">
               {!oprec.isOpen ? (
@@ -102,29 +102,17 @@ export default function Oprec({ db, onUpdateDB }) {
                 transition={{ duration: 0.5 }}
                 className="text-center py-20 space-y-10 flex flex-col items-center justify-center relative overflow-hidden"
               >
-                {/* Animated Background Glow */}
-                <motion.div 
-                  animate={{ 
-                    scale: [1, 1.3, 1],
-                    opacity: [0.2, 0.4, 0.2],
-                    rotate: [0, 90, 180, 270, 360]
-                  }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 blur-3xl rounded-full"
-                ></motion.div>
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-primary/5 blur-2xl md:blur-3xl rounded-full pointer-events-none" />
 
                 <div className="relative">
-                  <motion.div 
-                    animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-0 bg-primary/40 blur-[30px] rounded-full"
-                  ></motion.div>
+                  <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full pointer-events-none animate-pulse"></div>
                   
                   <motion.div
-                    animate={{ rotate: [0, 10, -10, 0], y: [0, -15, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    <span className="material-symbols-outlined text-[8rem] text-primary relative z-10 drop-shadow-[0_0_40px_rgba(185,0,20,0.9)]">
+                    <span className="material-symbols-outlined text-[7rem] md:text-[8rem] text-primary relative z-10 drop-shadow-[0_0_30px_rgba(185,0,20,0.8)]">
                       hourglass_top
                     </span>
                   </motion.div>
@@ -155,13 +143,9 @@ export default function Oprec({ db, onUpdateDB }) {
                   transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
                   className="relative z-10 mt-6"
                 >
-                  <motion.div
-                    animate={{ boxShadow: ["0 0 10px rgba(185,0,20,0.3)", "0 0 35px rgba(185,0,20,0.8)", "0 0 10px rgba(185,0,20,0.3)"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="inline-block bg-primary/10 text-primary px-10 py-3.5 rounded-full border border-primary/50"
-                  >
+                  <div className="inline-block bg-primary/15 text-primary px-10 py-3.5 rounded-full border border-primary/50 shadow-[0_0_20px_rgba(185,0,20,0.4)]">
                     <span className="font-display text-sm md:text-base uppercase tracking-widest font-bold">Persiapkan Dirimu!</span>
-                  </motion.div>
+                  </div>
                 </motion.div>
                 
                 <motion.p 

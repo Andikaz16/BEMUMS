@@ -94,8 +94,8 @@ export default function BeritaNasional() {
     <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden">
       
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#0a0a0a] to-[#1a0505] -z-10"></div>
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/10 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-[350px] md:h-[500px] bg-gradient-to-b from-primary/10 to-transparent opacity-40 blur-2xl md:blur-3xl -z-10 pointer-events-none"></div>
+      <div className="hidden md:block absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto space-y-10">
         {/* Header */}
@@ -207,13 +207,15 @@ export default function BeritaNasional() {
                 href={article.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-1 flex flex-col"
+                className="group relative bg-neutral-900/90 md:bg-neutral-900/50 md:backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-500 shadow-lg hover:shadow-2xl hover:-translate-y-1 flex flex-col"
               >
                 {article.thumbnail && (
                   <div className="relative w-full h-48 overflow-hidden">
                     <img 
                       src={article.thumbnail} 
                       alt={article.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       onError={(e) => { e.target.parentElement.style.display = 'none'; }}
                     />

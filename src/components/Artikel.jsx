@@ -262,8 +262,8 @@ export default function Artikel({ db, onUpdateDB }) {
     <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden">
       
       {/* Background Decorators */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/20 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-[350px] md:h-[500px] bg-gradient-to-b from-primary/15 to-transparent opacity-40 blur-2xl md:blur-3xl -z-10 pointer-events-none"></div>
+      <div className="hidden md:block absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
       {activeArticle ? (
         <motion.div 
@@ -604,15 +604,15 @@ export default function Artikel({ db, onUpdateDB }) {
                   variants={itemVariants}
                   key={a.id} 
                   onClick={() => handleOpenArticle(a)}
-                  className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500 flex flex-col h-full cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_10px_30px_-10px_rgba(220,20,20,0.2)]"
+                  className="group relative bg-neutral-900/90 md:bg-neutral-900/50 md:backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500 flex flex-col h-full cursor-pointer hover:-translate-y-1.5 hover:shadow-[0_10px_30px_-10px_rgba(220,20,20,0.2)]"
                 >
                   {/* Glow Effect */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors duration-700"></div>
+                  <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors duration-700"></div>
                   
                   {/* Thumbnail */}
                   <div className="relative aspect-[16/10] bg-neutral-900 overflow-hidden z-10">
                     {a.thumbnail ? (
-                      <img src={a.thumbnail} alt={a.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
+                      <img src={a.thumbnail} alt={a.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center text-neutral-700 bg-black/50">
                         <span className="font-heading font-bold tracking-widest text-xl opacity-30">KOLEKTIVA</span>

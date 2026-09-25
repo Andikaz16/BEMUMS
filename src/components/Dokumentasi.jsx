@@ -29,8 +29,8 @@ export default function Dokumentasi({ db }) {
     <div className="min-h-screen pt-32 pb-20 px-6 md:px-10 lg:px-20 text-white relative overflow-hidden">
       
       {/* Background Decorators */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/20 to-transparent opacity-50 blur-3xl -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-[350px] md:h-[500px] bg-gradient-to-b from-primary/15 to-transparent opacity-40 blur-2xl md:blur-3xl -z-10 pointer-events-none"></div>
+      <div className="hidden md:block absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto space-y-12">
         
@@ -60,7 +60,7 @@ export default function Dokumentasi({ db }) {
         >
           {albums.length === 0 ? (
             <motion.div variants={itemVariants} className="col-span-full py-20 text-center">
-              <div className="bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-12 inline-block">
+              <div className="bg-neutral-900/90 md:bg-neutral-900/50 md:backdrop-blur-xl border border-white/10 rounded-3xl p-12 inline-block">
                 <p className="text-neutral-400 font-body text-lg">Belum ada album dokumentasi yang dipublikasikan.</p>
               </div>
             </motion.div>
@@ -70,15 +70,15 @@ export default function Dokumentasi({ db }) {
                 variants={itemVariants}
                 key={a.id} 
                 onClick={() => setActiveAlbum(a)}
-                className="group relative bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer shadow-xl flex flex-col h-full"
+                className="group relative bg-neutral-900/90 md:bg-neutral-900/50 md:backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer shadow-xl flex flex-col h-full"
               >
                 {/* Hover Glow */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-colors duration-700"></div>
+                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[80px] rounded-full pointer-events-none group-hover:bg-primary/20 transition-colors duration-700"></div>
                 
                 {/* Album Cover */}
                 <div className="aspect-[4/3] relative overflow-hidden bg-black z-10 border-b border-neutral-800">
                   {a.photos && a.photos[0] ? (
-                    <img src={a.photos[0]} alt={a.title} className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-all duration-700 ease-out opacity-80 group-hover:opacity-100" />
+                    <img src={a.photos[0]} alt={a.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-all duration-700 ease-out opacity-80 group-hover:opacity-100" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-neutral-700 bg-neutral-900/50">
                       <ImageIcon className="w-12 h-12 mb-2 opacity-30" />
@@ -130,7 +130,7 @@ export default function Dokumentasi({ db }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-10 z-[100]"
+              className="fixed inset-0 bg-black/95 md:backdrop-blur-xl flex items-center justify-center p-4 md:p-10 z-[100]"
             >
               <div className="absolute inset-0 flex flex-col h-full w-full">
                 {/* Toolbar */}
@@ -175,7 +175,7 @@ export default function Dokumentasi({ db }) {
                           onClick={() => setFullscreenImage(ph)}
                           className="aspect-square rounded-2xl overflow-hidden border border-neutral-800 relative group cursor-pointer"
                         >
-                          <img src={ph} alt={`Dokumentasi ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                          <img src={ph} alt={`Dokumentasi ${idx + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300 flex items-center justify-center">
                             <Maximize2 className="text-white opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300 w-8 h-8 drop-shadow-lg" />
                           </div>
