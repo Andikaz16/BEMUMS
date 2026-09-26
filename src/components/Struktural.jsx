@@ -89,8 +89,8 @@ export default function Struktural({ db }) {
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-5 md:p-6 shadow-xl flex flex-col items-center text-center border border-red-500/15 relative overflow-hidden min-h-[160px] sm:min-h-[210px] md:min-h-[250px] justify-between cursor-default"
                 >
                   {/* Star Logo */}
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
-                    <svg viewBox="0 0 24 24" className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 drop-shadow-[0_4px_12px_rgba(185,0,20,0.4)]" fill="#b90014">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center mb-1 sm:mb-2">
+                    <svg viewBox="0 0 24 24" className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 drop-shadow-[0_4px_12px_rgba(185,0,20,0.4)]" fill="#b90014">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </div>
@@ -109,8 +109,8 @@ export default function Struktural({ db }) {
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-5 md:p-6 shadow-xl flex flex-col items-center text-center border border-red-500/15 relative overflow-hidden min-h-[160px] sm:min-h-[210px] md:min-h-[250px] justify-between cursor-default"
                 >
                   {/* Star Logo */}
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
-                    <svg viewBox="0 0 24 24" className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 drop-shadow-[0_4px_12px_rgba(185,0,20,0.4)]" fill="#b90014">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center mb-1 sm:mb-2">
+                    <svg viewBox="0 0 24 24" className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 drop-shadow-[0_4px_12px_rgba(185,0,20,0.4)]" fill="#b90014">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </div>
@@ -137,7 +137,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Seketaris.png" 
                       alt="Sekretaris Kabinet" 
@@ -175,7 +175,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Bendahara.png" 
                       alt="Bendahara Kabinet" 
@@ -208,7 +208,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Menteri luar neger.png" 
                       alt="Kemenlugri" 
@@ -230,7 +230,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Kementerian dalam negeri.png" 
                       alt="Kemendagri" 
@@ -252,7 +252,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png" 
                       alt="Kemenpop" 
@@ -277,7 +277,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png" 
                       alt="Kemen Advokesma" 
@@ -299,7 +299,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/Kementerian Pergerakan.png" 
                       alt="Kemen Pergerakan" 
@@ -321,7 +321,7 @@ export default function Struktural({ db }) {
                 <div
                   className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-5 shadow-xl flex flex-col items-center text-center border border-red-500/15 h-full justify-between min-h-[135px] sm:min-h-[190px] md:min-h-[220px] cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 flex items-center justify-center mb-1 sm:mb-2">
+                  <div className="w-[86px] h-[86px] sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 flex items-center justify-center mb-1 sm:mb-2">
                     <img 
                       src="/assets/medinfo.png" 
                       alt="Kemendinfo" 

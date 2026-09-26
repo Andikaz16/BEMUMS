@@ -304,15 +304,11 @@ const DEFAULT_DATA = {
 import { doc, setDoc, onSnapshot, writeBatch, increment, collection, getDocs, runTransaction } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
-// Utility to sort articles or albums by date/id descending (newest first)
+// Utility to sort articles or albums by creation time descending (newest first)
+// ID stores Date.now() for newly created items, so sorting by ID guarantees newest is first.
 export const sortItemsByDateDesc = (items = []) => {
   if (!Array.isArray(items)) return [];
   return [...items].sort((a, b) => {
-    const timeA = a?.date ? new Date(a.date).getTime() : 0;
-    const timeB = b?.date ? new Date(b.date).getTime() : 0;
-    if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB) {
-      return timeB - timeA;
-    }
     return (Number(b?.id) || 0) - (Number(a?.id) || 0);
   });
 };
