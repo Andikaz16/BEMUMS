@@ -2373,52 +2373,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 ))}
               </div>
 
-              {/* --- EDIT VISI & MISI KONSOLIDASI --- */}
-              <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">
-                <h3 className="font-display text-xl uppercase border-b border-white/5 pb-2 text-primary">Visi & Misi Konsolidasi</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-neutral-400">Judul Visi</label>
-                    <input 
-                      type="text" 
-                      value={silatnasVisiMisiForm.visiTitle}
-                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, visiTitle: e.target.value })}
-                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-neutral-400">Judul Misi</label>
-                    <input 
-                      type="text" 
-                      value={silatnasVisiMisiForm.misiTitle}
-                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, misiTitle: e.target.value })}
-                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-bold uppercase text-neutral-400">Deskripsi Visi</label>
-                    <textarea 
-                      value={silatnasVisiMisiForm.visiDesc}
-                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, visiDesc: e.target.value })}
-                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm h-24"
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-bold uppercase text-neutral-400">Deskripsi Misi</label>
-                    <textarea 
-                      value={silatnasVisiMisiForm.misiDesc}
-                      onChange={e => setSilatnasVisiMisiForm({ ...silatnasVisiMisiForm, misiDesc: e.target.value })}
-                      className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white focus:outline-none focus:border-primary/50 text-sm h-24"
-                    />
-                  </div>
-                </div>
-                <button 
-                  onClick={handleSaveSilatnasVisiMisi}
-                  className="bg-primary hover:bg-primary/80 text-white rounded-xl font-bold px-5 py-2.5 text-xs transition-all border border-primary/50"
-                >
-                  Simpan Visi & Misi Silatnas
-                </button>
-              </div>
+              {/* --- EDIT TEMA SILATNAS (Hides Visi Misi as it is hardcoded now) --- */}
+              {/* <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">
+                ... (form removed as Tema is now grandly hardcoded) ...
+              </div> */}
 
               {/* --- EDIT ALUR PENDAFTARAN DELEGASI --- */}
               <div className="border border-white/10 rounded-2xl p-6 bg-neutral-800/40 backdrop-blur-md text-white space-y-4">

@@ -691,39 +691,37 @@ export default function Silatnas({ db }) {
           </div>
         </motion.div>
 
-        {/* 2. TENTANG SILATNAS & VISI MISI */}
-        <div className="space-y-10">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
-              Visi & Misi Konsolidasi
+        {/* 2. GRAND TEMA SILATNAS */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative py-12"
+        >
+          {/* Ambient Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-sky-400/20 via-blue-500/10 to-transparent blur-3xl -z-10 rounded-full" />
+          
+          <div className="bg-gradient-to-br from-[#0B1E36] to-[#041222] border border-sky-500/30 p-10 md:p-16 rounded-[2.5rem] relative overflow-hidden shadow-2xl flex flex-col items-center text-center">
+            
+            {/* Watermark / Decoration */}
+            <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+              <Award className="w-64 h-64 text-sky-400" />
+            </div>
+
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-sky-500/10 border border-sky-500/30 mb-8 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-sky-300">Tema Besar Silatnas PTMAI 2026</span>
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-heading font-black uppercase tracking-tight text-white leading-[1.2] drop-shadow-xl z-10 max-w-5xl">
+              "Menjaga <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-300">Persyarikatan</span>, Merawat <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-400">Indonesia</span>:<br/>
+              <span className="text-xl sm:text-2xl md:text-4xl lg:text-5xl mt-2 block text-neutral-200 font-bold">Kontribusi BEM PTMA Untuk Indonesia Raya"</span>
             </h2>
-            <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
-              Tujuan dan prinsip gerakan Silaturahmi Nasional BEM PTMAI 2026.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-8 rounded-3xl space-y-4 hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
-              <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8]">
-                <Award className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-heading font-bold uppercase text-white">{visiMisi.visiTitle}</h3>
-              <p className="text-sm font-body text-[#E0F2FE]/80 leading-relaxed">
-                {visiMisi.visiDesc}
-              </p>
-            </div>
-
-            <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-8 rounded-3xl space-y-4 hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
-              <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8]">
-                <Users className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-heading font-bold uppercase text-white">{visiMisi.misiTitle}</h3>
-              <p className="text-sm font-body text-[#E0F2FE]/80 leading-relaxed">
-                {visiMisi.misiDesc}
-              </p>
-            </div>
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-sky-500 to-transparent mt-10 opacity-50" />
           </div>
-        </div>
+        </motion.div>
 
         {/* 2.5 PETA INTERAKTIF SEBARAN 7 ZONA WILAYAH SILATNAS */}
         <div className="space-y-8 pt-6 border-t border-white/10" id="rollcall-section">
