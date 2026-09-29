@@ -619,7 +619,7 @@ export default function Silatnas({ db }) {
                 </div>
                 <div>
                   <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Waktu Kegiatan</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">30 September - 3 Oktober 2026</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">29 - 31 Oktober 2026</div>
                 </div>
               </div>
               

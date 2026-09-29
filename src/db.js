@@ -174,7 +174,7 @@ const DEFAULT_DATA = {
     {
       id: 1,
       title: "Pendaftaran Delegasi Silatnas BEM PTMAI 2026",
-      schedule: "30 September - 3 Oktober 2026",
+      schedule: "29 - 31 Oktober 2026",
       isOpen: true,
       location: "Edutorium & Kampus UMS Surakarta",
       description: "Pendaftaran resmi delegasi pimpinan BEM (Presma, Wapresma, Menteri) dari Perguruan Tinggi Muhammadiyah 'Aisyiyah dan mitra kampus se-Indonesia.",
