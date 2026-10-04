@@ -173,10 +173,10 @@ export default function Navbar({ db, activePage, setActivePage }) {
         {/* CTA Button */}
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setActivePage('oprec')}
+            onClick={() => setActivePage('silatnas')}
             className="hidden sm:inline-block bg-primary text-white border-2 border-black font-display text-xs px-5 py-2 uppercase hover:bg-primary-container shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 active:translate-y-0.5"
           >
-            GABUNG KABINET
+            SILATNAS PTMAI
           </button>
 
           {/* Hamburger Menu Icon */}
@@ -263,12 +263,12 @@ export default function Navbar({ db, activePage, setActivePage }) {
           </div>
           <button 
             onClick={() => {
-              setActivePage('oprec');
+              setActivePage('silatnas');
               setIsOpen(false);
             }}
             className="bg-primary text-white border-2 border-black font-display text-xs w-full py-3 uppercase text-center mt-4 shadow-[2px_2px_0px_0px_#000]"
           >
-            GABUNG KABINET
+            SILATNAS PTMAI
           </button>
         </div>
       )}

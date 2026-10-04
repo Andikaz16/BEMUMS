@@ -89,10 +89,10 @@ export default function Hero({ db, setActivePage }) {
             className="flex flex-wrap gap-4 pt-6 justify-center"
           >
             <button 
-              onClick={() => setActivePage('oprec')}
+              onClick={() => setActivePage('silatnas')}
               className="bg-primary text-white border-2 border-black font-display text-xs md:text-sm px-8 py-3.5 uppercase hover:bg-primary-container shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform flex items-center gap-2"
             >
-              <UserCheck size={18} /> GABUNG KABINET
+              SILATNAS PTMAI
             </button>
             <button 
               onClick={() => setActivePage('struktural')}
