@@ -281,6 +281,7 @@ const DEFAULT_DATA = {
     { id: 22, name: "Universitas Muhammadiyah Maluku Utara", shortName: "UMMU Ternate", region: "Maluku & Papua", city: "Ternate, Maluku Utara", status: "Terkonfirmasi", delegates: 2, confirmed: true },
     { id: 23, name: "Universitas Muhammadiyah Papua", shortName: "UM Papua", region: "Maluku & Papua", city: "Jayapura, Papua", status: "Terkonfirmasi", delegates: 2, confirmed: true },
   ],
+  silatnasShuttle: [],
   kegiatan: [
     {
       id: 1,
@@ -376,6 +377,7 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         combinedData.volunteerCatalog = kData.volunteerCatalog || [];
         combinedData.silatnasCatalog = kData.silatnasCatalog || [];
         combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
+        combinedData.silatnasShuttle = kData.silatnasShuttle || [];
       }
     });
 
@@ -471,7 +473,7 @@ export const saveDB = async (data) => {
 
   try {
     const batch = writeBatch(firestore);
-    const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, silatnasCulture, ...coreData } = data;
+    const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, silatnasCulture, silatnasShuttle, ...coreData } = data;
     
     batch.set(doc(firestore, "cms", "core"), coreData);
     batch.set(doc(firestore, "cms", "articles"), { data: sortItemsByDateDesc(articles || []), lastUpdated: data.lastUpdated });
@@ -481,6 +483,7 @@ export const saveDB = async (data) => {
       volunteerCatalog: volunteerCatalog || [], 
       silatnasCatalog: silatnasCatalog || [], 
       silatnasCulture: silatnasCulture || [],
+      silatnasShuttle: silatnasShuttle || [],
       lastUpdated: data.lastUpdated 
     });
 
@@ -543,6 +546,17 @@ export const addSilatnasApplicant = async (eventId, applicantData) => {
       return v;
     });
     transaction.update(DOC_REF, { silatnasCatalog: updatedCatalog });
+  });
+};
+
+export const addSilatnasShuttle = async (shuttleData) => {
+  const DOC_REF = doc(firestore, "cms", "kegiatan");
+  await runTransaction(firestore, async (transaction) => {
+    const docSnap = await transaction.get(DOC_REF);
+    if (!docSnap.exists()) throw new Error("Database kosong!");
+    const data = docSnap.data();
+    const updated = [...(data.silatnasShuttle || []), { ...shuttleData, id: Date.now() }];
+    transaction.update(DOC_REF, { silatnasShuttle: updated });
   });
 };
 

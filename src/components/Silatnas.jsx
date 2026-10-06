@@ -8,7 +8,7 @@ import {
   Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star,
   Info, AlertCircle
 } from 'lucide-react';
-import { addSilatnasApplicant } from '../db';
+import { addSilatnasApplicant, addSilatnasShuttle } from '../db';
 
 
 const faqData = [
@@ -83,6 +83,8 @@ export default function Silatnas({ db }) {
 
   // Hospitality & Service Hub State
   const [hospitalityTab, setHospitalityTab] = useState('shuttle');
+  const [shuttleSubmitted, setShuttleSubmitted] = useState(false);
+  const [shuttleLoading, setShuttleLoading] = useState(false);
   const [shuttleForm, setShuttleForm] = useState({
     campus: '',
     count: '2',
@@ -93,11 +95,30 @@ export default function Silatnas({ db }) {
     phone: ''
   });
 
-  const handleShuttleSubmit = (e) => {
+  const handleShuttleSubmit = async (e) => {
     e.preventDefault();
-    const text = `Halo LO Silatnas BEM UMS 2026!\n\nKami mengonfirmasi kedatangan delegasi kontingen:\n- *Kampus/BEM:* ${shuttleForm.campus}\n- *Jumlah Delegasi:* ${shuttleForm.count} Orang\n- *Titik Penjemputan:* ${shuttleForm.point}\n- *Tanggal & Waktu Tiba:* ${shuttleForm.date} jam ${shuttleForm.time} WIB\n- *Koordinator Kontingen:* ${shuttleForm.leaderName} (${shuttleForm.phone})\n\nMohon pendampingan penjemputan shuttle LO. Terima kasih!`;
-    const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(text)}`;
-    window.open(waUrl, '_blank');
+    setShuttleLoading(true);
+    try {
+      await addSilatnasShuttle({
+        ...shuttleForm,
+        submittedAt: new Date().toISOString()
+      });
+      setShuttleSubmitted(true);
+      setShuttleForm({
+        campus: '',
+        count: '2',
+        point: 'Stasiun Solo Balapan',
+        date: '',
+        time: '',
+        leaderName: '',
+        phone: ''
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengirim konfirmasi penjemputan. Pastikan koneksi internet stabil lalu coba lagi.");
+    } finally {
+      setShuttleLoading(false);
+    }
   };
 
 
@@ -1038,131 +1059,6 @@ export default function Silatnas({ db }) {
           )}
         </div>
 
-        {/* 6. UNDUHAN DOKUMEN PENTING */}
-        <div className="space-y-10 pt-10 border-t border-white/10">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
-              Dokumen & Panduan Penting
-            </h2>
-            <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
-              Unduh kelengkapan administrasi resmi yang dibutuhkan selama proses kegiatan.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {docsList.map((doc, idx) => (
-              <div key={idx} className="bg-black/35 backdrop-blur-xl border border-white/10 p-6 rounded-2xl flex flex-col justify-between hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
-                <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#38BDF8]">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-lg font-heading font-bold text-white uppercase">{doc.title}</h4>
-                  <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">{doc.desc}</p>
-                </div>
-                <div className="pt-6">
-                  <button 
-                    onClick={() => {
-                      if (doc.url) {
-                        window.open(doc.url, '_blank');
-                      } else {
-                        alert(`Unduhan ${doc.title} simulasi berhasil dilakukan.`);
-                      }
-                    }}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-black/40 border border-white/5 hover:border-[#0EA5E9]/40 text-neutral-300 font-bold uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition duration-300"
-                  >
-                    <Download className="w-3.5 h-3.5 text-[#38BDF8]" /> Unduh Berkas ({doc.size})
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 6.5 SENTUHAN BUDAYA & WISATA SOLO (SOLO CULTURAL & HERITAGE SHOWCASE) */}
-        <div className="space-y-10 pt-10 border-t border-white/10">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
-              Eksplorasi Budaya & Wisata Surakarta
-            </h2>
-            <p className="text-[#E0F2FE] font-body text-sm max-w-2xl mx-auto mt-2 font-medium leading-relaxed">
-              <span className="text-[#38BDF8] font-semibold italic">Sugeng Rawuh ing Solo!</span> Nikmati kehangatan hospitality Solo Kota Budaya. BEM UMS memanjakan seluruh kontingen delegasi BEM se-Indonesia dengan keindahan arsitektur, sejarah luhur, dan kelezatan gastronomi khas Surakarta.
-            </p>
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {cultureList.map((item, idx) => (
-              <div 
-                key={item.id || idx} 
-                className={`group relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#38BDF8]/40 transition-all duration-300 shadow-xl flex flex-col justify-between ${idx === cultureList.length - 1 && cultureList.length % 3 !== 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
-              >
-                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 flex items-center justify-center">
-                  {item.image ? (
-                    <img 
-                      src={item.image} 
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                    />
-                  ) : (
-                    <Compass className="w-12 h-12 text-[#38BDF8]/40 animate-pulse" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-[#0EA5E9] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> {item.category || 'Destinasi Solo'}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-heading font-bold text-white uppercase group-hover:text-[#38BDF8] transition-colors">
-                      {item.title}
-                    </h4>
-                    <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">
-                      {item.desc || item.description}
-                    </p>
-                  </div>
-                  <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-semibold text-[#38BDF8]">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> {item.highlight || 'Destinasi Field Trip'}
-                    </span>
-                    <span className="text-neutral-400 text-[10px] font-mono">{item.location || 'Surakarta'}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Special Host Commitment Banner */}
-          <div className="max-w-6xl mx-auto bg-gradient-to-r from-sky-950/60 via-black/80 to-slate-950/60 border border-[#0EA5E9]/30 p-6 md:p-8 rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden">
-            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[#0EA5E9]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="space-y-2 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-bold text-[#38BDF8] uppercase tracking-widest">
-                  <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" /> Jaminan Keramahan Tuan Rumah BEM UMS
-                </div>
-                <h3 className="text-xl md:text-2xl font-heading font-bold text-white uppercase">
-                  "Solo Kota Ramah & Berbudaya: Berwacana Tajam, Bersilaturahmi Hangat"
-                </h3>
-                <p className="text-xs font-body text-[#E0F2FE]/80 max-w-3xl leading-relaxed">
-                  Panitia Silatnas BEM UMS 2026 berkomitmen penuh memberikan pelayanan terbaik, pendampingan Liaison Officer (LO) 24 jam, serta akomodasi terbaik demi kenyamanan seluruh saudara mahasiswa dari Sabang sampai Merauke.
-                </p>
-              </div>
-                <div className="shrink-0 w-full md:w-auto">
-                  <a 
-                    href="https://wa.me/6281234567890?text=Halo%20LO%20Silatnas%20BEM%20UMS%202026!%20Saya%20peserta%20Silatnas%2C%20boleh%20minta%20rekomendasi%20tempat%20wisata%20atau%20eksplorasi%20budaya%20yang%20bagus%20di%20Kota%20Solo%3F" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
-                  >
-                    <Phone className="w-4 h-4 shrink-0" /> Tanya Panitia / LO
-                  </a>
-                </div>
-            </div>
-          </div>
-        </div>
-
         {/* 6.8 PANDUAN LAYANAN & HOSPITALITAS DELEGASI (DELEGATE SERVICES & HOSPITALITY HUB) */}
         <div className="space-y-10 pt-10 border-t border-white/10" id="hospitality-section">
           <div className="text-center">
@@ -1265,103 +1161,122 @@ export default function Silatnas({ db }) {
                   </p>
                 </div>
 
-                <form onSubmit={handleShuttleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Nama BEM / Perguruan Tinggi *</label>
-                    <input 
-                      type="text" 
-                      required
-                      placeholder="Contoh: BEM UMS / BEM Universitas Muhammadiyah Jakarta"
-                      className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                      value={shuttleForm.campus}
-                      onChange={(e) => setShuttleForm({...shuttleForm, campus: e.target.value})}
-                    />
+                {shuttleSubmitted ? (
+                  <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-6 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+                      <CheckCircle className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-base font-heading font-bold text-white uppercase">Konfirmasi Kedatangan Terkirim!</h4>
+                    <p className="text-xs text-emerald-200/90 leading-relaxed font-body">
+                      Terima kasih! Data jadwal kedatangan kontingen Anda telah berhasil tersimpan di sistem tim Liaison Officer (LO) Silatnas BEM UMS. Petugas LO penjemputan kami akan segera menghubungi nomor WhatsApp koordinator Anda untuk koordinasi teknis penjemputan armada.
+                    </p>
+                    <button
+                      onClick={() => setShuttleSubmitted(false)}
+                      className="mt-3 inline-block px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-amber-400 text-xs font-bold uppercase tracking-wider transition"
+                    >
+                      Kirim Konfirmasi Tambahan / Kontingen Lain
+                    </button>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+                ) : (
+                  <form onSubmit={handleShuttleSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Jumlah Delegasi *</label>
-                      <input 
-                        type="number" 
-                        min="1"
-                        required
-                        className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.count}
-                        onChange={(e) => setShuttleForm({...shuttleForm, count: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Titik Kedatangan *</label>
-                      <select
-                        className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.point}
-                        onChange={(e) => setShuttleForm({...shuttleForm, point: e.target.value})}
-                      >
-                        <option value="Stasiun Solo Balapan">Stasiun Solo Balapan</option>
-                        <option value="Bandara Adi Soemarmo (SOC)">Bandara Adi Soemarmo (SOC)</option>
-                        <option value="Terminal Tirtonadi">Terminal Tirtonadi</option>
-                        <option value="Terminal Kartasura">Terminal Kartasura</option>
-                        <option value="Stasiun Purwosari / Jebres">Stasiun Purwosari / Jebres</option>
-                        <option value="Kendaraan Pribadi / Bus Kontingen">Kendaraan Pribadi / Bus Kontingen</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Tanggal Tiba *</label>
-                      <input 
-                        type="date" 
-                        required
-                        className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.date}
-                        onChange={(e) => setShuttleForm({...shuttleForm, date: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Estimasi Jam Tiba *</label>
-                      <input 
-                        type="time" 
-                        required
-                        className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.time}
-                        onChange={(e) => setShuttleForm({...shuttleForm, time: e.target.value})}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Nama Koordinator *</label>
+                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Nama BEM / Perguruan Tinggi *</label>
                       <input 
                         type="text" 
                         required
-                        placeholder="Nama Ketua Delegasi"
+                        placeholder="Contoh: BEM UMS / BEM Universitas Muhammadiyah Jakarta"
                         className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.leaderName}
-                        onChange={(e) => setShuttleForm({...shuttleForm, leaderName: e.target.value})}
+                        value={shuttleForm.campus}
+                        onChange={(e) => setShuttleForm({...shuttleForm, campus: e.target.value})}
                       />
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">No. WhatsApp *</label>
-                      <input 
-                        type="tel" 
-                        required
-                        placeholder="0812xxxx"
-                        className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.phone}
-                        onChange={(e) => setShuttleForm({...shuttleForm, phone: e.target.value})}
-                      />
-                    </div>
-                  </div>
 
-                  <button 
-                    type="submit"
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" /> Kirim Konfirmasi Penjemputan via WhatsApp LO
-                  </button>
-                </form>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Jumlah Delegasi *</label>
+                        <input 
+                          type="number" 
+                          min="1"
+                          required
+                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
+                          value={shuttleForm.count}
+                          onChange={(e) => setShuttleForm({...shuttleForm, count: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Titik Kedatangan *</label>
+                        <select
+                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
+                          value={shuttleForm.point}
+                          onChange={(e) => setShuttleForm({...shuttleForm, point: e.target.value})}
+                        >
+                          <option value="Stasiun Solo Balapan">Stasiun Solo Balapan</option>
+                          <option value="Bandara Adi Soemarmo (SOC)">Bandara Adi Soemarmo (SOC)</option>
+                          <option value="Terminal Tirtonadi">Terminal Tirtonadi</option>
+                          <option value="Terminal Kartasura">Terminal Kartasura</option>
+                          <option value="Stasiun Purwosari / Jebres">Stasiun Purwosari / Jebres</option>
+                          <option value="Kendaraan Pribadi / Bus Kontingen">Kendaraan Pribadi / Bus Kontingen</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Tanggal Tiba *</label>
+                        <input 
+                          type="date" 
+                          required
+                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
+                          value={shuttleForm.date}
+                          onChange={(e) => setShuttleForm({...shuttleForm, date: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Estimasi Jam Tiba *</label>
+                        <input 
+                          type="time" 
+                          required
+                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
+                          value={shuttleForm.time}
+                          onChange={(e) => setShuttleForm({...shuttleForm, time: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Nama Koordinator *</label>
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="Nama Ketua Delegasi"
+                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
+                          value={shuttleForm.leaderName}
+                          onChange={(e) => setShuttleForm({...shuttleForm, leaderName: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">No. WhatsApp *</label>
+                        <input 
+                          type="tel" 
+                          required
+                          placeholder="0812xxxx"
+                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
+                          value={shuttleForm.phone}
+                          onChange={(e) => setShuttleForm({...shuttleForm, phone: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <button 
+                      type="submit"
+                      disabled={shuttleLoading}
+                      className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <Send className="w-4 h-4" /> {shuttleLoading ? "Menyimpan ke Sistem LO..." : "Kirim Konfirmasi Kedatangan"}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           )}
@@ -1497,6 +1412,131 @@ export default function Silatnas({ db }) {
               </div>
             </div>
           )}
+        </div>
+
+        {/* 6. UNDUHAN DOKUMEN PENTING */}
+        <div className="space-y-10 pt-10 border-t border-white/10">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
+              Dokumen & Panduan Penting
+            </h2>
+            <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
+              Unduh kelengkapan administrasi resmi yang dibutuhkan selama proses kegiatan.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {docsList.map((doc, idx) => (
+              <div key={idx} className="bg-black/35 backdrop-blur-xl border border-white/10 p-6 rounded-2xl flex flex-col justify-between hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#38BDF8]">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-lg font-heading font-bold text-white uppercase">{doc.title}</h4>
+                  <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">{doc.desc}</p>
+                </div>
+                <div className="pt-6">
+                  <button 
+                    onClick={() => {
+                      if (doc.url) {
+                        window.open(doc.url, '_blank');
+                      } else {
+                        alert(`Unduhan ${doc.title} simulasi berhasil dilakukan.`);
+                      }
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-black/40 border border-white/5 hover:border-[#0EA5E9]/40 text-neutral-300 font-bold uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition duration-300"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#38BDF8]" /> Unduh Berkas ({doc.size})
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 6.5 SENTUHAN BUDAYA & WISATA SOLO (SOLO CULTURAL & HERITAGE SHOWCASE) */}
+        <div className="space-y-10 pt-10 border-t border-white/10">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
+              Eksplorasi Budaya & Wisata Surakarta
+            </h2>
+            <p className="text-[#E0F2FE] font-body text-sm max-w-2xl mx-auto mt-2 font-medium leading-relaxed">
+              <span className="text-[#38BDF8] font-semibold italic">Sugeng Rawuh ing Solo!</span> Nikmati kehangatan hospitality Solo Kota Budaya. BEM UMS memanjakan seluruh kontingen delegasi BEM se-Indonesia dengan keindahan arsitektur, sejarah luhur, dan kelezatan gastronomi khas Surakarta.
+            </p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {cultureList.map((item, idx) => (
+              <div 
+                key={item.id || idx} 
+                className={`group relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#38BDF8]/40 transition-all duration-300 shadow-xl flex flex-col justify-between ${idx === cultureList.length - 1 && cultureList.length % 3 !== 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
+              >
+                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 flex items-center justify-center">
+                  {item.image ? (
+                    <img 
+                      src={item.image} 
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <Compass className="w-12 h-12 text-[#38BDF8]/40 animate-pulse" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                  <div className="absolute top-3 left-3">
+                    <span className="bg-[#0EA5E9] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> {item.category || 'Destinasi Solo'}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-heading font-bold text-white uppercase group-hover:text-[#38BDF8] transition-colors">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">
+                      {item.desc || item.description}
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-semibold text-[#38BDF8]">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> {item.highlight || 'Destinasi Field Trip'}
+                    </span>
+                    <span className="text-neutral-400 text-[10px] font-mono">{item.location || 'Surakarta'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Special Host Commitment Banner */}
+          <div className="max-w-6xl mx-auto bg-gradient-to-r from-sky-950/60 via-black/80 to-slate-950/60 border border-[#0EA5E9]/30 p-6 md:p-8 rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[#0EA5E9]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-bold text-[#38BDF8] uppercase tracking-widest">
+                  <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" /> Jaminan Keramahan Tuan Rumah BEM UMS
+                </div>
+                <h3 className="text-xl md:text-2xl font-heading font-bold text-white uppercase">
+                  "Solo Kota Ramah & Berbudaya: Berwacana Tajam, Bersilaturahmi Hangat"
+                </h3>
+                <p className="text-xs font-body text-[#E0F2FE]/80 max-w-3xl leading-relaxed">
+                  Panitia Silatnas BEM UMS 2026 berkomitmen penuh memberikan pelayanan terbaik, pendampingan Liaison Officer (LO) 24 jam, serta akomodasi terbaik demi kenyamanan seluruh saudara mahasiswa dari Sabang sampai Merauke.
+                </p>
+              </div>
+                <div className="shrink-0 w-full md:w-auto">
+                  <a 
+                    href="https://wa.me/6281234567890?text=Halo%20LO%20Silatnas%20BEM%20UMS%202026!%20Saya%20peserta%20Silatnas%2C%20boleh%20minta%20rekomendasi%20tempat%20wisata%20atau%20eksplorasi%20budaya%20yang%20bagus%20di%20Kota%20Solo%3F" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
+                  >
+                    <Phone className="w-4 h-4 shrink-0" /> Tanya Panitia / LO
+                  </a>
+                </div>
+            </div>
+          </div>
         </div>
 
         {/* 7. FAQ (PERTANYAAN UMUM) */}

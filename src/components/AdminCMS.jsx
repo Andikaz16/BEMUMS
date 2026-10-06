@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
-  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3 
+  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation
 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -713,6 +713,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
     });
   };
 
+  const handleDeleteShuttleItem = (id) => {
+    confirmAction('Hapus data konfirmasi penjemputan LO ini?', () => {
+      onUpdateDB({ ...db, silatnasShuttle: (db.silatnasShuttle || []).filter(item => item.id !== id) });
+    });
+  };
+
   const handleAddExtraField = () => {
     if (!newFieldLabel.trim()) return;
     const key = newFieldLabel.trim().toLowerCase().replace(/\s+/g, '_');
@@ -906,6 +912,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
       nowa: "No. WhatsApp",
       motivasi: "Motivasi & Pesan Kesan",
       submittedAt: "Waktu Daftar",
+      point: "Titik Kedatangan / Penjemputan",
+      date: "Tanggal Tiba",
+      time: "Estimasi Jam Tiba (WIB)",
+      count: "Jumlah Delegasi (Orang)",
+      leaderName: "Nama Koordinator",
+      phone: "No. WhatsApp Koordinator",
       nim: "NIM",
       email: "Email",
       faculty: "Fakultas",
@@ -914,7 +926,6 @@ export default function AdminCMS({ db, onUpdateDB }) {
       cvLink: "Link CV / Portofolio",
       reason: "Alasan Mendaftar",
       id: "ID / Waktu Daftar",
-      phone: "No Telepon / WA",
       commitment: "Komitmen Waktu",
       commitmentLink: "Link Google Drive Dokumen",
       commitmentFileName: "Nama Berkas Terlampir"
@@ -922,10 +933,23 @@ export default function AdminCMS({ db, onUpdateDB }) {
     
     let processedData = data.map(item => ({ ...item }));
 
-    // Jika ini adalah rekap Silatnas (atau memiliki data asal kampus):
-    // Urutkan data berdasarkan "Asal Kampus" (A-Z) terlebih dahulu, lalu nama delegasi (A-Z)
-    // sehingga seluruh delegasi dari kampus yang sama langsung berdampingan / sejajar rapi di spreadsheet/Excel!
-    if (filename.includes('silatnas') || processedData.some(d => d.campus)) {
+    // Jika ini adalah rekap Shuttle LO:
+    if (filename.includes('shuttle')) {
+      // Urutkan secara kronologis berdasarkan Tanggal & Jam Tiba agar LO siap menjemput sesuai jadwal
+      processedData.sort((a, b) => {
+        const dtA = `${a.date || ''} ${a.time || ''}`;
+        const dtB = `${b.date || ''} ${b.time || ''}`;
+        if (dtA !== dtB) return dtA.localeCompare(dtB);
+        return (a.campus || '').localeCompare(b.campus || '');
+      });
+
+      processedData = processedData.map((row, idx) => ({
+        no: idx + 1,
+        ...row
+      }));
+    } else if (filename.includes('silatnas') || processedData.some(d => d.campus)) {
+      // Jika rekap Delegasi Silatnas:
+      // Urutkan berdasarkan Asal Kampus (A-Z) agar delegasi dari kampus yang sama langsung sejajar rapi
       processedData.sort((a, b) => {
         const campusA = (a.campus || '').trim().toLowerCase();
         const campusB = (b.campus || '').trim().toLowerCase();
@@ -937,7 +961,6 @@ export default function AdminCMS({ db, onUpdateDB }) {
         return nameA.localeCompare(nameB, 'id');
       });
 
-      // Tambahkan nomor urut No (1, 2, 3...)
       processedData = processedData.map((row, idx) => ({
         no: idx + 1,
         ...row
@@ -946,11 +969,13 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
     let rawKeys = Object.keys(processedData[0]);
 
-    // Urutkan kolom jika ini adalah rekap silatnas
-    if (filename.includes('silatnas')) {
+    if (filename.includes('shuttle')) {
+      const preferredOrder = ['no', 'date', 'time', 'point', 'campus', 'count', 'leaderName', 'phone', 'submittedAt'];
+      const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
+      rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
+    } else if (filename.includes('silatnas')) {
       const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'motivasi', 'submittedAt'];
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
-      // Hanya gabungkan key yang benar-benar ada di data
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     }
     
@@ -2405,6 +2430,78 @@ export default function AdminCMS({ db, onUpdateDB }) {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* --- REKAP PERMINTAAN SHUTTLE & PENJEMPUTAN LO --- */}
+              <div className="border border-amber-500/30 rounded-2xl p-6 bg-gradient-to-b from-neutral-800/60 to-black/60 backdrop-blur-md text-white space-y-4 shadow-xl">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/10 pb-4">
+                  <div>
+                    <h3 className="font-display text-xl uppercase text-amber-400 flex items-center gap-2">
+                      <Navigation className="w-5 h-5 text-amber-400" />
+                      Jadwal Penjemputan Shuttle LO ({db.silatnasShuttle?.length || 0})
+                    </h3>
+                    <p className="text-xs text-neutral-400 mt-1">
+                      Data konfirmasi kedatangan kontingen delegasi dari luar kota/luar Jawa untuk tim Liaison Officer (LO).
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => downloadCSV(db.silatnasShuttle || [], 'rekap_penjemputan_shuttle_lo.csv')}
+                    className="bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg disabled:opacity-40"
+                    disabled={!db.silatnasShuttle || db.silatnasShuttle.length === 0}
+                  >
+                    <Download className="w-4 h-4" /> Download Excel LO (CSV)
+                  </button>
+                </div>
+
+                <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                  {!db.silatnasShuttle || db.silatnasShuttle.length === 0 ? (
+                    <div className="text-center py-8 text-neutral-400 text-xs">
+                      Belum ada kontingen yang mengisi form konfirmasi penjemputan LO.
+                    </div>
+                  ) : (
+                    [...db.silatnasShuttle]
+                      .sort((a, b) => {
+                        const dtA = `${a.date || ''} ${a.time || ''}`;
+                        const dtB = `${b.date || ''} ${b.time || ''}`;
+                        return dtA.localeCompare(dtB);
+                      })
+                      .map((s, idx) => (
+                        <div key={s.id || idx} className="p-4 bg-black/50 border border-white/10 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 hover:border-amber-400/40 transition">
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 font-bold text-[10px] uppercase border border-amber-500/30">
+                                {s.point}
+                              </span>
+                              <span className="text-sm text-white font-bold">{s.campus}</span>
+                              <span className="text-xs text-neutral-400">({s.count} Delegasi)</span>
+                            </div>
+                            <p className="text-xs text-neutral-300">
+                              Tiba: <strong className="text-amber-400">{s.date}</strong> pukul <strong className="text-amber-400">{s.time} WIB</strong> | Koordinator: <strong>{s.leaderName}</strong>
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {s.phone && (
+                              <a 
+                                href={`https://wa.me/${s.phone.replace(/[^0-9]/g, '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="px-3 py-2 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
+                              >
+                                <Phone className="w-3.5 h-3.5" /> Chat WA ({s.phone})
+                              </a>
+                            )}
+                            <button
+                              onClick={() => handleDeleteShuttleItem(s.id)}
+                              className="p-2 text-neutral-400 hover:text-red-400 rounded-lg hover:bg-white/5 transition"
+                              title="Hapus data"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
               </div>
 
               {/* --- EDIT TEMA SILATNAS (Hides Visi Misi as it is hardcoded now) --- */}
