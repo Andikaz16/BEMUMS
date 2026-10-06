@@ -984,11 +984,7 @@ export default function Silatnas({ db }) {
                   key={v.id} 
                   className="group relative bg-black/35 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-between overflow-hidden hover:border-[#38BDF8]/40 transition duration-300 shadow-xl"
                 >
-                  <div className="flex justify-between items-start mb-6 gap-4">
-                    <span className="flex items-center gap-2 text-[10px] font-bold font-body text-neutral-300 uppercase tracking-widest bg-black/40 border border-white/10 px-3 py-1.5 rounded-full">
-                      <Clock className="w-3.5 h-3.5 text-[#38BDF8]" />
-                      {v.schedule}
-                    </span>
+                  <div className="flex justify-end items-start mb-6 gap-4">
                     <span className={`px-4 py-1 font-bold text-[10px] uppercase tracking-widest rounded-full border ${
                       v.isOpen 
                         ? 'bg-emerald-950/35 text-emerald-400 border-emerald-900/50' 
