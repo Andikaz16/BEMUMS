@@ -719,6 +719,24 @@ export default function AdminCMS({ db, onUpdateDB }) {
     });
   };
 
+  const handleDeleteApplicant = (catalogId, applicantToDelete) => {
+    confirmAction(`Hapus pendaftar "${applicantToDelete.name}" (${applicantToDelete.campus || 'Tanpa Kampus'}) dari daftar peserta?`, () => {
+      const updatedCatalog = (db.silatnasCatalog || []).map(cat => {
+        if (cat.id === catalogId) {
+          const updatedApplicants = (cat.applicants || []).filter(app => {
+            if (applicantToDelete.submittedAt && app.submittedAt) {
+              return app.submittedAt !== applicantToDelete.submittedAt;
+            }
+            return !(app.name === applicantToDelete.name && app.nowa === applicantToDelete.nowa);
+          });
+          return { ...cat, applicants: updatedApplicants };
+        }
+        return cat;
+      });
+      onUpdateDB({ ...db, silatnasCatalog: updatedCatalog });
+    });
+  };
+
   const handleAddExtraField = () => {
     if (!newFieldLabel.trim()) return;
     const key = newFieldLabel.trim().toLowerCase().replace(/\s+/g, '_');
@@ -2377,39 +2395,96 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         <p className="text-[10px] text-primary mt-1">+ {v.extraFields.length} kolom tambahan: {v.extraFields.map(f => f.label).join(', ')}</p>
                       )}
                       
-                      {/* Rekap Pendaftar */}
-                      <div className="mt-3 bg-neutral-800/40 text-white p-2.5 border border-white/10 rounded-xl overflow-hidden max-w-lg">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="font-display text-[10px] uppercase">Pendaftar ({v.applicants?.length || 0}):</span>
+                      {/* Rekap Pendaftar - Desain Luas & Rapi */}
+                      <div className="mt-4 bg-black/60 text-white p-4 md:p-5 border border-white/10 rounded-2xl shadow-xl space-y-3.5">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-primary" />
+                            <span className="font-display text-xs md:text-sm uppercase font-bold tracking-wider">
+                              Daftar Pendaftar Masuk
+                            </span>
+                            <span className="px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold">
+                              {v.applicants?.length || 0} Pendaftar
+                            </span>
+                          </div>
                           <button 
                             onClick={() => downloadCSV(v.applicants || [], `rekap_silatnas_${v.title.toLowerCase().replace(/\s+/g, '_')}.csv`)}
-                            className="text-[9px] font-bold uppercase underline hover:text-primary"
+                            className="bg-primary hover:bg-primary/80 text-white border border-primary/50 text-[10px] md:text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
                             disabled={!v.applicants || v.applicants.length === 0}
                           >
-                            Download Rekap
+                            <Download className="w-3.5 h-3.5" /> Download Seluruh Rekap (CSV)
                           </button>
                         </div>
-                        <div className="max-h-36 overflow-y-auto text-[10px] space-y-1">
+
+                        {/* List Pendaftar (Maksimal 10) */}
+                        <div className="space-y-2">
                           {!v.applicants || v.applicants.length === 0 ? (
-                            <span className="text-neutral-400">Belum ada peserta mendaftar.</span>
+                            <div className="text-center py-5 text-neutral-400 text-xs font-body">
+                              Belum ada delegasi yang mengisi formulir pendaftaran pada agenda ini.
+                            </div>
                           ) : (
-                            [...(v.applicants || [])]
-                              .sort((a, b) => {
-                                const cA = (a.campus || '').trim().toLowerCase();
-                                const cB = (b.campus || '').trim().toLowerCase();
-                                if (cA !== cB) return cA.localeCompare(cB, 'id');
-                                return (a.name || '').trim().toLowerCase().localeCompare((b.name || '').trim().toLowerCase(), 'id');
-                              })
-                              .map((app, i) => (
-                                <div key={i} className="border-b border-white/5 py-1.5 last:border-0 flex items-center justify-between gap-2">
-                                  <div className="truncate">
-                                    <span className="text-primary font-bold">[{app.campus || 'Tanpa Kampus'}]</span>{' '}
-                                    <span className="text-white font-medium">{app.name}</span>{' '}
-                                    <span className="text-neutral-400">({app.jabatan || 'Delegasi'})</span>
-                                  </div>
-                                  <span className="text-neutral-400 text-[9px] shrink-0">{app.nowa}</span>
+                            <>
+                              <div className="space-y-1.5">
+                                {[...(v.applicants || [])]
+                                  .sort((a, b) => {
+                                    const cA = (a.campus || '').trim().toLowerCase();
+                                    const cB = (b.campus || '').trim().toLowerCase();
+                                    if (cA !== cB) return cA.localeCompare(cB, 'id');
+                                    return (a.name || '').trim().toLowerCase().localeCompare((b.name || '').trim().toLowerCase(), 'id');
+                                  })
+                                  .slice(0, 10)
+                                  .map((app, i) => (
+                                    <div key={i} className="bg-neutral-900/90 border border-white/5 p-2.5 sm:p-3 rounded-xl flex items-center justify-between gap-3 hover:border-white/20 transition">
+                                      <div className="flex flex-wrap items-center gap-2 min-w-0">
+                                        <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary font-bold text-[10px] uppercase border border-primary/30 shrink-0">
+                                          {app.campus || 'Tanpa Kampus'}
+                                        </span>
+                                        <span className="text-white font-bold text-xs md:text-sm truncate">
+                                          {app.name}
+                                        </span>
+                                        <span className="text-neutral-400 text-xs shrink-0">
+                                          ({app.jabatan || 'Delegasi'})
+                                        </span>
+                                        {app.nowa && (
+                                          <span className="text-neutral-400 font-mono text-[11px] hidden sm:inline shrink-0">
+                                            | {app.nowa}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        {app.nowa && (
+                                          <a 
+                                            href={`https://wa.me/${app.nowa.replace(/[^0-9]/g, '')}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-1.5 text-neutral-400 hover:text-emerald-400 rounded-lg hover:bg-emerald-500/10 transition"
+                                            title="Chat WhatsApp"
+                                          >
+                                            <Phone className="w-3.5 h-3.5" />
+                                          </a>
+                                        )}
+                                        <button
+                                          onClick={() => handleDeleteApplicant(v.id, app)}
+                                          className="p-1.5 text-neutral-400 hover:text-red-400 rounded-lg hover:bg-red-500/10 transition"
+                                          title="Hapus pendaftar ini saja"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+
+                              {v.applicants.length > 10 ? (
+                                <div className="text-center py-2 px-3 bg-white/5 border border-white/5 rounded-xl text-neutral-400 text-xs font-body mt-2">
+                                  Menampilkan <strong>10 dari {v.applicants.length} pendaftar</strong>. Untuk melihat dan mengelola seluruh peserta secara lengkap, silakan klik tombol <strong>Download Seluruh Rekap</strong> di atas.
                                 </div>
-                              ))
+                              ) : (
+                                <div className="text-[10px] text-neutral-500 text-right pr-1 pt-1">
+                                  *Menampilkan maksimal 10 pendaftar pada pratinjau ini.
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
