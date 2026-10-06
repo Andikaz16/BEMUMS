@@ -1699,7 +1699,7 @@ export default function Silatnas({ db }) {
                           Pemberitahuan: Wajib Diisi Per Individu Delegasi
                         </h4>
                         <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
-                          Pendaftaran ini <strong>BUKAN perwakilan kelompok</strong>. Setiap kandidat atau delegasi yang akan hadir dari masing-masing kampus <strong>wajib mengisi formulir ini satu per satu (1 orang = 1 pengisian form)</strong> demi akurasi data identitas, akomodasi, dan penerbitan sertifikat resmi Silatnas 2026.
+                          Pendaftaran ini <strong>BUKAN perwakilan kelompok</strong>. Setiap kandidat atau delegasi yang akan hadir dari masing-masing kampus <strong>wajib mengisi formulir ini satu per satu (1 orang = 1 pengisian form)</strong> demi akurasi data identitas, akomodasi, serta kelancaran administrasi kehadiran delegasi.
                         </p>
                       </div>
                     </div>
