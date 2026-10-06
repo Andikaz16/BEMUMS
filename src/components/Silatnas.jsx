@@ -1765,9 +1765,6 @@ export default function Silatnas({ db }) {
                           onChange={(e) => setFormData({...formData, campus: e.target.value})}
                           placeholder="Universitas Muhammadiyah Surakarta"
                         />
-                        <span className="text-[10px] text-neutral-400 block leading-tight">
-                          *Tulis nama lengkap kampus (misal: Universitas Muhammadiyah Surakarta) agar data delegasi dari kampus Anda terkelompok sejajar dan rapi.
-                        </span>
                       </div>
                     </div>
 
