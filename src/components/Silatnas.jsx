@@ -5,7 +5,8 @@ import {
   Download, Phone, HelpCircle, FileText, ChevronDown, 
   Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
   Compass, Utensils, Landmark, Camera, Heart,
-  Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star
+  Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star,
+  Info, AlertCircle
 } from 'lucide-react';
 import { addSilatnasApplicant } from '../db';
 
@@ -1003,17 +1004,25 @@ export default function Silatnas({ db }) {
 
                   <div>
                     {v.isOpen ? (
-                      <button 
-                        onClick={() => {
-                          setSelectedEvent(v);
-                          setSubmitted(false);
-                          setFormData({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
-                          setExtraFields({});
-                        }}
-                        className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
-                      >
-                        Buka Formulir Pendaftaran
-                      </button>
+                      <>
+                        <div className="mb-4 bg-[#0EA5E9]/10 border border-[#0EA5E9]/25 rounded-2xl p-3.5 flex items-start gap-2.5 text-xs text-[#BAE6FD]">
+                          <Info className="w-4 h-4 text-[#38BDF8] shrink-0 mt-0.5" />
+                          <span className="leading-snug">
+                            <strong className="text-white">Pendaftaran Bersifat Individu:</strong> Setiap calon delegasi yang hadir dari kampus wajib mengisi form masing-masing (bukan diwakilkan).
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setSelectedEvent(v);
+                            setSubmitted(false);
+                            setFormData({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
+                            setExtraFields({});
+                          }}
+                          className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
+                        >
+                          Buka Formulir Pendaftaran
+                        </button>
+                      </>
                     ) : (
                       <button 
                         disabled 
@@ -1680,6 +1689,21 @@ export default function Silatnas({ db }) {
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSignup} className="space-y-6">
+                    {/* KETERANGAN PENDAFTARAN INDIVIDU / BUKAN PERWAKILAN */}
+                    <div className="bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-2xl p-4 md:p-5 flex items-start gap-3.5 text-left shadow-lg">
+                      <div className="p-2 rounded-xl bg-[#0EA5E9]/20 text-[#38BDF8] shrink-0 mt-0.5">
+                        <AlertCircle className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-white">
+                          Pemberitahuan: Wajib Diisi Per Individu Delegasi
+                        </h4>
+                        <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
+                          Pendaftaran ini <strong>BUKAN perwakilan kelompok</strong>. Setiap kandidat atau delegasi yang akan hadir dari masing-masing kampus <strong>wajib mengisi formulir ini satu per satu (1 orang = 1 pengisian form)</strong> demi akurasi data identitas, akomodasi, dan penerbitan sertifikat resmi Silatnas 2026.
+                        </p>
+                      </div>
+                    </div>
+
                     {/* Default Fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -1694,7 +1718,9 @@ export default function Silatnas({ db }) {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Asal Kampus *</label>
+                        <div className="flex justify-between items-center">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Asal Kampus *</label>
+                        </div>
                         <input 
                           type="text" 
                           required
@@ -1703,6 +1729,9 @@ export default function Silatnas({ db }) {
                           onChange={(e) => setFormData({...formData, campus: e.target.value})}
                           placeholder="Universitas Muhammadiyah Surakarta"
                         />
+                        <span className="text-[10px] text-neutral-400 block leading-tight">
+                          *Tulis nama lengkap kampus (misal: Universitas Muhammadiyah Surakarta) agar data delegasi dari kampus Anda terkelompok sejajar dan rapi.
+                        </span>
                       </div>
                     </div>
 

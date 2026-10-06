@@ -899,7 +899,13 @@ export default function AdminCMS({ db, onUpdateDB }) {
     
     // Tentukan header yang rapi
     const headerMapping = {
+      no: "No",
+      campus: "Asal Kampus",
       name: "Nama Lengkap",
+      jabatan: "Jabatan",
+      nowa: "No. WhatsApp",
+      motivasi: "Motivasi & Pesan Kesan",
+      submittedAt: "Waktu Daftar",
       nim: "NIM",
       email: "Email",
       faculty: "Fakultas",
@@ -907,23 +913,42 @@ export default function AdminCMS({ db, onUpdateDB }) {
       choice2: "Pilihan 2",
       cvLink: "Link CV / Portofolio",
       reason: "Alasan Mendaftar",
-      id: "Waktu Daftar",
+      id: "ID / Waktu Daftar",
       phone: "No Telepon / WA",
       commitment: "Komitmen Waktu",
       commitmentLink: "Link Google Drive Dokumen",
-      commitmentFileName: "Nama Berkas Terlampir",
-      nowa: "No. WhatsApp",
-      campus: "Asal Kampus",
-      jabatan: "Jabatan",
-      motivasi: "Motivasi & Pesan Kesan",
-      submittedAt: "Waktu Daftar"
+      commitmentFileName: "Nama Berkas Terlampir"
     };
     
-    let rawKeys = Object.keys(data[0]);
+    let processedData = data.map(item => ({ ...item }));
+
+    // Jika ini adalah rekap Silatnas (atau memiliki data asal kampus):
+    // Urutkan data berdasarkan "Asal Kampus" (A-Z) terlebih dahulu, lalu nama delegasi (A-Z)
+    // sehingga seluruh delegasi dari kampus yang sama langsung berdampingan / sejajar rapi di spreadsheet/Excel!
+    if (filename.includes('silatnas') || processedData.some(d => d.campus)) {
+      processedData.sort((a, b) => {
+        const campusA = (a.campus || '').trim().toLowerCase();
+        const campusB = (b.campus || '').trim().toLowerCase();
+        if (campusA !== campusB) {
+          return campusA.localeCompare(campusB, 'id');
+        }
+        const nameA = (a.name || '').trim().toLowerCase();
+        const nameB = (b.name || '').trim().toLowerCase();
+        return nameA.localeCompare(nameB, 'id');
+      });
+
+      // Tambahkan nomor urut No (1, 2, 3...)
+      processedData = processedData.map((row, idx) => ({
+        no: idx + 1,
+        ...row
+      }));
+    }
+
+    let rawKeys = Object.keys(processedData[0]);
 
     // Urutkan kolom jika ini adalah rekap silatnas
     if (filename.includes('silatnas')) {
-      const preferredOrder = ['name', 'nowa', 'campus', 'jabatan', 'motivasi', 'submittedAt'];
+      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'motivasi', 'submittedAt'];
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       // Hanya gabungkan key yang benar-benar ada di data
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
@@ -938,7 +963,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     csvRows.push(headers.join(';'));
     
     // Push data rows
-    for (const row of data) {
+    for (const row of processedData) {
       const values = rawKeys.map(key => {
         let val = row[key];
         
@@ -2339,18 +2364,27 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             Download Rekap
                           </button>
                         </div>
-                        <div className="max-h-24 overflow-y-auto text-[10px]">
+                        <div className="max-h-36 overflow-y-auto text-[10px] space-y-1">
                           {!v.applicants || v.applicants.length === 0 ? (
                             <span className="text-neutral-400">Belum ada peserta mendaftar.</span>
                           ) : (
-                            v.applicants.map((app, i) => (
-                              <div key={i} className="border-b border-neutral-300 py-1 last:border-0">
-                                {app.name} — {app.campus}
-                                {Object.keys(app).filter(k => !['name', 'campus', 'submittedAt'].includes(k)).map(k => (
-                                  <span key={k} className="text-neutral-500 ml-2">| {k}: {app[k]}</span>
-                                ))}
-                              </div>
-                            ))
+                            [...(v.applicants || [])]
+                              .sort((a, b) => {
+                                const cA = (a.campus || '').trim().toLowerCase();
+                                const cB = (b.campus || '').trim().toLowerCase();
+                                if (cA !== cB) return cA.localeCompare(cB, 'id');
+                                return (a.name || '').trim().toLowerCase().localeCompare((b.name || '').trim().toLowerCase(), 'id');
+                              })
+                              .map((app, i) => (
+                                <div key={i} className="border-b border-white/5 py-1.5 last:border-0 flex items-center justify-between gap-2">
+                                  <div className="truncate">
+                                    <span className="text-primary font-bold">[{app.campus || 'Tanpa Kampus'}]</span>{' '}
+                                    <span className="text-white font-medium">{app.name}</span>{' '}
+                                    <span className="text-neutral-400">({app.jabatan || 'Delegasi'})</span>
+                                  </div>
+                                  <span className="text-neutral-400 text-[9px] shrink-0">{app.nowa}</span>
+                                </div>
+                              ))
                           )}
                         </div>
                       </div>
