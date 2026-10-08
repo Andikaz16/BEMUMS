@@ -181,6 +181,7 @@ const DEFAULT_DATA = {
       applicants: []
     }
   ],
+  silatnasGroupWaLink: "",
   silatnasVisiMisi: {
     visiTitle: "Visi Kolaboratif",
     visiDesc: "Menciptakan ruang dialog nasional yang terbuka dan konstruktif guna merumuskan rekomendasi kritis terhadap arah kebijakan nasional demi memperjuangkan hak-hak kesejahteraan masyarakat umum.",
@@ -302,7 +303,7 @@ const DEFAULT_DATA = {
   ]
 };
 
-import { doc, setDoc, onSnapshot, writeBatch, increment, collection, getDocs, runTransaction } from "firebase/firestore";
+import { doc, setDoc, updateDoc, onSnapshot, writeBatch, increment, collection, getDocs, runTransaction } from "firebase/firestore";
 import { db as firestore } from "./firebase";
 
 // Utility to sort articles or albums by creation time descending (newest first)
@@ -378,6 +379,7 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         combinedData.silatnasCatalog = kData.silatnasCatalog || [];
         combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
         combinedData.silatnasShuttle = kData.silatnasShuttle || [];
+        combinedData.silatnasGroupWaLink = kData.silatnasGroupWaLink || '';
       }
     });
 
@@ -484,6 +486,7 @@ export const saveDB = async (data) => {
       silatnasCatalog: silatnasCatalog || [], 
       silatnasCulture: silatnasCulture || [],
       silatnasShuttle: silatnasShuttle || [],
+      silatnasGroupWaLink: data.silatnasGroupWaLink || '',
       lastUpdated: data.lastUpdated 
     });
 
@@ -558,6 +561,11 @@ export const addSilatnasShuttle = async (shuttleData) => {
     const updated = [...(data.silatnasShuttle || []), { ...shuttleData, id: Date.now() }];
     transaction.update(DOC_REF, { silatnasShuttle: updated });
   });
+};
+
+export const updateSilatnasGroupWaLink = async (link) => {
+  const DOC_REF = doc(firestore, "cms", "kegiatan");
+  await updateDoc(DOC_REF, { silatnasGroupWaLink: link });
 };
 
 // --- ARTICLE INTERACTIONS (LIKE & COMMENTS) ---

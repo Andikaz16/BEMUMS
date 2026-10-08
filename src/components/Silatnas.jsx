@@ -6,7 +6,7 @@ import {
   Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
   Compass, Utensils, Landmark, Camera, Heart,
   Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star,
-  Info, AlertCircle, Upload, ExternalLink, Image as ImageIcon
+  Info, AlertCircle, Upload, ExternalLink, Image as ImageIcon, MessageCircle
 } from 'lucide-react';
 import { addSilatnasApplicant, addSilatnasShuttle } from '../db';
 
@@ -54,6 +54,17 @@ export default function Silatnas({ db }) {
   const [uploadingSWP, setUploadingSWP] = useState(false);
   const [uploadProgressSWO, setUploadProgressSWO] = useState('');
   const [uploadProgressSWP, setUploadProgressSWP] = useState('');
+
+  // Lock body scroll when modal is open so touchpad 2-finger & mousewheel scrolling inside modal never moves background page
+  useEffect(() => {
+    if (selectedEvent || showSizeChartModal) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow || '';
+      };
+    }
+  }, [selectedEvent, showSizeChartModal]);
 
   // Roll-Call & Sebaran 7 Zona State
   const [selectedZone, setSelectedZone] = useState('Semua');
@@ -560,6 +571,16 @@ export default function Silatnas({ db }) {
       const applicantData = { ...formData, ...extraFields, submittedAt: new Date().toISOString() };
       await addSilatnasApplicant(selectedEvent.id, applicantData);
       setSubmitted(true);
+
+      // Auto redirect ke grup WhatsApp peserta Silatnas jika link sudah disediakan oleh sekretaris / admin
+      const waGroupLink = db?.silatnasGroupWaLink?.trim();
+      if (waGroupLink && (waGroupLink.startsWith('http://') || waGroupLink.startsWith('https://'))) {
+        try {
+          window.open(waGroupLink, '_blank', 'noopener,noreferrer');
+        } catch (openErr) {
+          console.warn('Tidak dapat membuka link grup WhatsApp secara otomatis (popup blocker):', openErr);
+        }
+      }
     } catch (err) {
       console.error(err);
       alert("Gagal mengirim pendaftaran, pastikan koneksi internet stabil lalu coba lagi.");
@@ -1899,15 +1920,29 @@ export default function Silatnas({ db }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 md:p-6 z-[100]"
-            onClick={() => setSelectedEvent(null)}
+            data-lenis-prevent="true"
+            data-lenis-prevent
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            style={{ overscrollBehavior: 'contain' }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 md:p-6 z-[100] overscroll-contain"
+            onClick={() => {
+              setSelectedEvent(null);
+              setSubmitted(false);
+            }}
           >
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative"
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+              data-lenis-prevent="true"
+              data-lenis-prevent
+              tabIndex={-1}
+              style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' }}
+              className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain shadow-2xl relative custom-scrollbar focus:outline-none"
             >
               {/* Modal Header */}
               <div className="sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-neutral-800 p-6 md:px-10 flex items-center justify-between z-20">
@@ -1916,7 +1951,10 @@ export default function Silatnas({ db }) {
                   <h2 className="text-xl md:text-2xl font-heading font-extrabold uppercase tracking-tight text-white">{selectedEvent.title}</h2>
                 </div>
                 <button 
-                  onClick={() => setSelectedEvent(null)}
+                  onClick={() => {
+                    setSelectedEvent(null);
+                    setSubmitted(false);
+                  }}
                   className="w-10 h-10 bg-black/50 hover:bg-[#0EA5E9] text-white rounded-full flex items-center justify-center transition-colors border border-neutral-700 hover:border-transparent"
                 >
                   <X className="w-5 h-5" />
@@ -1928,22 +1966,80 @@ export default function Silatnas({ db }) {
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-12 space-y-4"
+                    className="text-center py-6 md:py-8 space-y-4"
                   >
-                    <div className="w-20 h-20 bg-emerald-950/30 border border-emerald-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(52,211,153,0.2)]">
+                    <div className="w-20 h-20 bg-emerald-950/30 border border-emerald-900/50 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(52,211,153,0.2)]">
                       <CheckCircle className="text-emerald-400 w-10 h-10" />
                     </div>
-                    <h3 className="text-3xl font-heading font-bold text-white uppercase">Pendaftaran Berhasil!</h3>
-                    <p className="text-neutral-400 font-body text-sm leading-relaxed">
-                      Terima kasih, <strong>{formData.name}</strong>, telah mendaftar Silatnas BEM UMS.<br/>
-                      Panitia kami akan segera menghubungi Anda melalui nomor WhatsApp <strong>{formData.nowa}</strong> untuk kelanjutan verifikasi berkas.
+                    <h3 className="text-2xl md:text-3xl font-heading font-bold text-white uppercase">Pendaftaran Berhasil!</h3>
+                    <p className="text-neutral-400 font-body text-sm leading-relaxed max-w-lg mx-auto">
+                      Terima kasih, <strong>{formData.name}</strong> ({formData.campus || 'Delegasi'}), formulir pendaftaran Silatnas BEM UMS 2026 Anda telah kami terima dengan sukses.
                     </p>
-                    <button 
-                      onClick={() => setSelectedEvent(null)}
-                      className="mt-8 px-8 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold uppercase tracking-widest text-xs rounded-full transition-colors border border-neutral-800"
-                    >
-                      Tutup Jendela
-                    </button>
+
+                    {/* KOTAK GRUP WHATSAPP PESERTA SILATNAS */}
+                    {db?.silatnasGroupWaLink && db.silatnasGroupWaLink.trim() ? (
+                      <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-emerald-950/60 to-neutral-900 border border-emerald-500/40 text-left space-y-3.5 shadow-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                            <MessageCircle className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-heading font-bold text-white uppercase tracking-wider">
+                              Grup WhatsApp Resmi Delegasi Silatnas 2026
+                            </h4>
+                            <p className="text-xs text-emerald-300/80 font-body">
+                              Wadah koordinasi, rundown terbaru, & info penjemputan delegasi
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-neutral-300 font-body leading-relaxed">
+                          Tautan grup WhatsApp delegasi telah dibuka di tab baru browser Anda. Jika tab belum terbuka otomatis atau tidak sengaja tertutup, silakan klik tombol di bawah untuk bergabung sekarang:
+                        </p>
+                        <a 
+                          href={db.silatnasGroupWaLink.trim()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs transition shadow-lg shadow-emerald-950/50"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          Gabung Grup WhatsApp Silatnas Sekarang
+                          <ExternalLink className="w-3.5 h-3.5 ml-1" />
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-sky-950/50 to-neutral-900 border border-sky-500/30 text-left space-y-3 shadow-xl">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <MessageCircle className="w-5 h-5" />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="text-sm font-heading font-bold text-white uppercase tracking-wider">
+                                Grup WhatsApp Delegasi Silatnas 2026
+                              </h4>
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-bold uppercase">
+                                Sedang Dipersiapkan Panitia
+                              </span>
+                            </div>
+                            <p className="text-xs text-neutral-300 font-body leading-relaxed pt-1">
+                              Tautan resmi grup koordinasi WhatsApp delegasi saat ini sedang disiapkan oleh <strong>Sekretaris Panitia</strong>. Panitia kami akan segera mengirimkan tautan undangan resmi langsung ke nomor WhatsApp Anda (<strong>{formData.nowa}</strong>) setelah proses verifikasi berkas selesai.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="pt-4">
+                      <button 
+                        onClick={() => {
+                          setSelectedEvent(null);
+                          setSubmitted(false);
+                        }}
+                        className="px-8 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold uppercase tracking-widest text-xs rounded-full transition-colors border border-neutral-800"
+                      >
+                        Tutup Jendela
+                      </button>
+                    </div>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSignup} className="space-y-6">
@@ -2296,11 +2392,22 @@ export default function Silatnas({ db }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[120]"
+            data-lenis-prevent="true"
+            data-lenis-prevent
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            style={{ overscrollBehavior: 'contain' }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[120] overscroll-contain"
             onClick={() => setShowSizeChartModal(false)}
           >
             <div 
-              className="relative max-w-2xl w-full bg-neutral-900 border border-neutral-700 rounded-3xl p-4 md:p-6 shadow-2xl"
+              className="relative max-w-2xl w-full bg-neutral-900 border border-neutral-700 rounded-3xl p-4 md:p-6 shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain custom-scrollbar focus:outline-none"
+              data-lenis-prevent="true"
+              data-lenis-prevent
+              tabIndex={-1}
+              style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' }}
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between pb-3 border-b border-neutral-800 mb-4">

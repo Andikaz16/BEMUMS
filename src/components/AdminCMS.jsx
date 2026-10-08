@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
-  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation
+  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation, MessageCircle
 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -235,6 +235,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const [silatnasCampusesList, setSilatnasCampusesList] = useState(db.silatnasCampuses || []);
   const [newSilatnasCampus, setNewSilatnasCampus] = useState({ name: '', shortName: '', region: 'Jawa & DIY', city: '', status: 'Terkonfirmasi', delegates: 2, confirmed: true });
   const [editingSilatnasCampusIndex, setEditingSilatnasCampusIndex] = useState(null);
+  const [silatnasGroupWaLink, setSilatnasGroupWaLink] = useState(db.silatnasGroupWaLink || '');
 
   // Sync forms when database receives an update from Firebase
   useEffect(() => {
@@ -265,6 +266,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     if (db.silatnasDocs) setSilatnasDocsList(db.silatnasDocs);
     if (db.silatnasCulture) setSilatnasCultureList(db.silatnasCulture);
     if (db.silatnasCampuses) setSilatnasCampusesList(db.silatnasCampuses);
+    if (db.silatnasGroupWaLink !== undefined) setSilatnasGroupWaLink(db.silatnasGroupWaLink || '');
   }, [db.lastUpdated]);
 
   const kegiatanList = db.kegiatan || [];
@@ -904,6 +906,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
         setNewSilatnasCampus({ name: '', shortName: '', region: 'Jawa & DIY', city: '', status: 'Terkonfirmasi', delegates: 2, confirmed: true });
       }
     });
+  };
+
+  const handleSaveSilatnasGroupWaLink = () => {
+    save({ silatnasGroupWaLink: (silatnasGroupWaLink || '').trim() });
   };
 
   // Export JSON (for backup/rekap)
@@ -2253,6 +2259,70 @@ export default function AdminCMS({ db, onUpdateDB }) {
           {activeTab === 'silatnas' && (
             <div className="space-y-8">
               <h2 className="text-3xl font-display uppercase border-b border-white/10 pb-2">Manajemen Silatnas</h2>
+
+              {/* CARD: PENGATURAN LINK GRUP WHATSAPP PESERTA SILATNAS */}
+              <div className="p-5 md:p-6 border border-emerald-500/30 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-neutral-900/60 backdrop-blur-md text-white space-y-4 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 shrink-0">
+                      <MessageCircle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm md:text-base uppercase font-bold text-white tracking-wide">
+                        Link Undangan Grup WhatsApp Peserta Silatnas 2026
+                      </h3>
+                      <p className="text-xs text-neutral-400 font-body">
+                        Setelah pendaftar mengirim formulir, sistem akan otomatis mengarahkan delegasi untuk masuk ke grup ini.
+                      </p>
+                    </div>
+                  </div>
+                  {silatnasGroupWaLink ? (
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold self-start sm:self-auto flex items-center gap-1.5 shrink-0">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Grup Aktif
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold self-start sm:self-auto shrink-0">
+                      Menunggu Link dari Sekretaris
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300 block">
+                    URL Link Undangan WhatsApp (Contoh: https://chat.whatsapp.com/...)
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input 
+                      type="url" 
+                      placeholder="https://chat.whatsapp.com/..." 
+                      value={silatnasGroupWaLink}
+                      onChange={e => setSilatnasGroupWaLink(e.target.value)}
+                      className="flex-1 px-4 py-3 bg-black/60 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition placeholder-neutral-500 font-mono"
+                    />
+                    <button 
+                      onClick={handleSaveSilatnasGroupWaLink}
+                      className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition shadow-lg shadow-emerald-950/50 shrink-0 flex items-center justify-center gap-2"
+                    >
+                      <Check className="w-4 h-4" /> Simpan Link Grup WA
+                    </button>
+                    {silatnasGroupWaLink && (
+                      <a 
+                        href={silatnasGroupWaLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition shrink-0 flex items-center justify-center gap-1.5 border border-white/10"
+                        title="Uji coba buka link WhatsApp"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-emerald-400" /> Test Buka
+                      </a>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-neutral-400 font-body">
+                    *Jika kolom ini masih kosong, formulir pendaftaran akan menampilkan pemberitahuan bahwa tautan grup sedang dipersiapkan oleh sekretaris dan panitia akan mengundang via nomor WhatsApp peserta.
+                  </p>
+                </div>
+              </div>
               
               <div className="flex justify-between items-center">
                 <h3 className="font-display text-xl uppercase">Agenda Silatnas</h3>
