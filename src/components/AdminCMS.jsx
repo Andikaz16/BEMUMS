@@ -928,6 +928,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
       name: "Nama Lengkap",
       jabatan: "Jabatan",
       nowa: "No. WhatsApp",
+      sizeKaos: "Ukuran Kaos",
+      tipeLengan: "Tipe Lengan",
+      buktiPembayaran: "Bukti Pembayaran SWO & SWP",
+      buktiDriveLink: "Link GDrive Bukti Pembayaran",
+      buktiFileName: "Nama File Bukti",
       motivasi: "Motivasi & Pesan Kesan",
       submittedAt: "Waktu Daftar",
       point: "Titik Kedatangan / Penjemputan",
@@ -992,7 +997,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     } else if (filename.includes('silatnas')) {
-      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'motivasi', 'submittedAt'];
+      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'sizeKaos', 'tipeLengan', 'buktiPembayaran', 'buktiDriveLink', 'submittedAt'];
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     }
@@ -2445,6 +2450,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                         <span className="text-neutral-400 text-xs shrink-0">
                                           ({app.jabatan || 'Delegasi'})
                                         </span>
+                                        {app.sizeKaos && (
+                                          <span className="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold text-[10px] uppercase border border-sky-500/30 shrink-0">
+                                            Kaos: {app.sizeKaos} ({app.tipeLengan || 'Pendek'})
+                                          </span>
+                                        )}
                                         {app.nowa && (
                                           <span className="text-neutral-400 font-mono text-[11px] hidden sm:inline shrink-0">
                                             | {app.nowa}
@@ -2452,6 +2462,18 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                         )}
                                       </div>
                                       <div className="flex items-center gap-1 shrink-0">
+                                        {(app.buktiPembayaran || app.buktiDriveLink) && (
+                                          <a 
+                                            href={app.buktiPembayaran || app.buktiDriveLink} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-1.5 text-neutral-400 hover:text-[#38BDF8] rounded-lg hover:bg-sky-500/10 transition flex items-center gap-1.5 border border-transparent hover:border-sky-500/30"
+                                            title="Lihat Bukti Pembayaran SWO & SWP"
+                                          >
+                                            <FileText className="w-3.5 h-3.5 text-[#38BDF8]" />
+                                            <span className="text-[10px] font-bold text-[#38BDF8] hidden md:inline">Bukti SWO/SWP</span>
+                                          </a>
+                                        )}
                                         {app.nowa && (
                                           <a 
                                             href={`https://wa.me/${app.nowa.replace(/[^0-9]/g, '')}`} 

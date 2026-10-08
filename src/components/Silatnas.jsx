@@ -6,7 +6,7 @@ import {
   Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
   Compass, Utensils, Landmark, Camera, Heart,
   Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star,
-  Info, AlertCircle
+  Info, AlertCircle, Upload, ExternalLink, Image as ImageIcon
 } from 'lucide-react';
 import { addSilatnasApplicant, addSilatnasShuttle } from '../db';
 
@@ -34,10 +34,23 @@ const faqData = [
 
 export default function Silatnas({ db }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [formData, setFormData] = useState({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    campus: '', 
+    jabatan: '', 
+    nowa: '', 
+    sizeKaos: '', 
+    tipeLengan: '', 
+    buktiPembayaran: '', 
+    buktiFileName: '', 
+    buktiDriveLink: '' 
+  });
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
+  const [showSizeChartModal, setShowSizeChartModal] = useState(false);
+  const [uploadingBukti, setUploadingBukti] = useState(false);
+  const [uploadProgressText, setUploadProgressText] = useState('');
 
   // Roll-Call & Sebaran 7 Zona State
   const [selectedZone, setSelectedZone] = useState('Semua');
@@ -151,7 +164,7 @@ export default function Silatnas({ db }) {
 
   const alurData = Array.isArray(safeDb.silatnasAlur) ? safeDb.silatnasAlur : [
     { step: "01", title: "Pilih Agenda", desc: "Cari agenda Silatnas aktif di bagian pendaftaran portal ini." },
-    { step: "02", title: "Isi Formulir", desc: "Isi data delegasi, nomor WhatsApp, serta motivasi pendaftaran." },
+    { step: "02", title: "Isi Formulir", desc: "Isi data mandataris, kontak, ukuran kaos delegasi, serta bukti transfer SWO & SWP." },
     { step: "03", title: "Verifikasi Berkas", desc: "Panitia akan menghubungi Anda dalam 24 jam untuk verifikasi administrasi." },
     { step: "04", title: "Gabung Grup", desc: "Masuk grup resmi koordinasi delegasi untuk informasi akomodasi." }
   ];
@@ -341,9 +354,163 @@ export default function Silatnas({ db }) {
     return selectedZone === 'Semua' || z.id === selectedZone || z.name === selectedZone || z.zoneNumber === selectedZone;
   });
 
+  const handleBuktiUpload = async (e) => {
+    let file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 15 * 1024 * 1024) {
+      alert("Ukuran file terlalu besar! Maksimal 15 MB.");
+      if (e.target) e.target.value = null;
+      return;
+    }
+
+    setUploadingBukti(true);
+    setUploadProgressText("Memproses berkas...");
+
+    try {
+      const fileName = file.name.toLowerCase();
+      let isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
+
+      if (isHeic) {
+        setUploadProgressText("Mengonversi foto iPhone (HEIC)...");
+        try {
+          const { heicTo } = await import('heic-to');
+          const jpegBlob = await heicTo({
+            blob: file,
+            type: "image/jpeg",
+            quality: 0.8
+          });
+          file = new File([jpegBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+        } catch (heicErr) {
+          console.warn("HEIC convert fallback:", heicErr);
+        }
+      }
+
+      // Jika file PDF
+      if (file.type === 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setFormData(prev => ({
+            ...prev,
+            buktiPembayaran: event.target.result,
+            buktiFileName: file.name
+          }));
+          setUploadingBukti(false);
+          setUploadProgressText("");
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      // Untuk gambar: kompres menggunakan Canvas lalu unggah ke cloud
+      setUploadProgressText("Mengompres & mengunggah bukti transfer...");
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = async () => {
+          try {
+            const MAX_WIDTH = 1200;
+            let width = img.width;
+            let height = img.height;
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const base64Data = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            let uploadedUrl = null;
+
+            // 1. Coba upload langsung ke Imgur
+            try {
+              const formDataImg = new FormData();
+              formDataImg.append('image', base64Data);
+              const res = await fetch('https://api.imgur.com/3/image', {
+                method: 'POST',
+                headers: { 'Authorization': 'Client-ID 546c25a59c58ad7' },
+                body: formDataImg
+              });
+              const data = await res.json();
+              if (data.success && data.data?.link) {
+                uploadedUrl = data.data.link;
+              }
+            } catch (imgurErr) {
+              console.warn("Direct Imgur failed, trying Catbox fallback:", imgurErr);
+            }
+
+            // 2. Fallback Catbox via /api/upload
+            if (!uploadedUrl) {
+              try {
+                const fbRes = await fetch('/api/upload', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ image: base64Data })
+                });
+                const fbData = await fbRes.json();
+                if (fbData.success && fbData.url) {
+                  uploadedUrl = fbData.url;
+                }
+              } catch (fbErr) {
+                console.warn("Fallback upload failed:", fbErr);
+              }
+            }
+
+            // 3. Fallback: lightweight compressed data URI (500px, 0.4 quality, ~25KB)
+            if (!uploadedUrl) {
+              const tinyCanvas = document.createElement('canvas');
+              const tinyScale = Math.min(1, 500 / Math.max(width, height));
+              tinyCanvas.width = Math.round(width * tinyScale);
+              tinyCanvas.height = Math.round(height * tinyScale);
+              const tinyCtx = tinyCanvas.getContext('2d');
+              tinyCtx.drawImage(img, 0, 0, tinyCanvas.width, tinyCanvas.height);
+              uploadedUrl = tinyCanvas.toDataURL('image/jpeg', 0.4);
+            }
+
+            setFormData(prev => ({
+              ...prev,
+              buktiPembayaran: uploadedUrl,
+              buktiFileName: file.name
+            }));
+          } catch (procErr) {
+            console.error("Image processing error:", procErr);
+            alert("Gagal memproses gambar. Silakan cantumkan link Google Drive pada kolom alternatif.");
+          } finally {
+            setUploadingBukti(false);
+            setUploadProgressText("");
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Gagal memproses berkas. Silakan coba lagi.");
+      setUploadingBukti(false);
+      setUploadProgressText("");
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!selectedEvent) return;
+
+    if (!formData.sizeKaos) {
+      alert("Mohon pilih Ukuran Kaos (Size Chart) terlebih dahulu!");
+      return;
+    }
+    if (!formData.tipeLengan) {
+      alert("Mohon pilih Tipe Lengan Kaos (Lengan Pendek atau Lengan Panjang)!");
+      return;
+    }
+    if (!formData.buktiPembayaran && !formData.buktiDriveLink) {
+      alert("Mohon upload Bukti Pembayaran SWO & SWP (atau sertakan Link Google Drive bukti transfer)!");
+      return;
+    }
 
     try {
       const applicantData = { ...formData, ...extraFields, submittedAt: new Date().toISOString() };
@@ -1025,14 +1192,24 @@ export default function Silatnas({ db }) {
                         <div className="mb-4 bg-[#0EA5E9]/10 border border-[#0EA5E9]/25 rounded-2xl p-3.5 flex items-start gap-2.5 text-xs text-[#BAE6FD]">
                           <Info className="w-4 h-4 text-[#38BDF8] shrink-0 mt-0.5" />
                           <span className="leading-snug">
-                            <strong className="text-white">Pendaftaran Bersifat Individu:</strong> Setiap calon delegasi yang hadir dari kampus wajib mengisi form masing-masing (bukan diwakilkan).
+                            <strong className="text-white">Pendaftaran Mandataris Kampus:</strong> Diisi oleh mandataris perwakilan kampus (maks. 2 delegasi per kampus, diisi secara individu).
                           </span>
                         </div>
                         <button 
                           onClick={() => {
                             setSelectedEvent(v);
                             setSubmitted(false);
-                            setFormData({ name: '', campus: '', jabatan: '', nowa: '', motivasi: '' });
+                            setFormData({ 
+                              name: '', 
+                              campus: '', 
+                              jabatan: '', 
+                              nowa: '', 
+                              sizeKaos: '', 
+                              tipeLengan: '', 
+                              buktiPembayaran: '', 
+                              buktiFileName: '', 
+                              buktiDriveLink: '' 
+                            });
                             setExtraFields({});
                           }}
                           className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
@@ -1725,17 +1902,17 @@ export default function Silatnas({ db }) {
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSignup} className="space-y-6">
-                    {/* KETERANGAN PENDAFTARAN INDIVIDU / BUKAN PERWAKILAN */}
+                    {/* KETERANGAN PENDAFTARAN MANDATARIS KAMPUS */}
                     <div className="bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-2xl p-4 md:p-5 flex items-start gap-3.5 text-left shadow-lg">
                       <div className="p-2 rounded-xl bg-[#0EA5E9]/20 text-[#38BDF8] shrink-0 mt-0.5">
                         <AlertCircle className="w-5 h-5" />
                       </div>
                       <div className="space-y-1">
                         <h4 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-white">
-                          Pemberitahuan: Wajib Diisi Per Individu Delegasi
+                          Pemberitahuan: Ketentuan Mandataris Delegasi Kampus
                         </h4>
                         <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
-                          Pendaftaran ini <strong>BUKAN perwakilan kelompok</strong>. Setiap kandidat atau delegasi yang akan hadir dari masing-masing kampus <strong>wajib mengisi formulir ini satu per satu (1 orang = 1 pengisian form)</strong> demi akurasi data identitas, akomodasi, serta kelancaran administrasi kehadiran delegasi.
+                          Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong>2 (dua) orang</strong> (wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran official merchandise/kaos, serta tertib administrasi kehadiran Silatnas PTMAI 2026).
                         </p>
                       </div>
                     </div>
@@ -1797,22 +1974,175 @@ export default function Silatnas({ db }) {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-end">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Motivasi & Pesan Kesan *</label>
-                        <span className={`text-[10px] ${formData.motivasi.length < 30 ? 'text-red-400' : 'text-emerald-400'}`}>
-                          {formData.motivasi.length}/30 karakter
+                    {/* PANDUAN SIZE CHART KAOS DEWASA */}
+                    <div className="space-y-3 bg-neutral-900/90 border border-neutral-800 p-4 sm:p-5 rounded-2xl">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[#38BDF8]" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-white">
+                            Size Chart Kaos Resmi Delegasi
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-[#38BDF8] bg-[#0EA5E9]/10 border border-[#0EA5E9]/20 px-2.5 py-1 rounded-full font-mono self-start sm:self-auto">
+                          Standar Kaos Dewasa (cm)
                         </span>
                       </div>
-                      <textarea 
-                        required
-                        minLength="30"
-                        rows="4"
-                        className="w-full bg-black border border-neutral-800 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body text-sm resize-none"
-                        value={formData.motivasi}
-                        onChange={(e) => setFormData({...formData, motivasi: e.target.value})}
-                        placeholder="Tuliskan motivasi mengikuti Silatnas dan pesan kesan Anda (minimal 30 karakter)..."
-                      ></textarea>
+
+                      {/* Display Image with Zoom trigger */}
+                      <div 
+                        onClick={() => setShowSizeChartModal(true)}
+                        className="relative group overflow-hidden rounded-xl border border-white/10 bg-black/60 flex items-center justify-center p-2 cursor-pointer hover:border-[#38BDF8]/50 transition"
+                        title="Klik untuk memperbesar gambar Size Chart"
+                      >
+                        <img 
+                          src="/assets/size_chart_silatnas.png" 
+                          alt="Size Chart Kaos Dewasa Silatnas" 
+                          className="w-full max-h-72 object-contain rounded-lg transition-transform duration-300 group-hover:scale-[1.01]"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                          <span className="bg-[#0EA5E9] text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                            <Search className="w-3.5 h-3.5" /> Klik untuk Memperbesar Tabel Ukuran
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-neutral-400 font-body leading-relaxed">
+                        *Harap cermati tabel panduan ukuran (Lebar, Tinggi, dan Panjang Lengan) di atas sebelum menentukan pilihan ukuran kaos Anda di bawah ini.
+                      </p>
+                    </div>
+
+                    {/* INPUT SIZE KAOS & TIPE LENGAN (KIRI & KANAN) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {/* Kiri: Ukuran Size */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
+                          Ukuran Kaos (Size) *
+                        </label>
+                        <select
+                          required
+                          className="w-full bg-black border border-neutral-800 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body text-sm cursor-pointer"
+                          value={formData.sizeKaos}
+                          onChange={(e) => setFormData({ ...formData, sizeKaos: e.target.value })}
+                        >
+                          <option value="" disabled>-- Pilih Ukuran Kaos --</option>
+                          <option value="XS">XS (Lebar 45 cm, Tinggi 65 cm)</option>
+                          <option value="S">S (Lebar 48 cm, Tinggi 68 cm)</option>
+                          <option value="M">M (Lebar 51 cm, Tinggi 71 cm)</option>
+                          <option value="L">L (Lebar 54 cm, Tinggi 75 cm)</option>
+                          <option value="XL">XL (Lebar 57 cm, Tinggi 78 cm)</option>
+                          <option value="XXL">XXL (Lebar 60 cm, Tinggi 81 cm)</option>
+                          <option value="3XL">3XL (Lebar 63 cm, Tinggi 84 cm)</option>
+                          <option value="4XL">4XL (Lebar 66 cm, Tinggi 87 cm)</option>
+                          <option value="5XL">5XL (Lebar 69 cm, Tinggi 90 cm)</option>
+                          <option value="6XL">6XL (Lebar 72 cm, Tinggi 93 cm)</option>
+                        </select>
+                      </div>
+
+                      {/* Kanan: Tipe Lengan */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
+                          Tipe Lengan Kaos *
+                        </label>
+                        <select
+                          required
+                          className="w-full bg-black border border-neutral-800 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body text-sm cursor-pointer"
+                          value={formData.tipeLengan}
+                          onChange={(e) => setFormData({ ...formData, tipeLengan: e.target.value })}
+                        >
+                          <option value="" disabled>-- Pilih Tipe Lengan --</option>
+                          <option value="Lengan Pendek">Lengan Pendek</option>
+                          <option value="Lengan Panjang">Lengan Panjang</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* UPLOAD BUKTI PEMBAYARAN SWO & SWP */}
+                    <div className="space-y-3 bg-neutral-900/60 border border-neutral-800 p-4 sm:p-5 rounded-2xl">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-[#38BDF8]" />
+                          Bukti Pembayaran SWO & SWP *
+                        </label>
+                        <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">
+                          *Wajib Diisi Per Individu
+                        </span>
+                      </div>
+
+                      {/* Peringatan Transfer Terpisah */}
+                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-200">
+                        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">
+                          <strong>Ketentuan Transfer:</strong> Bukti pembayaran SWO dan SWP wajib diunggah. Pentransferan wajib <strong>terpisah dengan rekan sesama mandat kampus</strong> (1 delegasi = 1 bukti transfer terpisah).
+                        </span>
+                      </div>
+
+                      {/* Area Upload File */}
+                      <div className="space-y-3 pt-1">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                          <label className={`cursor-pointer flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition border ${
+                            uploadingBukti 
+                              ? 'bg-neutral-800 text-neutral-400 border-neutral-700 cursor-wait'
+                              : formData.buktiPembayaran
+                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
+                                : 'bg-[#0EA5E9] hover:bg-[#0369A1] text-white border-[#0EA5E9] shadow-[0_0_15px_rgba(14,165,233,0.3)]'
+                          }`}>
+                            <input 
+                              type="file" 
+                              accept="image/*,.pdf,.heic,.heif"
+                              onChange={handleBuktiUpload}
+                              disabled={uploadingBukti}
+                              className="hidden"
+                            />
+                            {uploadingBukti ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>{uploadProgressText || 'Mengunggah Berkas...'}</span>
+                              </>
+                            ) : formData.buktiPembayaran ? (
+                              <>
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                <span>Ganti Bukti Pembayaran</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-4 h-4" />
+                                <span>Upload Bukti Pembayaran</span>
+                              </>
+                            )}
+                          </label>
+
+                          {formData.buktiFileName && (
+                            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-neutral-900 border border-white/10 rounded-xl text-xs text-neutral-300 truncate">
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span className="truncate">{formData.buktiFileName}</span>
+                              {formData.buktiPembayaran && formData.buktiPembayaran.startsWith('http') && (
+                                <a 
+                                  href={formData.buktiPembayaran} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-[#38BDF8] hover:underline text-[10px] ml-1 shrink-0 font-bold"
+                                >
+                                  [Lihat File]
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Opsi Cadangan Link Google Drive */}
+                        <div className="pt-2 border-t border-white/5 space-y-1.5">
+                          <label className="block text-[11px] font-medium text-neutral-400">
+                            Atau cantumkan Link Google Drive Bukti Transfer (Opsi Cadangan/Alternatif):
+                          </label>
+                          <input 
+                            type="url"
+                            className="w-full bg-black border border-neutral-800 text-white px-4 py-2.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] text-xs font-body placeholder:text-neutral-600"
+                            value={formData.buktiDriveLink}
+                            onChange={(e) => setFormData({ ...formData, buktiDriveLink: e.target.value })}
+                            placeholder="https://drive.google.com/file/d/..."
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Dynamic Extra Fields from Admin */}
@@ -1850,15 +2180,56 @@ export default function Silatnas({ db }) {
                     <div className="pt-4 border-t border-neutral-800 flex justify-end">
                       <button 
                         type="submit"
-                        className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
+                        disabled={uploadingBukti}
+                        className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Kirim Pendaftaran
+                        {uploadingBukti ? 'Mohon Tunggu...' : 'Kirim Pendaftaran'}
                       </button>
                     </div>
                   </form>
                 )}
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* SIZE CHART EXPANDED PREVIEW MODAL */}
+      <AnimatePresence>
+        {showSizeChartModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[120]"
+            onClick={() => setShowSizeChartModal(false)}
+          >
+            <div 
+              className="relative max-w-2xl w-full bg-neutral-900 border border-neutral-700 rounded-3xl p-4 md:p-6 shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-neutral-800 mb-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[#38BDF8]" />
+                  <h3 className="font-heading font-bold text-white uppercase text-base">Panduan Size Chart Kaos Silatnas</h3>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setShowSizeChartModal(false)}
+                  className="w-8 h-8 rounded-full bg-black/60 hover:bg-[#0EA5E9] text-white flex items-center justify-center transition border border-white/20"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <img 
+                src="/assets/size_chart_silatnas.png" 
+                alt="Size Chart Kaos Silatnas" 
+                className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
+              />
+              <div className="text-center pt-3 text-xs text-neutral-400">
+                *Tabel ukuran standar dewasa dalam satuan centimeter (cm).
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
