@@ -930,7 +930,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
       nowa: "No. WhatsApp",
       sizeKaos: "Ukuran Kaos",
       tipeLengan: "Tipe Lengan",
-      buktiPembayaran: "Bukti Pembayaran SWO & SWP",
+      buktiSWO: "Bukti Pembayaran SWO",
+      buktiSWP: "Bukti Pembayaran SWP",
+      buktiSWOFileName: "File SWO",
+      buktiSWPFileName: "File SWP",
+      buktiPembayaran: "Bukti Pembayaran (Legacy)",
       buktiDriveLink: "Link GDrive Bukti Pembayaran",
       buktiFileName: "Nama File Bukti",
       motivasi: "Motivasi & Pesan Kesan",
@@ -997,7 +1001,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     } else if (filename.includes('silatnas')) {
-      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'sizeKaos', 'tipeLengan', 'buktiPembayaran', 'buktiDriveLink', 'submittedAt'];
+      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'sizeKaos', 'tipeLengan', 'buktiSWO', 'buktiSWP', 'submittedAt'];
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     }
@@ -2462,16 +2466,40 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                         )}
                                       </div>
                                       <div className="flex items-center gap-1 shrink-0">
-                                        {(app.buktiPembayaran || app.buktiDriveLink) && (
+                                        {app.buktiSWO && (
+                                          <a 
+                                            href={app.buktiSWO} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-1.5 text-neutral-400 hover:text-[#38BDF8] rounded-lg hover:bg-sky-500/10 transition flex items-center gap-1 border border-transparent hover:border-sky-500/30"
+                                            title="Lihat Bukti Pembayaran SWO"
+                                          >
+                                            <FileText className="w-3.5 h-3.5 text-[#38BDF8]" />
+                                            <span className="text-[10px] font-bold text-[#38BDF8] hidden md:inline">SWO</span>
+                                          </a>
+                                        )}
+                                        {app.buktiSWP && (
+                                          <a 
+                                            href={app.buktiSWP} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-1.5 text-neutral-400 hover:text-amber-400 rounded-lg hover:bg-amber-500/10 transition flex items-center gap-1 border border-transparent hover:border-amber-500/30"
+                                            title="Lihat Bukti Pembayaran SWP"
+                                          >
+                                            <FileText className="w-3.5 h-3.5 text-amber-400" />
+                                            <span className="text-[10px] font-bold text-amber-400 hidden md:inline">SWP</span>
+                                          </a>
+                                        )}
+                                        {(!app.buktiSWO && !app.buktiSWP && (app.buktiPembayaran || app.buktiDriveLink)) && (
                                           <a 
                                             href={app.buktiPembayaran || app.buktiDriveLink} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
-                                            className="p-1.5 text-neutral-400 hover:text-[#38BDF8] rounded-lg hover:bg-sky-500/10 transition flex items-center gap-1.5 border border-transparent hover:border-sky-500/30"
-                                            title="Lihat Bukti Pembayaran SWO & SWP"
+                                            className="p-1.5 text-neutral-400 hover:text-[#38BDF8] rounded-lg hover:bg-sky-500/10 transition flex items-center gap-1 border border-transparent hover:border-sky-500/30"
+                                            title="Lihat Bukti Pembayaran"
                                           >
                                             <FileText className="w-3.5 h-3.5 text-[#38BDF8]" />
-                                            <span className="text-[10px] font-bold text-[#38BDF8] hidden md:inline">Bukti SWO/SWP</span>
+                                            <span className="text-[10px] font-bold text-[#38BDF8] hidden md:inline">Bukti</span>
                                           </a>
                                         )}
                                         {app.nowa && (

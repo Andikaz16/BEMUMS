@@ -41,16 +41,19 @@ export default function Silatnas({ db }) {
     nowa: '', 
     sizeKaos: '', 
     tipeLengan: '', 
-    buktiPembayaran: '', 
-    buktiFileName: '', 
-    buktiDriveLink: '' 
+    buktiSWO: '', 
+    buktiSWOFileName: '',
+    buktiSWP: '', 
+    buktiSWPFileName: '' 
   });
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
   const [showSizeChartModal, setShowSizeChartModal] = useState(false);
-  const [uploadingBukti, setUploadingBukti] = useState(false);
-  const [uploadProgressText, setUploadProgressText] = useState('');
+  const [uploadingSWO, setUploadingSWO] = useState(false);
+  const [uploadingSWP, setUploadingSWP] = useState(false);
+  const [uploadProgressSWO, setUploadProgressSWO] = useState('');
+  const [uploadProgressSWP, setUploadProgressSWP] = useState('');
 
   // Roll-Call & Sebaran 7 Zona State
   const [selectedZone, setSelectedZone] = useState('Semua');
@@ -354,7 +357,7 @@ export default function Silatnas({ db }) {
     return selectedZone === 'Semua' || z.id === selectedZone || z.name === selectedZone || z.zoneNumber === selectedZone;
   });
 
-  const handleBuktiUpload = async (e) => {
+  const handleBuktiUpload = async (type, e) => {
     let file = e.target.files[0];
     if (!file) return;
 
@@ -364,15 +367,22 @@ export default function Silatnas({ db }) {
       return;
     }
 
-    setUploadingBukti(true);
-    setUploadProgressText("Memproses berkas...");
+    const isSWO = type === 'swo';
+    if (isSWO) {
+      setUploadingSWO(true);
+      setUploadProgressSWO("Memproses berkas...");
+    } else {
+      setUploadingSWP(true);
+      setUploadProgressSWP("Memproses berkas...");
+    }
 
     try {
       const fileName = file.name.toLowerCase();
       let isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
 
       if (isHeic) {
-        setUploadProgressText("Mengonversi foto iPhone (HEIC)...");
+        if (isSWO) setUploadProgressSWO("Mengonversi foto iPhone (HEIC)...");
+        else setUploadProgressSWP("Mengonversi foto iPhone (HEIC)...");
         try {
           const { heicTo } = await import('heic-to');
           const jpegBlob = await heicTo({
@@ -390,20 +400,32 @@ export default function Silatnas({ db }) {
       if (file.type === 'application/pdf') {
         const reader = new FileReader();
         reader.onload = (event) => {
-          setFormData(prev => ({
-            ...prev,
-            buktiPembayaran: event.target.result,
-            buktiFileName: file.name
-          }));
-          setUploadingBukti(false);
-          setUploadProgressText("");
+          if (isSWO) {
+            setFormData(prev => ({
+              ...prev,
+              buktiSWO: event.target.result,
+              buktiSWOFileName: file.name
+            }));
+            setUploadingSWO(false);
+            setUploadProgressSWO("");
+          } else {
+            setFormData(prev => ({
+              ...prev,
+              buktiSWP: event.target.result,
+              buktiSWPFileName: file.name
+            }));
+            setUploadingSWP(false);
+            setUploadProgressSWP("");
+          }
         };
         reader.readAsDataURL(file);
         return;
       }
 
       // Untuk gambar: kompres menggunakan Canvas lalu unggah ke cloud
-      setUploadProgressText("Mengompres & mengunggah bukti transfer...");
+      if (isSWO) setUploadProgressSWO("Mengompres & mengunggah bukti SWO...");
+      else setUploadProgressSWP("Mengompres & mengunggah bukti SWP...");
+
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
@@ -471,17 +493,30 @@ export default function Silatnas({ db }) {
               uploadedUrl = tinyCanvas.toDataURL('image/jpeg', 0.4);
             }
 
-            setFormData(prev => ({
-              ...prev,
-              buktiPembayaran: uploadedUrl,
-              buktiFileName: file.name
-            }));
+            if (isSWO) {
+              setFormData(prev => ({
+                ...prev,
+                buktiSWO: uploadedUrl,
+                buktiSWOFileName: file.name
+              }));
+            } else {
+              setFormData(prev => ({
+                ...prev,
+                buktiSWP: uploadedUrl,
+                buktiSWPFileName: file.name
+              }));
+            }
           } catch (procErr) {
             console.error("Image processing error:", procErr);
-            alert("Gagal memproses gambar. Silakan cantumkan link Google Drive pada kolom alternatif.");
+            alert("Gagal memproses gambar. Silakan coba lagi.");
           } finally {
-            setUploadingBukti(false);
-            setUploadProgressText("");
+            if (isSWO) {
+              setUploadingSWO(false);
+              setUploadProgressSWO("");
+            } else {
+              setUploadingSWP(false);
+              setUploadProgressSWP("");
+            }
           }
         };
         img.src = reader.result;
@@ -490,8 +525,13 @@ export default function Silatnas({ db }) {
     } catch (err) {
       console.error("Upload error:", err);
       alert("Gagal memproses berkas. Silakan coba lagi.");
-      setUploadingBukti(false);
-      setUploadProgressText("");
+      if (isSWO) {
+        setUploadingSWO(false);
+        setUploadProgressSWO("");
+      } else {
+        setUploadingSWP(false);
+        setUploadProgressSWP("");
+      }
     }
   };
 
@@ -507,8 +547,12 @@ export default function Silatnas({ db }) {
       alert("Mohon pilih Tipe Lengan Kaos (Lengan Pendek atau Lengan Panjang)!");
       return;
     }
-    if (!formData.buktiPembayaran && !formData.buktiDriveLink) {
-      alert("Mohon upload Bukti Pembayaran SWO & SWP (atau sertakan Link Google Drive bukti transfer)!");
+    if (!formData.buktiSWO) {
+      alert("Mohon upload Bukti Pembayaran SWO (Sumbangan Wajib Organisasi)!");
+      return;
+    }
+    if (!formData.buktiSWP) {
+      alert("Mohon upload Bukti Pembayaran SWP (Sumbangan Wajib Peserta)!");
       return;
     }
 
@@ -1206,9 +1250,10 @@ export default function Silatnas({ db }) {
                               nowa: '', 
                               sizeKaos: '', 
                               tipeLengan: '', 
-                              buktiPembayaran: '', 
-                              buktiFileName: '', 
-                              buktiDriveLink: '' 
+                              buktiSWO: '', 
+                              buktiSWOFileName: '',
+                              buktiSWP: '', 
+                              buktiSWPFileName: '' 
                             });
                             setExtraFields({});
                           }}
@@ -2056,68 +2101,68 @@ export default function Silatnas({ db }) {
                       </div>
                     </div>
 
-                    {/* UPLOAD BUKTI PEMBAYARAN SWO & SWP */}
-                    <div className="space-y-3 bg-neutral-900/60 border border-neutral-800 p-4 sm:p-5 rounded-2xl">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-[#38BDF8]" />
-                          Bukti Pembayaran SWO & SWP *
-                        </label>
-                        <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">
-                          *Wajib Diisi Per Individu
-                        </span>
-                      </div>
-
+                    {/* SEKSI UPLOAD BUKTI PEMBAYARAN SWO & SWP (ATAS & BAWAH) */}
+                    <div className="space-y-4">
                       {/* Peringatan Transfer Terpisah */}
-                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-200">
+                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-200">
                         <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                         <span className="leading-relaxed">
-                          <strong>Ketentuan Transfer:</strong> Bukti pembayaran SWO dan SWP wajib diunggah. Pentransferan wajib <strong>terpisah dengan rekan sesama mandat kampus</strong> (1 delegasi = 1 bukti transfer terpisah).
+                          <strong>Ketentuan Transfer:</strong> Bukti pembayaran SWO dan SWP wajib diunggah masing-masing secara terpisah. Pentransferan wajib <strong>terpisah dengan rekan sesama mandat kampus</strong> (1 delegasi = transfer terpisah per individu).
                         </span>
                       </div>
 
-                      {/* Area Upload File */}
-                      <div className="space-y-3 pt-1">
+                      {/* 1. UPLOAD BUKTI SWO (ATAS) */}
+                      <div className="bg-neutral-900/60 border border-neutral-800 p-4 sm:p-5 rounded-2xl space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-[#38BDF8]" />
+                            1. Bukti Pembayaran SWO *
+                          </label>
+                          <span className="text-[10px] text-[#38BDF8] bg-[#0EA5E9]/10 border border-[#0EA5E9]/20 px-2.5 py-0.5 rounded-full font-mono">
+                            Sumbangan Wajib Organisasi
+                          </span>
+                        </div>
+
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                           <label className={`cursor-pointer flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition border ${
-                            uploadingBukti 
+                            uploadingSWO 
                               ? 'bg-neutral-800 text-neutral-400 border-neutral-700 cursor-wait'
-                              : formData.buktiPembayaran
+                              : formData.buktiSWO
                                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
                                 : 'bg-[#0EA5E9] hover:bg-[#0369A1] text-white border-[#0EA5E9] shadow-[0_0_15px_rgba(14,165,233,0.3)]'
                           }`}>
                             <input 
                               type="file" 
                               accept="image/*,.pdf,.heic,.heif"
-                              onChange={handleBuktiUpload}
-                              disabled={uploadingBukti}
+                              onChange={(e) => handleBuktiUpload('swo', e)}
+                              disabled={uploadingSWO}
                               className="hidden"
                             />
-                            {uploadingBukti ? (
+                            {uploadingSWO ? (
                               <>
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                <span>{uploadProgressText || 'Mengunggah Berkas...'}</span>
+                                <span>{uploadProgressSWO || 'Mengunggah SWO...'}</span>
                               </>
-                            ) : formData.buktiPembayaran ? (
+                            ) : formData.buktiSWO ? (
                               <>
                                 <CheckCircle className="w-4 h-4 text-emerald-400" />
-                                <span>Ganti Bukti Pembayaran</span>
+                                <span>Ganti Bukti SWO</span>
                               </>
                             ) : (
                               <>
                                 <Upload className="w-4 h-4" />
-                                <span>Upload Bukti Pembayaran</span>
+                                <span>Upload Bukti Pembayaran SWO</span>
                               </>
                             )}
                           </label>
 
-                          {formData.buktiFileName && (
+                          {formData.buktiSWOFileName && (
                             <div className="flex items-center gap-2 px-3.5 py-2.5 bg-neutral-900 border border-white/10 rounded-xl text-xs text-neutral-300 truncate">
                               <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                              <span className="truncate">{formData.buktiFileName}</span>
-                              {formData.buktiPembayaran && formData.buktiPembayaran.startsWith('http') && (
+                              <span className="truncate">{formData.buktiSWOFileName}</span>
+                              {formData.buktiSWO && formData.buktiSWO.startsWith('http') && (
                                 <a 
-                                  href={formData.buktiPembayaran} 
+                                  href={formData.buktiSWO} 
                                   target="_blank" 
                                   rel="noopener noreferrer" 
                                   className="text-[#38BDF8] hover:underline text-[10px] ml-1 shrink-0 font-bold"
@@ -2128,19 +2173,69 @@ export default function Silatnas({ db }) {
                             </div>
                           )}
                         </div>
+                      </div>
 
-                        {/* Opsi Cadangan Link Google Drive */}
-                        <div className="pt-2 border-t border-white/5 space-y-1.5">
-                          <label className="block text-[11px] font-medium text-neutral-400">
-                            Atau cantumkan Link Google Drive Bukti Transfer (Opsi Cadangan/Alternatif):
+                      {/* 2. UPLOAD BUKTI SWP (BAWAH) */}
+                      <div className="bg-neutral-900/60 border border-neutral-800 p-4 sm:p-5 rounded-2xl space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-amber-400" />
+                            2. Bukti Pembayaran SWP *
                           </label>
-                          <input 
-                            type="url"
-                            className="w-full bg-black border border-neutral-800 text-white px-4 py-2.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] text-xs font-body placeholder:text-neutral-600"
-                            value={formData.buktiDriveLink}
-                            onChange={(e) => setFormData({ ...formData, buktiDriveLink: e.target.value })}
-                            placeholder="https://drive.google.com/file/d/..."
-                          />
+                          <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full font-mono">
+                            Sumbangan Wajib Peserta
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                          <label className={`cursor-pointer flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition border ${
+                            uploadingSWP 
+                              ? 'bg-neutral-800 text-neutral-400 border-neutral-700 cursor-wait'
+                              : formData.buktiSWP
+                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
+                                : 'bg-amber-500 hover:bg-amber-600 text-black border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                          }`}>
+                            <input 
+                              type="file" 
+                              accept="image/*,.pdf,.heic,.heif"
+                              onChange={(e) => handleBuktiUpload('swp', e)}
+                              disabled={uploadingSWP}
+                              className="hidden"
+                            />
+                            {uploadingSWP ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>{uploadProgressSWP || 'Mengunggah SWP...'}</span>
+                              </>
+                            ) : formData.buktiSWP ? (
+                              <>
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                <span>Ganti Bukti SWP</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-4 h-4" />
+                                <span>Upload Bukti Pembayaran SWP</span>
+                              </>
+                            )}
+                          </label>
+
+                          {formData.buktiSWPFileName && (
+                            <div className="flex items-center gap-2 px-3.5 py-2.5 bg-neutral-900 border border-white/10 rounded-xl text-xs text-neutral-300 truncate">
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span className="truncate">{formData.buktiSWPFileName}</span>
+                              {formData.buktiSWP && formData.buktiSWP.startsWith('http') && (
+                                <a 
+                                  href={formData.buktiSWP} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-[#38BDF8] hover:underline text-[10px] ml-1 shrink-0 font-bold"
+                                >
+                                  [Lihat File]
+                                </a>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -2180,10 +2275,10 @@ export default function Silatnas({ db }) {
                     <div className="pt-4 border-t border-neutral-800 flex justify-end">
                       <button 
                         type="submit"
-                        disabled={uploadingBukti}
+                        disabled={uploadingSWO || uploadingSWP}
                         className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {uploadingBukti ? 'Mohon Tunggu...' : 'Kirim Pendaftaran'}
+                        {(uploadingSWO || uploadingSWP) ? 'Mohon Tunggu...' : 'Kirim Pendaftaran'}
                       </button>
                     </div>
                   </form>
