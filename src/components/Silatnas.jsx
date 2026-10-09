@@ -6,9 +6,10 @@ import {
   Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
   Compass, Utensils, Landmark, Camera, Heart,
   Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star,
-  Info, AlertCircle, Upload, ExternalLink, Image as ImageIcon, MessageCircle
+  Info, AlertCircle, Upload, ExternalLink, Image as ImageIcon, MessageCircle,
+  Lock, Unlock, CheckCircle2, ClipboardCheck
 } from 'lucide-react';
-import { addSilatnasApplicant, addSilatnasShuttle } from '../db';
+import { addSilatnasApplicant, addSilatnasShuttle, addSilatnasPresensi } from '../db';
 
 
 const faqData = [
@@ -65,6 +66,99 @@ export default function Silatnas({ db }) {
       };
     }
   }, [selectedEvent, showSizeChartModal]);
+
+  // 4 Stages Stepper State
+  const [activeStage, setActiveStage] = useState('stage1');
+
+  // Presensi Hari 1 State
+  const [presensiHari1Form, setPresensiHari1Form] = useState({
+    name: '',
+    campus: '',
+    nim: '',
+    nowa: '',
+    jabatan: 'Presiden Mahasiswa',
+    sesi: 'Opening Ceremony & Sambutan (Pagi)',
+    status: 'Hadir di Lokasi (Edutorium UMS)',
+    notes: ''
+  });
+  const [presensiHari1Loading, setPresensiHari1Loading] = useState(false);
+  const [presensiHari1Submitted, setPresensiHari1Submitted] = useState(false);
+
+  // Presensi Hari 2 State
+  const [presensiHari2Form, setPresensiHari2Form] = useState({
+    name: '',
+    campus: '',
+    nim: '',
+    nowa: '',
+    komisi: 'Komisi A: AD/ART & Rekomendasi Organisasi',
+    statusSuara: 'Peserta Penuh (Hak Suara & Hak Bicara)',
+    sesi: 'Hadir Penuh Seluruh Persidangan',
+    notes: ''
+  });
+  const [presensiHari2Loading, setPresensiHari2Loading] = useState(false);
+  const [presensiHari2Submitted, setPresensiHari2Submitted] = useState(false);
+
+  // Presensi Hari 3 State
+  const [presensiHari3Form, setPresensiHari3Form] = useState({
+    name: '',
+    campus: '',
+    nim: '',
+    nowa: '',
+    sesi: 'Closing Ceremony & Malam Keakraban',
+    kesanPesan: ''
+  });
+  const [presensiHari3Loading, setPresensiHari3Loading] = useState(false);
+  const [presensiHari3Submitted, setPresensiHari3Submitted] = useState(false);
+
+  const handlePresensiSubmit = async (e, dayNumber) => {
+    e.preventDefault();
+    if (dayNumber === 1) {
+      if (!presensiHari1Form.name || !presensiHari1Form.campus || !presensiHari1Form.nim || !presensiHari1Form.nowa) {
+        alert("Mohon lengkapi semua kolom wajib presensi hari pertama!");
+        return;
+      }
+      setPresensiHari1Loading(true);
+      try {
+        await addSilatnasPresensi(1, presensiHari1Form);
+        setPresensiHari1Submitted(true);
+      } catch (err) {
+        console.error(err);
+        alert("Gagal mencatat presensi hari ke-1, mohon periksa koneksi internet Anda.");
+      } finally {
+        setPresensiHari1Loading(false);
+      }
+    } else if (dayNumber === 2) {
+      if (!presensiHari2Form.name || !presensiHari2Form.campus || !presensiHari2Form.nim || !presensiHari2Form.nowa) {
+        alert("Mohon lengkapi semua kolom wajib presensi persidangan!");
+        return;
+      }
+      setPresensiHari2Loading(true);
+      try {
+        await addSilatnasPresensi(2, presensiHari2Form);
+        setPresensiHari2Submitted(true);
+      } catch (err) {
+        console.error(err);
+        alert("Gagal mencatat presensi persidangan, mohon periksa koneksi internet Anda.");
+      } finally {
+        setPresensiHari2Loading(false);
+      }
+    } else if (dayNumber === 3) {
+      if (!presensiHari3Form.name || !presensiHari3Form.campus || !presensiHari3Form.nim || !presensiHari3Form.nowa || !presensiHari3Form.kesanPesan) {
+        alert("Mohon lengkapi semua kolom wajib termasuk kesan pesan evaluasi!");
+        return;
+      }
+      setPresensiHari3Loading(true);
+      try {
+        await addSilatnasPresensi(3, presensiHari3Form);
+        setPresensiHari3Submitted(true);
+      } catch (err) {
+        console.error(err);
+        alert("Gagal mencatat presensi penutupan, mohon periksa koneksi internet Anda.");
+      } finally {
+        setPresensiHari3Loading(false);
+      }
+    }
+  };
 
   // Roll-Call & Sebaran 7 Zona State
   const [selectedZone, setSelectedZone] = useState('Semua');
@@ -1186,116 +1280,728 @@ export default function Silatnas({ db }) {
           </div>
         </div>
 
-        {/* 5. AGENDA PENDAFTARAN AKTIF (CATALOG DATABASE) */}
-        <div className="space-y-10 pt-10 border-t border-white/10" id="catalog-section">
-          <div className="text-center">
+        {/* 5. TAHAPAN REGISTRASI & PRESENSI DELEGASI (4-STAGE STEPPER) */}
+        <div className="space-y-8 pt-10 border-t border-white/10" id="catalog-section">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[#38BDF8] text-[11px] font-bold uppercase tracking-widest bg-[#0EA5E9]/10 px-3.5 py-1.5 rounded-full border border-[#0EA5E9]/30 inline-block">
+              Portal Terpadu Delegasi Silatnas 2026
+            </span>
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
-              Agenda Pendaftaran Aktif
+              Pendaftaran & Presensi Delegasi
             </h2>
-            <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
-              Formulir pendaftaran resmi yang dibuka untuk delegasi di bawah ini.
+            <p className="text-[#E0F2FE]/80 font-body text-xs md:text-sm leading-relaxed">
+              Silaturahmi Nasional BEM Perguruan Tinggi Muhammadiyah 'Aisyiyah se-Indonesia. Pilih tahapan di bawah untuk mengakses formulir pendaftaran resmi maupun presensi kehadiran agenda.
             </p>
           </div>
 
-          {catalog.length === 0 ? (
-            <div className="max-w-xl mx-auto text-center">
-              <div className="bg-black/35 backdrop-blur-xl border border-white/10 rounded-3xl p-10 space-y-4 shadow-xl">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/50 mx-auto">
-                  <Calendar className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-heading font-bold text-neutral-300 uppercase">Pendaftaran Belum Dibuka</h3>
-                <p className="text-xs font-body text-[#E0F2FE]/60 leading-relaxed">
-                  Saat ini belum ada agenda pendaftaran aktif dari admin BEM UMS. Silakan unduh dokumen panduan (TOR) di bawah untuk memantau jadwal pembukaan berikutnya.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className={catalog.length === 1 ? "max-w-2xl mx-auto w-full" : "grid grid-cols-1 md:grid-cols-2 gap-8 items-start"}>
-              {catalog.map(v => (
-                <div 
-                  key={v.id} 
-                  className="group relative bg-black/35 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-between overflow-hidden hover:border-[#38BDF8]/40 transition duration-300 shadow-xl"
-                >
-                  <div className="flex justify-end items-start mb-6 gap-4">
-                    <span className={`px-4 py-1 font-bold text-[10px] uppercase tracking-widest rounded-full border ${
-                      v.isOpen 
-                        ? 'bg-emerald-950/35 text-emerald-400 border-emerald-900/50' 
-                        : 'bg-red-950/35 text-red-400 border-red-900/50'
-                    }`}>
-                      {v.isOpen ? 'DIBUKA' : 'DITUTUP'}
-                    </span>
-                  </div>
+          {/* Datalist for Campus Autocomplete */}
+          <datalist id="silatnas-campus-datalist">
+            {(db?.silatnasCampuses || []).map((c, i) => (
+              <option key={i} value={c.name} />
+            ))}
+          </datalist>
 
-                  <h3 className="text-2xl font-heading font-extrabold uppercase tracking-tight text-white mb-6">
-                    {v.title}
-                  </h3>
-                  
-                  <div className="space-y-4 mb-8 text-sm">
-                    {v.location && (
-                      <div>
-                        <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-300 mb-2">
-                          <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> Lokasi Pelaksanaan
-                        </h4>
-                        <p className="text-xs font-body text-[#E0F2FE]/80 leading-relaxed bg-black/35 p-4 rounded-xl border border-white/5">
-                          {v.location}
+          {/* Stepper Container */}
+          {(() => {
+            const stagesData = db?.silatnasStages || {
+              stage1: {
+                id: "stage1",
+                phaseNumber: "01",
+                phaseLabel: "PENDAFTARAN RESMI",
+                title: "Pendaftaran Delegasi Silatnas",
+                subTitle: "Registrasi Mandataris & Berkas Administrasi",
+                desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.",
+                isOpen: (catalog && catalog[0] && catalog[0].isOpen !== undefined) ? catalog[0].isOpen : true
+              },
+              stage2: {
+                id: "stage2",
+                phaseNumber: "02",
+                phaseLabel: "HARI PERTAMA",
+                title: "Presensi Grand Opening & Seminar",
+                subTitle: "Opening Ceremony & Seminar Nasional",
+                desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Edutorium Universitas Muhammadiyah Surakarta.",
+                isOpen: false
+              },
+              stage3: {
+                id: "stage3",
+                phaseNumber: "03",
+                phaseLabel: "HARI KEDUA",
+                title: "Presensi Persidangan Nasional",
+                subTitle: "Sidang Pleno & Sidang Komisi",
+                desc: "Presensi kehadiran mandataris kampus dalam agenda persidangan, pembahasan tata tertib, sidang komisi isu strategis, dan rekomendasi nasional.",
+                isOpen: false
+              },
+              stage4: {
+                id: "stage4",
+                phaseNumber: "04",
+                phaseLabel: "HARI KETIGA",
+                title: "Presensi Penutupan & Resolusi",
+                subTitle: "Closing Ceremony & Malam Keakraban",
+                desc: "Presensi kehadiran malam puncak penutupan Silatnas PTMAI 2026, pembacaan naskah deklarasi resolusi bersama, serta evaluasi kegiatan.",
+                isOpen: false
+              }
+            };
+
+            const isStage1Open = db?.silatnasStages?.stage1?.isOpen !== undefined 
+              ? db.silatnasStages.stage1.isOpen 
+              : (catalog && catalog[0] ? catalog[0].isOpen : true);
+
+            const activeStageInfo = activeStage === 'stage1' 
+              ? { ...stagesData.stage1, isOpen: isStage1Open }
+              : stagesData[activeStage];
+
+            const activeEvent = catalog && catalog[0] ? catalog[0] : {
+              id: 1,
+              title: "Pendaftaran Delegasi Silatnas BEM PTMAI 2026",
+              schedule: "29 - 31 Oktober 2026",
+              location: "Edutorium & Kampus UMS Surakarta",
+              description: "Pendaftaran resmi delegasi pimpinan BEM (Presma, Wapresma, Menteri) dari Perguruan Tinggi Muhammadiyah 'Aisyiyah dan mitra kampus se-Indonesia."
+            };
+
+            return (
+              <div className="max-w-4xl mx-auto w-full space-y-6">
+                {/* 4 HORIZONTAL STEPPER TABS (Styled after Image 2 reference) */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 p-2 rounded-2xl bg-black/50 border border-white/10 backdrop-blur-md shadow-xl">
+                  {[
+                    { key: 'stage1', stg: { ...stagesData.stage1, isOpen: isStage1Open } },
+                    { key: 'stage2', stg: stagesData.stage2 },
+                    { key: 'stage3', stg: stagesData.stage3 },
+                    { key: 'stage4', stg: stagesData.stage4 }
+                  ].map(({ key, stg }) => {
+                    const isActive = activeStage === key;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setActiveStage(key)}
+                        className={`p-3.5 sm:p-4 rounded-xl border text-left transition-all duration-300 relative flex flex-col justify-between ${
+                          isActive 
+                            ? 'bg-[#0EA5E9]/20 border-[#0EA5E9] shadow-[0_0_25px_rgba(14,165,233,0.3)] ring-1 ring-[#0EA5E9]' 
+                            : 'bg-neutral-900/60 border-white/5 hover:border-white/20 text-neutral-400 hover:text-white'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1 mb-1.5">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-[#38BDF8]' : 'text-neutral-500'}`}>
+                            {stg.phaseLabel}
+                          </span>
+                          {stg.isOpen ? (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-400 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/30">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                              BUKA
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-neutral-400 bg-neutral-800/80 px-1.5 py-0.5 rounded border border-neutral-700">
+                              <Lock className="w-2.5 h-2.5 text-neutral-400" />
+                              TUTUP
+                            </span>
+                          )}
+                        </div>
+                        <div className={`text-xs sm:text-sm font-heading font-extrabold uppercase tracking-tight line-clamp-1 ${isActive ? 'text-white' : 'text-neutral-300'}`}>
+                          {stg.title}
+                        </div>
+                        <div className="text-[10px] text-neutral-400 font-body line-clamp-1 mt-0.5 hidden sm:block">
+                          {stg.subTitle}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* MAIN CONTENT CARD */}
+                <div className="bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl relative">
+                  {/* Card Header */}
+                  <div className="border-b border-white/10 pb-6 mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[#38BDF8] text-xs font-bold uppercase tracking-widest bg-[#0EA5E9]/10 px-2.5 py-1 rounded-lg border border-[#0EA5E9]/30">
+                            {activeStageInfo.phaseLabel}
+                          </span>
+                          <span className={`px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-full border ${
+                            activeStageInfo.isOpen 
+                              ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/40' 
+                              : 'bg-red-950/40 text-red-400 border-red-500/40'
+                          }`}>
+                            {activeStageInfo.isOpen ? 'STATUS: DIBUKA' : 'STATUS: DITUTUP'}
+                          </span>
+                        </div>
+                        <h3 className="text-xl md:text-2xl font-heading font-extrabold uppercase tracking-tight text-white pt-1">
+                          {activeStageInfo.phaseNumber}. {activeStageInfo.title}
+                        </h3>
+                        <p className="text-xs md:text-sm font-body text-[#BAE6FD]/80 leading-relaxed max-w-2xl">
+                          {activeStageInfo.desc}
                         </p>
                       </div>
-                    )}
-                    <div>
-                      <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-300 mb-2">
-                        <Users className="w-3.5 h-3.5 text-[#38BDF8]" /> Deskripsi Pendaftaran
-                      </h4>
-                      <p className="text-xs font-body text-[#E0F2FE]/80 leading-relaxed bg-black/35 p-4 rounded-xl border border-white/5">
-                        {v.description}
-                      </p>
                     </div>
                   </div>
 
-                  <div>
-                    {v.isOpen ? (
-                      <>
-                        <div className="mb-4 bg-[#0EA5E9]/10 border border-[#0EA5E9]/25 rounded-2xl p-3.5 flex items-start gap-2.5 text-xs text-[#BAE6FD]">
-                          <Info className="w-4 h-4 text-[#38BDF8] shrink-0 mt-0.5" />
-                          <span className="leading-snug">
-                            <strong className="text-white">Pendaftaran Mandataris Kampus:</strong> Diisi oleh mandataris perwakilan kampus (maks. 2 delegasi per kampus, diisi secara individu).
-                          </span>
+                  {/* IF STAGE IS CLOSED BY ADMIN */}
+                  {!activeStageInfo.isOpen ? (
+                    <div className="text-center py-12 px-4 space-y-4 max-w-md mx-auto">
+                      <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-500 mx-auto shadow-inner">
+                        <Lock className="w-8 h-8" />
+                      </div>
+                      <h4 className="text-lg font-heading font-bold uppercase text-white tracking-wide">
+                        Formulir {activeStageInfo.title} Sedang Ditutup
+                      </h4>
+                      <p className="text-xs text-neutral-400 font-body leading-relaxed">
+                        Panitia Pelaksana Silatnas BEM PTMAI 2026 saat ini belum membuka atau telah menutup tahap ini. Formulir akan dibuka secara resmi sesuai jadwal pelaksanaan agenda kegiatan.
+                      </p>
+                      <div className="pt-2">
+                        <span className="inline-block px-3 py-1.5 rounded-xl bg-neutral-900 border border-white/10 text-[11px] text-neutral-400 font-mono">
+                          Status: Ditutup oleh Panitia Pelaksana
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    /* IF STAGE IS OPEN */
+                    <div>
+                      {/* === TAHAP 1: PENDAFTARAN DELEGASI RESMI === */}
+                      {activeStage === 'stage1' && (
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-neutral-900/60 p-4 rounded-2xl border border-white/5 space-y-1">
+                              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-400">
+                                <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> Lokasi Pelaksanaan
+                              </h5>
+                              <p className="text-sm font-body text-white font-medium">
+                                {activeEvent.location || "Edutorium & Kampus UMS Surakarta"}
+                              </p>
+                            </div>
+                            <div className="bg-neutral-900/60 p-4 rounded-2xl border border-white/5 space-y-1">
+                              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-400">
+                                <Calendar className="w-3.5 h-3.5 text-[#38BDF8]" /> Jadwal Pelaksanaan
+                              </h5>
+                              <p className="text-sm font-body text-white font-medium">
+                                {activeEvent.schedule || "29 - 31 Oktober 2026"}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-2xl p-4 md:p-5 flex items-start gap-3 text-left">
+                            <Info className="w-5 h-5 text-[#38BDF8] shrink-0 mt-0.5" />
+                            <div className="space-y-1">
+                              <h5 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-white">
+                                Ketentuan Mandataris Delegasi Kampus
+                              </h5>
+                              <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
+                                Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong>2 (dua) orang</strong> (wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO dan SWP).
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="pt-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedEvent(activeEvent);
+                                setSubmitted(false);
+                                setFormData({ 
+                                  name: '', 
+                                  campus: '', 
+                                  jabatan: '', 
+                                  nowa: '', 
+                                  sizeKaos: '', 
+                                  tipeLengan: '', 
+                                  buktiSWO: '', 
+                                  buktiSWOFileName: '',
+                                  buktiSWP: '', 
+                                  buktiSWPFileName: '' 
+                                });
+                                setExtraFields({});
+                              }}
+                              className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4.5 rounded-2xl transition duration-300 shadow-[0_0_25px_rgba(14,165,233,0.35)] flex items-center justify-center gap-2"
+                            >
+                              <Sparkles className="w-4 h-4" /> Buka Formulir Pendaftaran Delegasi
+                            </button>
+                          </div>
                         </div>
-                        <button 
-                          onClick={() => {
-                            setSelectedEvent(v);
-                            setSubmitted(false);
-                            setFormData({ 
-                              name: '', 
-                              campus: '', 
-                              jabatan: '', 
-                              nowa: '', 
-                              sizeKaos: '', 
-                              tipeLengan: '', 
-                              buktiSWO: '', 
-                              buktiSWOFileName: '',
-                              buktiSWP: '', 
-                              buktiSWPFileName: '' 
-                            });
-                            setExtraFields({});
-                          }}
-                          className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
-                        >
-                          Buka Formulir Pendaftaran
-                        </button>
-                      </>
-                    ) : (
-                      <button 
-                        disabled 
-                        className="w-full bg-black/40 border border-white/5 text-neutral-600 font-bold uppercase tracking-widest text-xs py-4 rounded-xl cursor-not-allowed"
-                      >
-                        Pendaftaran Ditutup
-                      </button>
-                    )}
-                  </div>
+                      )}
+
+                      {/* === TAHAP 2: PRESENSI HARI 1 (GRAND OPENING & SEMINAR) === */}
+                      {activeStage === 'stage2' && (
+                        <div>
+                          {presensiHari1Submitted ? (
+                            <div className="text-center py-10 space-y-4">
+                              <div className="w-16 h-16 rounded-full bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(52,211,153,0.3)]">
+                                <CheckCircle className="w-8 h-8" />
+                              </div>
+                              <h4 className="text-2xl font-heading font-bold uppercase text-white">
+                                Presensi Hari Pertama Berhasil!
+                              </h4>
+                              <p className="text-xs md:text-sm font-body text-neutral-300 max-w-md mx-auto leading-relaxed">
+                                Terima kasih, <strong>{presensiHari1Form.name}</strong> ({presensiHari1Form.campus}). Kehadiran Anda pada sesi <strong>Grand Opening & Seminar Nasional</strong> telah tercatat secara resmi di sistem panitia Silatnas 2026.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPresensiHari1Submitted(false);
+                                  setPresensiHari1Form({
+                                    name: '', campus: '', nim: '', nowa: '',
+                                    jabatan: 'Presiden Mahasiswa',
+                                    sesi: 'Opening Ceremony & Sambutan (Pagi)',
+                                    status: 'Hadir di Lokasi (Edutorium UMS)',
+                                    notes: ''
+                                  });
+                                }}
+                                className="mt-4 px-6 py-2.5 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition border border-neutral-700"
+                              >
+                                Isi Presensi Delegasi Lain
+                              </button>
+                            </div>
+                          ) : (
+                            <form onSubmit={(e) => handlePresensiSubmit(e, 1)} className="space-y-5 text-left">
+                              <div className="p-3.5 bg-neutral-900/60 rounded-xl border border-white/5 text-xs text-[#BAE6FD] flex items-center gap-2">
+                                <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                                <span>Silakan isi formulir presensi kehadiran di bawah ini saat mengikuti rangkaian Grand Opening di Edutorium UMS.</span>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nama Lengkap Delegasi *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: Muhammad Farhan"
+                                    value={presensiHari1Form.name}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, name: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Asal Perguruan Tinggi / Kampus *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    list="silatnas-campus-datalist"
+                                    placeholder="Ketik atau pilih nama kampus"
+                                    value={presensiHari1Form.campus}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, campus: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    NIM / Nomor Induk Mahasiswa *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: L200210123"
+                                    value={presensiHari1Form.nim}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, nim: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nomor WhatsApp Aktif *
+                                  </label>
+                                  <input 
+                                    type="tel"
+                                    required
+                                    placeholder="Contoh: 081234567890"
+                                    value={presensiHari1Form.nowa}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, nowa: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Jabatan di BEM / Delegasi *
+                                  </label>
+                                  <select 
+                                    value={presensiHari1Form.jabatan}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, jabatan: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Presiden Mahasiswa">Presiden Mahasiswa (Ketua BEM)</option>
+                                    <option value="Wakil Presiden Mahasiswa">Wakil Presiden Mahasiswa</option>
+                                    <option value="Sekretaris Jenderal / Kabinet">Sekretaris Jenderal / Kabinet</option>
+                                    <option value="Menteri / Koordinator">Menteri / Koordinator Kementerian</option>
+                                    <option value="Staff Delegasi Resmi">Staff Delegasi Resmi</option>
+                                    <option value="Pendamping Delegasi">Pendamping / Delegasi Lainnya</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Sesi Kehadiran Hari ke-1 *
+                                  </label>
+                                  <select 
+                                    value={presensiHari1Form.sesi}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, sesi: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Opening Ceremony & Sambutan (Pagi)">Opening Ceremony & Sambutan (Pagi)</option>
+                                    <option value="Seminar Nasional Kebangsaan (Siang)">Seminar Nasional Kebangsaan (Siang)</option>
+                                    <option value="Hadir Penuh Seluruh Rangkaian Hari ke-1">Hadir Penuh Seluruh Rangkaian Hari ke-1</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Status Kehadiran *
+                                  </label>
+                                  <select 
+                                    value={presensiHari1Form.status}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, status: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Hadir di Lokasi (Edutorium UMS)">Hadir di Lokasi (Edutorium UMS)</option>
+                                    <option value="Hadir di Sesi Seminar Saja">Hadir di Sesi Seminar Saja</option>
+                                    <option value="Izin Terlambat">Izin Terlambat</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nomor Meja / Kursi Delegasi (Opsional)
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    placeholder="Contoh: Baris A-12"
+                                    value={presensiHari1Form.notes}
+                                    onChange={e => setPresensiHari1Form({ ...presensiHari1Form, notes: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+                              </div>
+
+                              <button
+                                type="submit"
+                                disabled={presensiHari1Loading}
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                              >
+                                <ClipboardCheck className="w-4 h-4" />
+                                {presensiHari1Loading ? "Mencatat Presensi..." : "Kirim Presensi Kehadiran Hari 1"}
+                              </button>
+                            </form>
+                          )}
+                        </div>
+                      )}
+
+                      {/* === TAHAP 3: PRESENSI HARI 2 (PERSIDANGAN) === */}
+                      {activeStage === 'stage3' && (
+                        <div>
+                          {presensiHari2Submitted ? (
+                            <div className="text-center py-10 space-y-4">
+                              <div className="w-16 h-16 rounded-full bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(52,211,153,0.3)]">
+                                <CheckCircle className="w-8 h-8" />
+                              </div>
+                              <h4 className="text-2xl font-heading font-bold uppercase text-white">
+                                Presensi Persidangan Berhasil!
+                              </h4>
+                              <p className="text-xs md:text-sm font-body text-neutral-300 max-w-md mx-auto leading-relaxed">
+                                Terima kasih, <strong>{presensiHari2Form.name}</strong> ({presensiHari2Form.campus}). Kehadiran dan mandat persidangan Anda pada <strong>{presensiHari2Form.komisi}</strong> telah resmi terdaftar di presidium sidang Silatnas PTMAI 2026.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPresensiHari2Submitted(false);
+                                  setPresensiHari2Form({
+                                    name: '', campus: '', nim: '', nowa: '',
+                                    komisi: 'Komisi A: AD/ART & Rekomendasi Organisasi',
+                                    statusSuara: 'Peserta Penuh (Hak Suara & Hak Bicara)',
+                                    sesi: 'Hadir Penuh Seluruh Persidangan',
+                                    notes: ''
+                                  });
+                                }}
+                                className="mt-4 px-6 py-2.5 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition border border-neutral-700"
+                              >
+                                Isi Presensi Delegasi Lain
+                              </button>
+                            </div>
+                          ) : (
+                            <form onSubmit={(e) => handlePresensiSubmit(e, 2)} className="space-y-5 text-left">
+                              <div className="p-3.5 bg-neutral-900/60 rounded-xl border border-white/5 text-xs text-[#BAE6FD] flex items-center gap-2">
+                                <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                                <span>Diisi oleh delegasi mandataris yang mengikuti jalannya persidangan pleno dan sidang komisi Silatnas PTMAI 2026.</span>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nama Lengkap Delegasi *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: Muhammad Farhan"
+                                    value={presensiHari2Form.name}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, name: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Asal Perguruan Tinggi / Kampus *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    list="silatnas-campus-datalist"
+                                    placeholder="Ketik atau pilih nama kampus"
+                                    value={presensiHari2Form.campus}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, campus: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    NIM / Nomor Induk Mahasiswa *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: L200210123"
+                                    value={presensiHari2Form.nim}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, nim: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nomor WhatsApp Aktif *
+                                  </label>
+                                  <input 
+                                    type="tel"
+                                    required
+                                    placeholder="Contoh: 081234567890"
+                                    value={presensiHari2Form.nowa}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, nowa: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Komisi Sidang yang Diikuti *
+                                  </label>
+                                  <select 
+                                    value={presensiHari2Form.komisi}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, komisi: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Komisi A: AD/ART & Rekomendasi Organisasi">Komisi A: AD/ART & Rekomendasi Organisasi</option>
+                                    <option value="Komisi B: Isu Strategis Kebangsaan & Kebijakan">Komisi B: Isu Strategis Kebangsaan & Kebijakan</option>
+                                    <option value="Komisi C: Internal Kelembagaan & Sinergi PTMAI">Komisi C: Internal Kelembagaan & Sinergi PTMAI</option>
+                                    <option value="Komisi D: Perumusan Resolusi Silatnas 2026">Komisi D: Perumusan Resolusi Silatnas 2026</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Status Hak Suara Delegasi *
+                                  </label>
+                                  <select 
+                                    value={presensiHari2Form.statusSuara}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, statusSuara: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Peserta Penuh (Hak Suara & Hak Bicara)">Peserta Penuh (Hak Suara & Hak Bicara)</option>
+                                    <option value="Peserta Peninjau (Hak Bicara)">Peserta Peninjau (Hak Bicara)</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Sesi Persidangan *
+                                  </label>
+                                  <select 
+                                    value={presensiHari2Form.sesi}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, sesi: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Hadir Penuh Seluruh Persidangan">Hadir Penuh Seluruh Rangkaian Sidang</option>
+                                    <option value="Sidang Pleno I (Tata Tertib & Presidium Sidang)">Sidang Pleno I (Tata Tertib & Presidium Sidang)</option>
+                                    <option value="Sidang Komisi">Sidang Komisi</option>
+                                    <option value="Sidang Pleno II (Laporan Hasil & Pengesahan)">Sidang Pleno II (Laporan Hasil & Pengesahan)</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Catatan Usulan / Aspirasi Sidang (Opsional)
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    placeholder="Tuliskan poin usulan awal atau catatan komisi (opsional)"
+                                    value={presensiHari2Form.notes}
+                                    onChange={e => setPresensiHari2Form({ ...presensiHari2Form, notes: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+                              </div>
+
+                              <button
+                                type="submit"
+                                disabled={presensiHari2Loading}
+                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                              >
+                                <ClipboardCheck className="w-4 h-4" />
+                                {presensiHari2Loading ? "Mencatat Presensi..." : "Kirim Presensi Persidangan Hari 2"}
+                              </button>
+                            </form>
+                          )}
+                        </div>
+                      )}
+
+                      {/* === TAHAP 4: PRESENSI HARI 3 (PENUTUPAN & RESOLUSI) === */}
+                      {activeStage === 'stage4' && (
+                        <div>
+                          {presensiHari3Submitted ? (
+                            <div className="text-center py-10 space-y-4">
+                              <div className="w-16 h-16 rounded-full bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(52,211,153,0.3)]">
+                                <CheckCircle className="w-8 h-8" />
+                              </div>
+                              <h4 className="text-2xl font-heading font-bold uppercase text-white">
+                                Presensi Penutupan Berhasil!
+                              </h4>
+                              <p className="text-xs md:text-sm font-body text-neutral-300 max-w-md mx-auto leading-relaxed">
+                                Terima kasih, <strong>{presensiHari3Form.name}</strong> ({presensiHari3Form.campus}). Terima kasih atas partisipasi aktif dan kontribusi gagasan berharga Anda selama 3 hari pelaksanaan Silatnas BEM PTMAI 2026 di Universitas Muhammadiyah Surakarta!
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPresensiHari3Submitted(false);
+                                  setPresensiHari3Form({
+                                    name: '', campus: '', nim: '', nowa: '',
+                                    sesi: 'Closing Ceremony & Malam Keakraban',
+                                    kesanPesan: ''
+                                  });
+                                }}
+                                className="mt-4 px-6 py-2.5 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition border border-neutral-700"
+                              >
+                                Isi Presensi Delegasi Lain
+                              </button>
+                            </div>
+                          ) : (
+                            <form onSubmit={(e) => handlePresensiSubmit(e, 3)} className="space-y-5 text-left">
+                              <div className="p-3.5 bg-neutral-900/60 rounded-xl border border-white/5 text-xs text-[#BAE6FD] flex items-center gap-2">
+                                <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                                <span>Presensi kehadiran malam puncak penutupan Silatnas sekaligus ruang evaluasi bersama bagi seluruh pimpinan BEM se-Indonesia.</span>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nama Lengkap Delegasi *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: Muhammad Farhan"
+                                    value={presensiHari3Form.name}
+                                    onChange={e => setPresensiHari3Form({ ...presensiHari3Form, name: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Asal Perguruan Tinggi / Kampus *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    list="silatnas-campus-datalist"
+                                    placeholder="Ketik atau pilih nama kampus"
+                                    value={presensiHari3Form.campus}
+                                    onChange={e => setPresensiHari3Form({ ...presensiHari3Form, campus: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    NIM / Nomor Induk Mahasiswa *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: L200210123"
+                                    value={presensiHari3Form.nim}
+                                    onChange={e => setPresensiHari3Form({ ...presensiHari3Form, nim: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Nomor WhatsApp Aktif *
+                                  </label>
+                                  <input 
+                                    type="tel"
+                                    required
+                                    placeholder="Contoh: 081234567890"
+                                    value={presensiHari3Form.nowa}
+                                    onChange={e => setPresensiHari3Form({ ...presensiHari3Form, nowa: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Sesi Acara Penutupan *
+                                  </label>
+                                  <select 
+                                    value={presensiHari3Form.sesi}
+                                    onChange={e => setPresensiHari3Form({ ...presensiHari3Form, sesi: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                  >
+                                    <option value="Hadir Seluruh Rangkaian Penutupan">Hadir Seluruh Rangkaian Penutupan</option>
+                                    <option value="Pembacaan Naskah Resolusi Bersama">Pembacaan Naskah Resolusi Bersama</option>
+                                    <option value="Closing Ceremony & Malam Keakraban">Closing Ceremony & Malam Keakraban Budaya</option>
+                                    <option value="Penyerahan Sertifikat & Vandel">Penyerahan Sertifikat & Vandel</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                    Kesan, Pesan & Evaluasi untuk Panitia Silatnas BEM UMS *
+                                  </label>
+                                  <textarea 
+                                    required
+                                    rows="3"
+                                    placeholder="Tuliskan kesan, pesan, saran, atau masukan berharga Anda untuk penyelenggaraan Silatnas berikutnya..."
+                                    value={presensiHari3Form.kesanPesan}
+                                    onChange={e => setPresensiHari3Form({ ...presensiHari3Form, kesanPesan: e.target.value })}
+                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition resize-none"
+                                  />
+                                </div>
+                              </div>
+
+                              <button
+                                type="submit"
+                                disabled={presensiHari3Loading}
+                                className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(217,119,6,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                              >
+                                <ClipboardCheck className="w-4 h-4" />
+                                {presensiHari3Loading ? "Mencatat Presensi..." : "Kirim Presensi Penutupan Hari 3"}
+                              </button>
+                            </form>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* 6.8 PANDUAN LAYANAN & HOSPITALITAS DELEGASI (DELEGATE SERVICES & HOSPITALITY HUB) */}

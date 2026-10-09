@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
-  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation, MessageCircle
+  Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation, MessageCircle,
+  Lock, Unlock, ClipboardCheck
 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -912,6 +913,46 @@ export default function AdminCMS({ db, onUpdateDB }) {
     save({ silatnasGroupWaLink: (silatnasGroupWaLink || '').trim() });
   };
 
+  const [adminPresensiTab, setAdminPresensiTab] = useState('hari1');
+
+  const handleToggleStage = (stageKey) => {
+    const currentStages = db.silatnasStages || {
+      stage1: { id: "stage1", phaseNumber: "01", phaseLabel: "PENDAFTARAN RESMI", title: "Pendaftaran Delegasi Silatnas", subTitle: "Registrasi Mandataris & Berkas Administrasi", desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.", isOpen: true },
+      stage2: { id: "stage2", phaseNumber: "02", phaseLabel: "HARI PERTAMA", title: "Presensi Grand Opening & Seminar", subTitle: "Opening Ceremony & Seminar Nasional", desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Edutorium Universitas Muhammadiyah Surakarta.", isOpen: false },
+      stage3: { id: "stage3", phaseNumber: "03", phaseLabel: "HARI KEDUA", title: "Presensi Persidangan Nasional", subTitle: "Sidang Pleno & Sidang Komisi", desc: "Presensi kehadiran mandataris kampus dalam agenda persidangan, pembahasan tata tertib, sidang komisi isu strategis, dan rekomendasi nasional.", isOpen: false },
+      stage4: { id: "stage4", phaseNumber: "04", phaseLabel: "HARI KETIGA", title: "Presensi Penutupan & Resolusi", subTitle: "Closing Ceremony & Malam Keakraban", desc: "Presensi kehadiran malam puncak penutupan Silatnas PTMAI 2026, pembacaan naskah deklarasi resolusi bersama, serta evaluasi kegiatan.", isOpen: false }
+    };
+    const currentStage = currentStages[stageKey] || {};
+    const newIsOpen = !currentStage.isOpen;
+    const updatedStages = {
+      ...currentStages,
+      [stageKey]: {
+        ...currentStage,
+        isOpen: newIsOpen
+      }
+    };
+
+    let updatedCatalog = db.silatnasCatalog || [];
+    if (stageKey === 'stage1' && updatedCatalog.length > 0) {
+      updatedCatalog = updatedCatalog.map((item, idx) => idx === 0 ? { ...item, isOpen: newIsOpen } : item);
+    }
+
+    save({ silatnasStages: updatedStages, silatnasCatalog: updatedCatalog });
+  };
+
+  const handleDeletePresensi = (dayNumber, itemToDelete) => {
+    confirmAction(`Hapus data presensi "${itemToDelete.name}" (${itemToDelete.campus || 'Tanpa Kampus'})?`, () => {
+      const fieldKey = `silatnasPresensiHari${dayNumber}`;
+      const currentList = db[fieldKey] || [];
+      const updated = currentList.filter(item => {
+        if (item.id && itemToDelete.id) return item.id !== itemToDelete.id;
+        if (item.submittedAt && itemToDelete.submittedAt) return item.submittedAt !== itemToDelete.submittedAt;
+        return !(item.name === itemToDelete.name && item.nim === itemToDelete.nim);
+      });
+      save({ [fieldKey]: updated });
+    });
+  };
+
   // Export JSON (for backup/rekap)
   const downloadJSON = (data, filename) => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -944,24 +985,30 @@ export default function AdminCMS({ db, onUpdateDB }) {
       buktiDriveLink: "Link GDrive Bukti Pembayaran",
       buktiFileName: "Nama File Bukti",
       motivasi: "Motivasi & Pesan Kesan",
-      submittedAt: "Waktu Daftar",
+      submittedAt: "Waktu Daftar / Presensi",
       point: "Titik Kedatangan / Penjemputan",
       date: "Tanggal Tiba",
       time: "Estimasi Jam Tiba (WIB)",
       count: "Jumlah Delegasi (Orang)",
       leaderName: "Nama Koordinator",
       phone: "No. WhatsApp Koordinator",
-      nim: "NIM",
+      nim: "NIM / ID Delegasi",
       email: "Email",
       faculty: "Fakultas",
       choice1: "Pilihan 1",
       choice2: "Pilihan 2",
       cvLink: "Link CV / Portofolio",
       reason: "Alasan Mendaftar",
-      id: "ID / Waktu Daftar",
+      id: "ID Pendaftaran",
       commitment: "Komitmen Waktu",
       commitmentLink: "Link Google Drive Dokumen",
-      commitmentFileName: "Nama Berkas Terlampir"
+      commitmentFileName: "Nama Berkas Terlampir",
+      sesi: "Sesi Acara / Kehadiran",
+      status: "Status Kehadiran",
+      komisi: "Komisi Sidang",
+      statusSuara: "Hak Suara / Status Delegasi",
+      notes: "Catatan Kursi / Usulan",
+      kesanPesan: "Pesan Kesan & Evaluasi"
     };
     
     let processedData = data.map(item => ({ ...item }));
@@ -2322,6 +2369,290 @@ export default function AdminCMS({ db, onUpdateDB }) {
                     *Jika kolom ini masih kosong, formulir pendaftaran akan menampilkan pemberitahuan bahwa tautan grup sedang dipersiapkan oleh sekretaris dan panitia akan mengundang via nomor WhatsApp peserta.
                   </p>
                 </div>
+              </div>
+
+              {/* CARD: KONTROL STATUS 4 TAHAP FORMULIR & PRESENSI SILATNAS */}
+              <div className="p-5 md:p-6 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white space-y-5 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-primary/20 text-primary shrink-0">
+                      <Settings className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-base md:text-lg uppercase font-bold text-white tracking-wide">
+                        Kontrol Status 4 Tahap Silatnas (Buka / Tutup)
+                      </h3>
+                      <p className="text-xs text-neutral-400 font-body">
+                        Kelola akses pembukaan formulir pendaftaran dan presensi kehadiran per hari secara mandiri.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4 Tahap Grid */}
+                {(() => {
+                  const stages = db.silatnasStages || {
+                    stage1: { id: "stage1", phaseLabel: "PENDAFTARAN RESMI", title: "Pendaftaran Delegasi Silatnas", isOpen: (db.silatnasCatalog && db.silatnasCatalog[0]?.isOpen) ?? true },
+                    stage2: { id: "stage2", phaseLabel: "HARI PERTAMA", title: "Presensi Grand Opening & Seminar", isOpen: false },
+                    stage3: { id: "stage3", phaseLabel: "HARI KEDUA", title: "Presensi Persidangan Nasional", isOpen: false },
+                    stage4: { id: "stage4", phaseLabel: "HARI KETIGA", title: "Presensi Penutupan & Resolusi", isOpen: false }
+                  };
+
+                  const stageItems = [
+                    { 
+                      key: 'stage1', 
+                      label: 'Tahap 1: Pendaftaran Delegasi', 
+                      tag: 'REGISTRASI',
+                      count: (db.silatnasCatalog && db.silatnasCatalog[0]?.applicants?.length) || 0,
+                      countLabel: 'Pendaftar',
+                      isOpen: stages.stage1?.isOpen ?? ((db.silatnasCatalog && db.silatnasCatalog[0]?.isOpen) ?? true)
+                    },
+                    { 
+                      key: 'stage2', 
+                      label: 'Tahap 2: Presensi Hari Pertama', 
+                      tag: 'GRAND OPENING',
+                      count: (db.silatnasPresensiHari1 || []).length,
+                      countLabel: 'Hadir',
+                      isOpen: stages.stage2?.isOpen ?? false
+                    },
+                    { 
+                      key: 'stage3', 
+                      label: 'Tahap 3: Presensi Hari Kedua', 
+                      tag: 'PERSIDANGAN',
+                      count: (db.silatnasPresensiHari2 || []).length,
+                      countLabel: 'Hadir',
+                      isOpen: stages.stage3?.isOpen ?? false
+                    },
+                    { 
+                      key: 'stage4', 
+                      label: 'Tahap 4: Presensi Hari Ketiga', 
+                      tag: 'PENUTUPAN',
+                      count: (db.silatnasPresensiHari3 || []).length,
+                      countLabel: 'Hadir',
+                      isOpen: stages.stage4?.isOpen ?? false
+                    }
+                  ];
+
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                      {stageItems.map(item => (
+                        <div 
+                          key={item.key} 
+                          className="bg-black/50 border border-white/10 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-white/20 transition"
+                        >
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                                {item.tag}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                                item.isOpen 
+                                  ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/40' 
+                                  : 'bg-red-950/40 text-red-400 border-red-500/40'
+                              }`}>
+                                {item.isOpen ? 'DIBUKA' : 'DITUTUP'}
+                              </span>
+                            </div>
+                            <h4 className="font-display text-sm font-bold text-white uppercase leading-snug">
+                              {item.label}
+                            </h4>
+                            <div className="text-xs text-neutral-400 font-body">
+                              Data Masuk: <strong className="text-white">{item.count}</strong> {item.countLabel}
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleToggleStage(item.key)}
+                            className={`w-full py-2.5 px-3 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-1.5 shadow-sm ${
+                              item.isOpen
+                                ? 'bg-red-900/40 hover:bg-red-800 text-red-200 border border-red-700/60'
+                                : 'bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500/50'
+                            }`}
+                          >
+                            {item.isOpen ? (
+                              <>
+                                <Lock className="w-3.5 h-3.5" /> Tutup Tahap Ini
+                              </>
+                            ) : (
+                              <>
+                                <Unlock className="w-3.5 h-3.5" /> Buka Tahap Ini
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* CARD: REKAPITULASI DATA PRESENSI PER HARI */}
+              <div className="p-5 md:p-6 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white space-y-5 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                  <div>
+                    <h3 className="font-display text-base md:text-lg uppercase font-bold text-white tracking-wide">
+                      Rekapitulasi Presensi Kehadiran Delegasi
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-body">
+                      Lihat data delegasi yang hadir per agenda hari pelaksanaan dan download rekapitulasi CSV.
+                    </p>
+                  </div>
+
+                  {/* Sub-tab Presensi Selector */}
+                  <div className="flex items-center gap-1.5 bg-black/60 p-1.5 rounded-xl border border-white/10 self-start sm:self-auto">
+                    {[
+                      { id: 'hari1', label: 'Hari 1 (Opening)', dayNumber: 1, list: db.silatnasPresensiHari1 || [] },
+                      { id: 'hari2', label: 'Hari 2 (Sidang)', dayNumber: 2, list: db.silatnasPresensiHari2 || [] },
+                      { id: 'hari3', label: 'Hari 3 (Closing)', dayNumber: 3, list: db.silatnasPresensiHari3 || [] }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setAdminPresensiTab(tab.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition flex items-center gap-1.5 ${
+                          adminPresensiTab === tab.id
+                            ? 'bg-primary text-white shadow'
+                            : 'text-neutral-400 hover:text-white'
+                        }`}
+                      >
+                        <span>{tab.label}</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/40">
+                          {tab.list.length}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sub-tab Content */}
+                {(() => {
+                  const dayMap = {
+                    hari1: {
+                      title: "Presensi Hari Pertama (Grand Opening & Seminar)",
+                      dayNumber: 1,
+                      filename: "rekap_presensi_silatnas_hari_1_grand_opening.csv",
+                      data: db.silatnasPresensiHari1 || []
+                    },
+                    hari2: {
+                      title: "Presensi Hari Kedua (Persidangan: Pleno & Komisi)",
+                      dayNumber: 2,
+                      filename: "rekap_presensi_silatnas_hari_2_persidangan.csv",
+                      data: db.silatnasPresensiHari2 || []
+                    },
+                    hari3: {
+                      title: "Presensi Hari Ketiga (Penutupan & Resolusi)",
+                      dayNumber: 3,
+                      filename: "rekap_presensi_silatnas_hari_3_penutupan.csv",
+                      data: db.silatnasPresensiHari3 || []
+                    }
+                  };
+
+                  const currentTabInfo = dayMap[adminPresensiTab] || dayMap.hari1;
+                  const presensiList = currentTabInfo.data;
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-primary" />
+                          <span className="font-display text-sm uppercase font-bold text-white">
+                            {currentTabInfo.title}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold">
+                            {presensiList.length} Delegasi Hadir
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => downloadCSV(presensiList, currentTabInfo.filename)}
+                          disabled={presensiList.length === 0}
+                          className="bg-primary hover:bg-primary/80 text-white border border-primary/50 text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
+                        >
+                          <Download className="w-3.5 h-3.5" /> Download Rekap Presensi (CSV)
+                        </button>
+                      </div>
+
+                      {/* List Attendees */}
+                      {presensiList.length === 0 ? (
+                        <div className="text-center py-8 text-neutral-400 text-xs font-body bg-black/40 rounded-xl border border-white/5">
+                          Belum ada delegasi yang mengisi formulir presensi pada agenda hari ini.
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="space-y-1.5">
+                            {[...presensiList]
+                              .sort((a, b) => {
+                                const cA = (a.campus || '').trim().toLowerCase();
+                                const cB = (b.campus || '').trim().toLowerCase();
+                                if (cA !== cB) return cA.localeCompare(cB, 'id');
+                                return (a.name || '').trim().toLowerCase().localeCompare((b.name || '').trim().toLowerCase(), 'id');
+                              })
+                              .slice(0, 10)
+                              .map((att, i) => (
+                                <div key={i} className="bg-neutral-900/90 border border-white/5 p-2.5 sm:p-3 rounded-xl flex items-center justify-between gap-3 hover:border-white/20 transition">
+                                  <div className="flex flex-wrap items-center gap-2 min-w-0">
+                                    <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary font-bold text-[10px] uppercase border border-primary/30 shrink-0">
+                                      {att.campus || 'Tanpa Kampus'}
+                                    </span>
+                                    <span className="text-white font-bold text-xs md:text-sm truncate">
+                                      {att.name}
+                                    </span>
+                                    {att.nim && (
+                                      <span className="text-neutral-400 text-xs shrink-0 font-mono">
+                                        ({att.nim})
+                                      </span>
+                                    )}
+                                    {att.komisi && (
+                                      <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-bold text-[10px] uppercase border border-indigo-500/30 shrink-0">
+                                        {att.komisi.split(':')[0]}
+                                      </span>
+                                    )}
+                                    {att.sesi && (
+                                      <span className="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold text-[10px] uppercase border border-sky-500/30 shrink-0">
+                                        {att.sesi}
+                                      </span>
+                                    )}
+                                    {att.nowa && (
+                                      <span className="text-neutral-400 font-mono text-[11px] hidden sm:inline shrink-0">
+                                        | {att.nowa}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    {att.nowa && (
+                                      <a
+                                        href={`https://wa.me/${att.nowa.replace(/[^0-9]/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-1.5 text-neutral-400 hover:text-emerald-400 rounded-lg hover:bg-emerald-500/10 transition"
+                                        title="Chat WhatsApp"
+                                      >
+                                        <Phone className="w-3.5 h-3.5" />
+                                      </a>
+                                    )}
+                                    <button
+                                      onClick={() => handleDeletePresensi(currentTabInfo.dayNumber, att)}
+                                      className="p-1.5 text-neutral-400 hover:text-red-400 rounded-lg hover:bg-red-500/10 transition"
+                                      title="Hapus data presensi ini"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+
+                          {presensiList.length > 10 && (
+                            <div className="text-center py-2 px-3 bg-white/5 border border-white/5 rounded-xl text-neutral-400 text-xs font-body mt-2">
+                              Menampilkan <strong>10 dari {presensiList.length} delegasi yang hadir</strong>. Silakan klik tombol <strong>Download Rekap Presensi (CSV)</strong> di atas untuk melihat seluruh rekap lengkap.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
               
               <div className="flex justify-between items-center">

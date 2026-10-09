@@ -182,6 +182,47 @@ const DEFAULT_DATA = {
     }
   ],
   silatnasGroupWaLink: "",
+  silatnasStages: {
+    stage1: {
+      id: "stage1",
+      phaseNumber: "01",
+      phaseLabel: "PENDAFTARAN RESMI",
+      title: "Pendaftaran Delegasi Silatnas",
+      subTitle: "Registrasi Mandataris & Berkas Administrasi",
+      desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.",
+      isOpen: true
+    },
+    stage2: {
+      id: "stage2",
+      phaseNumber: "02",
+      phaseLabel: "HARI PERTAMA",
+      title: "Presensi Grand Opening & Seminar",
+      subTitle: "Opening Ceremony & Seminar Nasional",
+      desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Edutorium Universitas Muhammadiyah Surakarta.",
+      isOpen: false
+    },
+    stage3: {
+      id: "stage3",
+      phaseNumber: "03",
+      phaseLabel: "HARI KEDUA",
+      title: "Presensi Persidangan Nasional",
+      subTitle: "Sidang Pleno & Sidang Komisi",
+      desc: "Presensi kehadiran mandataris kampus dalam agenda persidangan, pembahasan tata tertib, sidang komisi isu strategis, dan rekomendasi nasional.",
+      isOpen: false
+    },
+    stage4: {
+      id: "stage4",
+      phaseNumber: "04",
+      phaseLabel: "HARI KETIGA",
+      title: "Presensi Penutupan & Resolusi",
+      subTitle: "Closing Ceremony & Malam Keakraban",
+      desc: "Presensi kehadiran malam puncak penutupan Silatnas PTMAI 2026, pembacaan naskah deklarasi resolusi bersama, serta evaluasi kegiatan.",
+      isOpen: false
+    }
+  },
+  silatnasPresensiHari1: [],
+  silatnasPresensiHari2: [],
+  silatnasPresensiHari3: [],
   silatnasVisiMisi: {
     visiTitle: "Visi Kolaboratif",
     visiDesc: "Menciptakan ruang dialog nasional yang terbuka dan konstruktif guna merumuskan rekomendasi kritis terhadap arah kebijakan nasional demi memperjuangkan hak-hak kesejahteraan masyarakat umum.",
@@ -380,6 +421,10 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
         combinedData.silatnasShuttle = kData.silatnasShuttle || [];
         combinedData.silatnasGroupWaLink = kData.silatnasGroupWaLink || '';
+        combinedData.silatnasStages = kData.silatnasStages || DEFAULT_DATA.silatnasStages;
+        combinedData.silatnasPresensiHari1 = kData.silatnasPresensiHari1 || [];
+        combinedData.silatnasPresensiHari2 = kData.silatnasPresensiHari2 || [];
+        combinedData.silatnasPresensiHari3 = kData.silatnasPresensiHari3 || [];
       }
     });
 
@@ -487,6 +532,10 @@ export const saveDB = async (data) => {
       silatnasCulture: silatnasCulture || [],
       silatnasShuttle: silatnasShuttle || [],
       silatnasGroupWaLink: data.silatnasGroupWaLink || '',
+      silatnasStages: data.silatnasStages || DEFAULT_DATA.silatnasStages,
+      silatnasPresensiHari1: data.silatnasPresensiHari1 || [],
+      silatnasPresensiHari2: data.silatnasPresensiHari2 || [],
+      silatnasPresensiHari3: data.silatnasPresensiHari3 || [],
       lastUpdated: data.lastUpdated 
     });
 
@@ -566,6 +615,20 @@ export const addSilatnasShuttle = async (shuttleData) => {
 export const updateSilatnasGroupWaLink = async (link) => {
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   await updateDoc(DOC_REF, { silatnasGroupWaLink: link });
+};
+
+export const addSilatnasPresensi = async (dayNumber, presensiData) => {
+  const DOC_REF = doc(firestore, "cms", "kegiatan");
+  const fieldKey = `silatnasPresensiHari${dayNumber}`;
+  await runTransaction(firestore, async (transaction) => {
+    const docSnap = await transaction.get(DOC_REF);
+    if (!docSnap.exists()) throw new Error("Database kosong!");
+    const data = docSnap.data();
+    const currentList = data[fieldKey] || [];
+    transaction.update(DOC_REF, { 
+      [fieldKey]: [...currentList, { ...presensiData, id: Date.now(), submittedAt: new Date().toISOString() }] 
+    });
+  });
 };
 
 // --- ARTICLE INTERACTIONS (LIKE & COMMENTS) ---
