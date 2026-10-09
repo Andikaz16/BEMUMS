@@ -1379,8 +1379,8 @@ export default function Silatnas({ db }) {
 
             return (
               <div className="max-w-4xl mx-auto w-full space-y-6">
-                {/* 4 HORIZONTAL STEPPER TABS (Styled after Image 2 reference) */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 p-2 rounded-2xl bg-black/50 border border-white/10 backdrop-blur-md shadow-xl">
+                {/* 4 HORIZONTAL STEPPER TABS (Glassmorphism & High-Contrast Typography) */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-white/[0.08] border border-white/20 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
                   {[
                     { key: 'stage1', stg: { ...stagesData.stage1, isOpen: isStage1Open } },
                     { key: 'stage2', stg: stagesData.stage2 },
@@ -1399,35 +1399,53 @@ export default function Silatnas({ db }) {
                             setActiveStage(key);
                           }
                         }}
-                        className={`p-3.5 sm:p-4 rounded-xl border text-left transition-all duration-300 relative flex flex-col justify-between ${
+                        className={`p-3.5 sm:p-4 rounded-xl border text-left transition-all duration-300 relative flex flex-col justify-between backdrop-blur-xl ${
                           isLocked 
-                            ? 'opacity-40 cursor-not-allowed bg-neutral-900/30 border-white/5 text-neutral-500 hover:border-white/5 select-none' 
+                            ? 'bg-black/35 border-white/10 text-white select-none cursor-not-allowed hover:border-white/10' 
                             : isActive 
-                              ? 'bg-[#0EA5E9]/20 border-[#0EA5E9] shadow-[0_0_25px_rgba(14,165,233,0.3)] ring-1 ring-[#0EA5E9] cursor-pointer' 
-                              : 'bg-neutral-900/60 border-white/5 hover:border-white/20 text-neutral-400 hover:text-white cursor-pointer'
+                              ? 'bg-gradient-to-br from-sky-500/35 via-blue-600/30 to-sky-700/25 border-sky-400 shadow-[0_0_25px_rgba(56,189,248,0.4)] ring-1 ring-sky-400 text-white cursor-pointer' 
+                              : 'bg-white/[0.07] hover:bg-white/[0.14] border-white/15 hover:border-white/30 text-white cursor-pointer shadow-sm'
                         }`}
                         title={isLocked ? `${stg.title} (Tahap Ditutup / Terkunci)` : stg.title}
                       >
                         <div className="flex items-center justify-between gap-1 mb-1.5">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-[#38BDF8]' : isLocked ? 'text-neutral-600' : 'text-neutral-500'}`}>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                            isActive 
+                              ? 'text-sky-300' 
+                              : isLocked 
+                                ? 'text-slate-300 font-semibold' 
+                                : 'text-sky-200'
+                          }`}>
                             {stg.phaseLabel}
                           </span>
                           {stg.isOpen ? (
-                            <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-400 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/30">
+                            <span className="flex items-center gap-1 text-[9px] font-extrabold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/50 backdrop-blur-sm">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                               BUKA
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-[9px] font-bold text-neutral-400 bg-neutral-800/80 px-1.5 py-0.5 rounded border border-neutral-700">
-                              <Lock className="w-2.5 h-2.5 text-neutral-400" />
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-slate-200 bg-black/50 px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">
+                              <Lock className="w-2.5 h-2.5 text-slate-300" />
                               TUTUP
                             </span>
                           )}
                         </div>
-                        <div className={`text-xs sm:text-sm font-heading font-extrabold uppercase tracking-tight line-clamp-1 ${isActive ? 'text-white' : isLocked ? 'text-neutral-500' : 'text-neutral-300'}`}>
+                        <div className={`text-xs sm:text-sm font-heading font-extrabold uppercase tracking-tight line-clamp-1 ${
+                          isActive 
+                            ? 'text-white' 
+                            : isLocked 
+                              ? 'text-white drop-shadow-sm' 
+                              : 'text-white'
+                        }`}>
                           {stg.title}
                         </div>
-                        <div className="text-[10px] text-neutral-400 font-body line-clamp-1 mt-0.5 hidden sm:block">
+                        <div className={`text-[10px] sm:text-[11px] font-body line-clamp-1 mt-0.5 hidden sm:block ${
+                          isActive 
+                            ? 'text-sky-100' 
+                            : isLocked 
+                              ? 'text-slate-200 font-medium' 
+                              : 'text-slate-200'
+                        }`}>
                           {stg.subTitle}
                         </div>
                       </button>
@@ -1435,28 +1453,32 @@ export default function Silatnas({ db }) {
                   })}
                 </div>
 
-                {/* MAIN CONTENT CARD */}
-                <div className="bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl relative">
+                {/* MAIN CONTENT CARD (Glassmorphism Frosted Glass) */}
+                <div className="bg-slate-950/40 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_16px_48px_0_rgba(0,0,0,0.5)] relative overflow-hidden">
+                  {/* Ambient Frosted Glows */}
+                  <div className="absolute -top-32 -right-32 w-72 h-72 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-32 -left-32 w-72 h-72 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+
                   {/* Card Header */}
-                  <div className="border-b border-white/10 pb-6 mb-8">
+                  <div className="border-b border-white/15 pb-6 mb-8 relative z-10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="space-y-1">
+                      <div className="space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[#38BDF8] text-xs font-bold uppercase tracking-widest bg-[#0EA5E9]/10 px-2.5 py-1 rounded-lg border border-[#0EA5E9]/30">
+                          <span className="text-sky-200 text-xs font-bold uppercase tracking-widest bg-sky-500/25 px-3 py-1 rounded-lg border border-sky-400/40 backdrop-blur-md">
                             {activeStageInfo.phaseLabel}
                           </span>
-                          <span className={`px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-full border ${
+                          <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md ${
                             activeStageInfo.isOpen 
-                              ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/40' 
-                              : 'bg-red-950/40 text-red-400 border-red-500/40'
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50' 
+                              : 'bg-red-500/20 text-red-300 border-red-400/50'
                           }`}>
                             {activeStageInfo.isOpen ? 'STATUS: DIBUKA' : 'STATUS: DITUTUP'}
                           </span>
                         </div>
-                        <h3 className="text-xl md:text-2xl font-heading font-extrabold uppercase tracking-tight text-white pt-1">
+                        <h3 className="text-2xl md:text-3xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md pt-1">
                           {activeStageInfo.phaseNumber}. {activeStageInfo.title}
                         </h3>
-                        <p className="text-xs md:text-sm font-body text-[#BAE6FD]/80 leading-relaxed max-w-2xl">
+                        <p className="text-xs md:text-sm font-body text-slate-100 font-medium leading-relaxed max-w-2xl drop-shadow-sm">
                           {activeStageInfo.desc}
                         </p>
                       </div>
@@ -1465,55 +1487,55 @@ export default function Silatnas({ db }) {
 
                   {/* IF STAGE IS CLOSED BY ADMIN */}
                   {!activeStageInfo.isOpen ? (
-                    <div className="text-center py-12 px-4 space-y-4 max-w-md mx-auto">
-                      <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-500 mx-auto shadow-inner">
-                        <Lock className="w-8 h-8" />
+                    <div className="text-center py-12 px-4 space-y-4 max-w-md mx-auto relative z-10">
+                      <div className="w-16 h-16 rounded-full bg-white/[0.08] border border-white/20 flex items-center justify-center text-slate-300 mx-auto shadow-inner backdrop-blur-md">
+                        <Lock className="w-8 h-8 text-sky-400" />
                       </div>
-                      <h4 className="text-lg font-heading font-bold uppercase text-white tracking-wide">
+                      <h4 className="text-xl font-heading font-extrabold uppercase text-white tracking-wide drop-shadow-md">
                         Formulir {activeStageInfo.title} Sedang Ditutup
                       </h4>
-                      <p className="text-xs text-neutral-400 font-body leading-relaxed">
+                      <p className="text-xs md:text-sm text-slate-200 font-body leading-relaxed font-medium">
                         Panitia Pelaksana Silatnas BEM PTMAI 2026 saat ini belum membuka atau telah menutup tahap ini. Formulir akan dibuka secara resmi sesuai jadwal pelaksanaan agenda kegiatan.
                       </p>
                       <div className="pt-2">
-                        <span className="inline-block px-3 py-1.5 rounded-xl bg-neutral-900 border border-white/10 text-[11px] text-neutral-400 font-mono">
+                        <span className="inline-block px-4 py-1.5 rounded-xl bg-white/[0.08] border border-white/20 text-xs text-sky-200 font-medium backdrop-blur-md">
                           Status: Ditutup oleh Panitia Pelaksana
                         </span>
                       </div>
                     </div>
                   ) : (
                     /* IF STAGE IS OPEN */
-                    <div>
+                    <div className="relative z-10">
                       {/* === TAHAP 1: PENDAFTARAN DELEGASI RESMI === */}
                       {activeStage === 'stage1' && (
                         <div className="space-y-6">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-neutral-900/60 p-4 rounded-2xl border border-white/5 space-y-1">
-                              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-400">
-                                <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> Lokasi Pelaksanaan
+                            <div className="bg-white/[0.07] backdrop-blur-xl p-5 rounded-2xl border border-white/20 space-y-1.5 shadow-lg">
+                              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-300">
+                                <MapPin className="w-4 h-4 text-sky-400" /> Lokasi Pelaksanaan
                               </h5>
-                              <p className="text-sm font-body text-white font-medium">
+                              <p className="text-base font-heading font-bold text-white drop-shadow-sm">
                                 {activeEvent.location || "Edutorium & Kampus UMS Surakarta"}
                               </p>
                             </div>
-                            <div className="bg-neutral-900/60 p-4 rounded-2xl border border-white/5 space-y-1">
-                              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-400">
-                                <Calendar className="w-3.5 h-3.5 text-[#38BDF8]" /> Jadwal Pelaksanaan
+                            <div className="bg-white/[0.07] backdrop-blur-xl p-5 rounded-2xl border border-white/20 space-y-1.5 shadow-lg">
+                              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-300">
+                                <Calendar className="w-4 h-4 text-sky-400" /> Jadwal Pelaksanaan
                               </h5>
-                              <p className="text-sm font-body text-white font-medium">
+                              <p className="text-base font-heading font-bold text-white drop-shadow-sm">
                                 {activeEvent.schedule || "29 - 31 Oktober 2026"}
                               </p>
                             </div>
                           </div>
 
-                          <div className="bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-2xl p-4 md:p-5 flex items-start gap-3 text-left">
-                            <Info className="w-5 h-5 text-[#38BDF8] shrink-0 mt-0.5" />
+                          <div className="bg-sky-500/15 backdrop-blur-xl border border-sky-400/30 rounded-2xl p-5 md:p-6 flex items-start gap-3.5 text-left shadow-lg">
+                            <Info className="w-5 h-5 text-sky-300 shrink-0 mt-0.5" />
                             <div className="space-y-1">
-                              <h5 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-white">
+                              <h5 className="text-sm md:text-base font-heading font-bold uppercase tracking-wider text-white drop-shadow-sm">
                                 Ketentuan Mandataris Delegasi Kampus
                               </h5>
-                              <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
-                                Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong>2 (dua) orang</strong> (wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO dan SWP).
+                              <p className="text-xs md:text-sm font-body text-sky-100 leading-relaxed font-medium">
+                                Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong className="text-white font-bold">2 (dua) orang</strong> (wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO dan SWP).
                               </p>
                             </div>
                           </div>
@@ -1538,7 +1560,7 @@ export default function Silatnas({ db }) {
                                 });
                                 setExtraFields({});
                               }}
-                              className="w-full bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4.5 rounded-2xl transition duration-300 shadow-[0_0_25px_rgba(14,165,233,0.35)] flex items-center justify-center gap-2"
+                              className="w-full bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold uppercase tracking-widest text-xs md:text-sm py-4.5 rounded-2xl transition duration-300 shadow-[0_0_30px_rgba(14,165,233,0.45)] hover:shadow-[0_0_40px_rgba(14,165,233,0.65)] flex items-center justify-center gap-2 border border-sky-300/40"
                             >
                               <Sparkles className="w-4 h-4" /> Buka Formulir Pendaftaran Delegasi
                             </button>
@@ -1579,14 +1601,14 @@ export default function Silatnas({ db }) {
                             </div>
                           ) : (
                             <form onSubmit={(e) => handlePresensiSubmit(e, 1)} className="space-y-5 text-left">
-                              <div className="p-3.5 bg-neutral-900/60 rounded-xl border border-white/5 text-xs text-[#BAE6FD] flex items-center gap-2">
-                                <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                              <div className="p-4 bg-sky-500/15 backdrop-blur-md rounded-2xl border border-sky-400/30 text-xs md:text-sm text-sky-100 font-medium flex items-center gap-3">
+                                <Info className="w-5 h-5 text-sky-300 shrink-0" />
                                 <span>Silakan isi formulir presensi kehadiran di bawah ini saat mengikuti rangkaian Grand Opening di Edutorium UMS.</span>
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nama Lengkap Delegasi *
                                   </label>
                                   <input 
@@ -1595,12 +1617,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: Muhammad Farhan"
                                     value={presensiHari1Form.name}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, name: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Asal Perguruan Tinggi / Kampus *
                                   </label>
                                   <input 
@@ -1610,12 +1632,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Ketik atau pilih nama kampus"
                                     value={presensiHari1Form.campus}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, campus: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     NIM / Nomor Induk Mahasiswa *
                                   </label>
                                   <input 
@@ -1624,12 +1646,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: L200210123"
                                     value={presensiHari1Form.nim}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, nim: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nomor WhatsApp Aktif *
                                   </label>
                                   <input 
@@ -1638,60 +1660,60 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: 081234567890"
                                     value={presensiHari1Form.nowa}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, nowa: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Jabatan di BEM / Delegasi *
                                   </label>
                                   <select 
                                     value={presensiHari1Form.jabatan}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, jabatan: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Presiden Mahasiswa">Presiden Mahasiswa (Ketua BEM)</option>
-                                    <option value="Wakil Presiden Mahasiswa">Wakil Presiden Mahasiswa</option>
-                                    <option value="Sekretaris Jenderal / Kabinet">Sekretaris Jenderal / Kabinet</option>
-                                    <option value="Menteri / Koordinator">Menteri / Koordinator Kementerian</option>
-                                    <option value="Staff Delegasi Resmi">Staff Delegasi Resmi</option>
-                                    <option value="Pendamping Delegasi">Pendamping / Delegasi Lainnya</option>
+                                    <option value="Presiden Mahasiswa" className="bg-slate-900 text-white">Presiden Mahasiswa (Ketua BEM)</option>
+                                    <option value="Wakil Presiden Mahasiswa" className="bg-slate-900 text-white">Wakil Presiden Mahasiswa</option>
+                                    <option value="Sekretaris Jenderal / Kabinet" className="bg-slate-900 text-white">Sekretaris Jenderal / Kabinet</option>
+                                    <option value="Menteri / Koordinator" className="bg-slate-900 text-white">Menteri / Koordinator Kementerian</option>
+                                    <option value="Staff Delegasi Resmi" className="bg-slate-900 text-white">Staff Delegasi Resmi</option>
+                                    <option value="Pendamping Delegasi" className="bg-slate-900 text-white">Pendamping / Delegasi Lainnya</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Sesi Kehadiran Hari ke-1 *
                                   </label>
                                   <select 
                                     value={presensiHari1Form.sesi}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, sesi: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Opening Ceremony & Sambutan (Pagi)">Opening Ceremony & Sambutan (Pagi)</option>
-                                    <option value="Seminar Nasional Kebangsaan (Siang)">Seminar Nasional Kebangsaan (Siang)</option>
-                                    <option value="Hadir Penuh Seluruh Rangkaian Hari ke-1">Hadir Penuh Seluruh Rangkaian Hari ke-1</option>
+                                    <option value="Opening Ceremony & Sambutan (Pagi)" className="bg-slate-900 text-white">Opening Ceremony & Sambutan (Pagi)</option>
+                                    <option value="Seminar Nasional Kebangsaan (Siang)" className="bg-slate-900 text-white">Seminar Nasional Kebangsaan (Siang)</option>
+                                    <option value="Hadir Penuh Seluruh Rangkaian Hari ke-1" className="bg-slate-900 text-white">Hadir Penuh Seluruh Rangkaian Hari ke-1</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Status Kehadiran *
                                   </label>
                                   <select 
                                     value={presensiHari1Form.status}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, status: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Hadir di Lokasi (Edutorium UMS)">Hadir di Lokasi (Edutorium UMS)</option>
-                                    <option value="Hadir di Sesi Seminar Saja">Hadir di Sesi Seminar Saja</option>
-                                    <option value="Izin Terlambat">Izin Terlambat</option>
+                                    <option value="Hadir di Lokasi (Edutorium UMS)" className="bg-slate-900 text-white">Hadir di Lokasi (Edutorium UMS)</option>
+                                    <option value="Hadir di Sesi Seminar Saja" className="bg-slate-900 text-white">Hadir di Sesi Seminar Saja</option>
+                                    <option value="Izin Terlambat" className="bg-slate-900 text-white">Izin Terlambat</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nomor Meja / Kursi Delegasi (Opsional)
                                   </label>
                                   <input 
@@ -1699,7 +1721,7 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: Baris A-12"
                                     value={presensiHari1Form.notes}
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, notes: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
                               </div>
@@ -1707,7 +1729,7 @@ export default function Silatnas({ db }) {
                               <button
                                 type="submit"
                                 disabled={presensiHari1Loading}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-heading font-extrabold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_25px_rgba(16,185,129,0.35)] disabled:opacity-50 flex items-center justify-center gap-2 border border-emerald-400/40 mt-2"
                               >
                                 <ClipboardCheck className="w-4 h-4" />
                                 {presensiHari1Loading ? "Mencatat Presensi..." : "Kirim Presensi Kehadiran Hari 1"}
@@ -1750,14 +1772,14 @@ export default function Silatnas({ db }) {
                             </div>
                           ) : (
                             <form onSubmit={(e) => handlePresensiSubmit(e, 2)} className="space-y-5 text-left">
-                              <div className="p-3.5 bg-neutral-900/60 rounded-xl border border-white/5 text-xs text-[#BAE6FD] flex items-center gap-2">
-                                <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                              <div className="p-4 bg-sky-500/15 backdrop-blur-md rounded-2xl border border-sky-400/30 text-xs md:text-sm text-sky-100 font-medium flex items-center gap-3">
+                                <Info className="w-5 h-5 text-sky-300 shrink-0" />
                                 <span>Diisi oleh delegasi mandataris yang mengikuti jalannya persidangan pleno dan sidang komisi Silatnas PTMAI 2026.</span>
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nama Lengkap Delegasi *
                                   </label>
                                   <input 
@@ -1766,12 +1788,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: Muhammad Farhan"
                                     value={presensiHari2Form.name}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, name: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Asal Perguruan Tinggi / Kampus *
                                   </label>
                                   <input 
@@ -1781,12 +1803,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Ketik atau pilih nama kampus"
                                     value={presensiHari2Form.campus}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, campus: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     NIM / Nomor Induk Mahasiswa *
                                   </label>
                                   <input 
@@ -1795,12 +1817,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: L200210123"
                                     value={presensiHari2Form.nim}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, nim: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nomor WhatsApp Aktif *
                                   </label>
                                   <input 
@@ -1809,58 +1831,58 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: 081234567890"
                                     value={presensiHari2Form.nowa}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, nowa: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Komisi Sidang yang Diikuti *
                                   </label>
                                   <select 
                                     value={presensiHari2Form.komisi}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, komisi: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Komisi A: AD/ART & Rekomendasi Organisasi">Komisi A: AD/ART & Rekomendasi Organisasi</option>
-                                    <option value="Komisi B: Isu Strategis Kebangsaan & Kebijakan">Komisi B: Isu Strategis Kebangsaan & Kebijakan</option>
-                                    <option value="Komisi C: Internal Kelembagaan & Sinergi PTMAI">Komisi C: Internal Kelembagaan & Sinergi PTMAI</option>
-                                    <option value="Komisi D: Perumusan Resolusi Silatnas 2026">Komisi D: Perumusan Resolusi Silatnas 2026</option>
+                                    <option value="Komisi A: AD/ART & Rekomendasi Organisasi" className="bg-slate-900 text-white">Komisi A: AD/ART & Rekomendasi Organisasi</option>
+                                    <option value="Komisi B: Isu Strategis Kebangsaan & Kebijakan" className="bg-slate-900 text-white">Komisi B: Isu Strategis Kebangsaan & Kebijakan</option>
+                                    <option value="Komisi C: Internal Kelembagaan & Sinergi PTMAI" className="bg-slate-900 text-white">Komisi C: Internal Kelembagaan & Sinergi PTMAI</option>
+                                    <option value="Komisi D: Perumusan Resolusi Silatnas 2026" className="bg-slate-900 text-white">Komisi D: Perumusan Resolusi Silatnas 2026</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Status Hak Suara Delegasi *
                                   </label>
                                   <select 
                                     value={presensiHari2Form.statusSuara}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, statusSuara: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Peserta Penuh (Hak Suara & Hak Bicara)">Peserta Penuh (Hak Suara & Hak Bicara)</option>
-                                    <option value="Peserta Peninjau (Hak Bicara)">Peserta Peninjau (Hak Bicara)</option>
+                                    <option value="Peserta Penuh (Hak Suara & Hak Bicara)" className="bg-slate-900 text-white">Peserta Penuh (Hak Suara & Hak Bicara)</option>
+                                    <option value="Peserta Peninjau (Hak Bicara)" className="bg-slate-900 text-white">Peserta Peninjau (Hak Bicara)</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5 md:col-span-2">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Sesi Persidangan *
                                   </label>
                                   <select 
                                     value={presensiHari2Form.sesi}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, sesi: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Hadir Penuh Seluruh Persidangan">Hadir Penuh Seluruh Rangkaian Sidang</option>
-                                    <option value="Sidang Pleno I (Tata Tertib & Presidium Sidang)">Sidang Pleno I (Tata Tertib & Presidium Sidang)</option>
-                                    <option value="Sidang Komisi">Sidang Komisi</option>
-                                    <option value="Sidang Pleno II (Laporan Hasil & Pengesahan)">Sidang Pleno II (Laporan Hasil & Pengesahan)</option>
+                                    <option value="Hadir Penuh Seluruh Persidangan" className="bg-slate-900 text-white">Hadir Penuh Seluruh Rangkaian Sidang</option>
+                                    <option value="Sidang Pleno I (Tata Tertib & Presidium Sidang)" className="bg-slate-900 text-white">Sidang Pleno I (Tata Tertib & Presidium Sidang)</option>
+                                    <option value="Sidang Komisi" className="bg-slate-900 text-white">Sidang Komisi</option>
+                                    <option value="Sidang Pleno II (Laporan Hasil & Pengesahan)" className="bg-slate-900 text-white">Sidang Pleno II (Laporan Hasil & Pengesahan)</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5 md:col-span-2">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Catatan Usulan / Aspirasi Sidang (Opsional)
                                   </label>
                                   <input 
@@ -1868,7 +1890,7 @@ export default function Silatnas({ db }) {
                                     placeholder="Tuliskan poin usulan awal atau catatan komisi (opsional)"
                                     value={presensiHari2Form.notes}
                                     onChange={e => setPresensiHari2Form({ ...presensiHari2Form, notes: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
                               </div>
@@ -1876,7 +1898,7 @@ export default function Silatnas({ db }) {
                               <button
                                 type="submit"
                                 disabled={presensiHari2Loading}
-                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                                className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-heading font-extrabold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_25px_rgba(99,102,241,0.35)] disabled:opacity-50 flex items-center justify-center gap-2 border border-indigo-400/40 mt-2"
                               >
                                 <ClipboardCheck className="w-4 h-4" />
                                 {presensiHari2Loading ? "Mencatat Presensi..." : "Kirim Presensi Persidangan Hari 2"}
@@ -1917,14 +1939,14 @@ export default function Silatnas({ db }) {
                             </div>
                           ) : (
                             <form onSubmit={(e) => handlePresensiSubmit(e, 3)} className="space-y-5 text-left">
-                              <div className="p-3.5 bg-neutral-900/60 rounded-xl border border-white/5 text-xs text-[#BAE6FD] flex items-center gap-2">
-                                <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                              <div className="p-4 bg-sky-500/15 backdrop-blur-md rounded-2xl border border-sky-400/30 text-xs md:text-sm text-sky-100 font-medium flex items-center gap-3">
+                                <Info className="w-5 h-5 text-sky-300 shrink-0" />
                                 <span>Presensi kehadiran malam puncak penutupan Silatnas sekaligus ruang evaluasi bersama bagi seluruh pimpinan BEM se-Indonesia.</span>
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nama Lengkap Delegasi *
                                   </label>
                                   <input 
@@ -1933,12 +1955,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: Muhammad Farhan"
                                     value={presensiHari3Form.name}
                                     onChange={e => setPresensiHari3Form({ ...presensiHari3Form, name: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Asal Perguruan Tinggi / Kampus *
                                   </label>
                                   <input 
@@ -1948,12 +1970,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Ketik atau pilih nama kampus"
                                     value={presensiHari3Form.campus}
                                     onChange={e => setPresensiHari3Form({ ...presensiHari3Form, campus: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     NIM / Nomor Induk Mahasiswa *
                                   </label>
                                   <input 
@@ -1962,12 +1984,12 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: L200210123"
                                     value={presensiHari3Form.nim}
                                     onChange={e => setPresensiHari3Form({ ...presensiHari3Form, nim: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Nomor WhatsApp Aktif *
                                   </label>
                                   <input 
@@ -1976,28 +1998,28 @@ export default function Silatnas({ db }) {
                                     placeholder="Contoh: 081234567890"
                                     value={presensiHari3Form.nowa}
                                     onChange={e => setPresensiHari3Form({ ...presensiHari3Form, nowa: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   />
                                 </div>
 
                                 <div className="space-y-1.5 md:col-span-2">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Sesi Acara Penutupan *
                                   </label>
                                   <select 
                                     value={presensiHari3Form.sesi}
                                     onChange={e => setPresensiHari3Form({ ...presensiHari3Form, sesi: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Hadir Seluruh Rangkaian Penutupan">Hadir Seluruh Rangkaian Penutupan</option>
-                                    <option value="Pembacaan Naskah Resolusi Bersama">Pembacaan Naskah Resolusi Bersama</option>
-                                    <option value="Closing Ceremony & Malam Keakraban">Closing Ceremony & Malam Keakraban Budaya</option>
-                                    <option value="Penyerahan Sertifikat & Vandel">Penyerahan Sertifikat & Vandel</option>
+                                    <option value="Hadir Seluruh Rangkaian Penutupan" className="bg-slate-900 text-white">Hadir Seluruh Rangkaian Penutupan</option>
+                                    <option value="Pembacaan Naskah Resolusi Bersama" className="bg-slate-900 text-white">Pembacaan Naskah Resolusi Bersama</option>
+                                    <option value="Closing Ceremony & Malam Keakraban" className="bg-slate-900 text-white">Closing Ceremony & Malam Keakraban Budaya</option>
+                                    <option value="Penyerahan Sertifikat & Vandel" className="bg-slate-900 text-white">Penyerahan Sertifikat & Vandel</option>
                                   </select>
                                 </div>
 
                                 <div className="space-y-1.5 md:col-span-2">
-                                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
                                     Kesan, Pesan & Evaluasi untuk Panitia Silatnas BEM UMS *
                                   </label>
                                   <textarea 
@@ -2006,7 +2028,7 @@ export default function Silatnas({ db }) {
                                     placeholder="Tuliskan kesan, pesan, saran, atau masukan berharga Anda untuk penyelenggaraan Silatnas berikutnya..."
                                     value={presensiHari3Form.kesanPesan}
                                     onChange={e => setPresensiHari3Form({ ...presensiHari3Form, kesanPesan: e.target.value })}
-                                    className="w-full bg-black/60 border border-neutral-800 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-[#0EA5E9] transition resize-none"
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition resize-none"
                                   />
                                 </div>
                               </div>
@@ -2014,7 +2036,7 @@ export default function Silatnas({ db }) {
                               <button
                                 type="submit"
                                 disabled={presensiHari3Loading}
-                                className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(217,119,6,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                                className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-heading font-extrabold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_25px_rgba(217,119,6,0.35)] disabled:opacity-50 flex items-center justify-center gap-2 border border-amber-400/40 mt-2"
                               >
                                 <ClipboardCheck className="w-4 h-4" />
                                 {presensiHari3Loading ? "Mencatat Presensi..." : "Kirim Presensi Penutupan Hari 3"}
