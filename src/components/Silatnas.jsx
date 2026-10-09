@@ -34,6 +34,9 @@ const faqData = [
 
 
 export default function Silatnas({ db }) {
+  const safeDb = db || {};
+  const catalog = Array.isArray(safeDb.silatnasCatalog) ? safeDb.silatnasCatalog : [];
+
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [formData, setFormData] = useState({ 
     name: '', 
@@ -74,7 +77,7 @@ export default function Silatnas({ db }) {
   useEffect(() => {
     const isStage1Open = db?.silatnasStages?.stage1?.isOpen !== undefined 
       ? db.silatnasStages.stage1.isOpen 
-      : (catalog && catalog[0] && catalog[0].isOpen !== undefined ? catalog[0].isOpen : true);
+      : (catalog[0]?.isOpen ?? true);
     const stages = db?.silatnasStages || {};
     const checkOpen = (k) => k === 'stage1' ? isStage1Open : Boolean(stages[k]?.isOpen);
 
@@ -84,7 +87,7 @@ export default function Silatnas({ db }) {
         setActiveStage(openKey);
       }
     }
-  }, [db?.silatnasStages, catalog, activeStage]);
+  }, [db?.silatnasStages, db?.silatnasCatalog, activeStage]);
 
   // Presensi Hari 1 State
   const [presensiHari1Form, setPresensiHari1Form] = useState({
@@ -275,9 +278,6 @@ export default function Silatnas({ db }) {
     return () => clearInterval(interval);
   }, []);
 
-  const safeDb = db || {};
-
-  const catalog = Array.isArray(safeDb.silatnasCatalog) ? safeDb.silatnasCatalog : [];
 
   const visiMisi = (safeDb.silatnasVisiMisi && typeof safeDb.silatnasVisiMisi === 'object') ? safeDb.silatnasVisiMisi : {
     visiTitle: "Visi Kolaboratif",
