@@ -70,6 +70,22 @@ export default function Silatnas({ db }) {
   // 4 Stages Stepper State
   const [activeStage, setActiveStage] = useState('stage1');
 
+  // Pastikan activeStage selalu mengarah ke tahap yang DIBUKA (tidak terkunci)
+  useEffect(() => {
+    const isStage1Open = db?.silatnasStages?.stage1?.isOpen !== undefined 
+      ? db.silatnasStages.stage1.isOpen 
+      : (catalog && catalog[0] && catalog[0].isOpen !== undefined ? catalog[0].isOpen : true);
+    const stages = db?.silatnasStages || {};
+    const checkOpen = (k) => k === 'stage1' ? isStage1Open : Boolean(stages[k]?.isOpen);
+
+    if (!checkOpen(activeStage)) {
+      const openKey = ['stage1', 'stage2', 'stage3', 'stage4'].find(k => checkOpen(k));
+      if (openKey) {
+        setActiveStage(openKey);
+      }
+    }
+  }, [db?.silatnasStages, catalog, activeStage]);
+
   // Presensi Hari 1 State
   const [presensiHari1Form, setPresensiHari1Form] = useState({
     name: '',
@@ -1284,9 +1300,6 @@ export default function Silatnas({ db }) {
         <div className="space-y-8 pt-10 border-t border-white/10" id="catalog-section">
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-[#38BDF8] text-[11px] font-bold uppercase tracking-widest bg-[#0EA5E9]/10 px-3.5 py-1.5 rounded-full border border-[#0EA5E9]/30 inline-block">
-              Portal Terpadu Delegasi Silatnas 2026
-            </span>
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
               Pendaftaran & Presensi Delegasi
             </h2>
@@ -1351,7 +1364,12 @@ export default function Silatnas({ db }) {
               ? { ...stagesData.stage1, isOpen: isStage1Open }
               : stagesData[activeStage];
 
-            const activeEvent = catalog && catalog[0] ? catalog[0] : {
+            const activeEvent = catalog && catalog[0] ? {
+              ...catalog[0],
+              schedule: (catalog[0].schedule && (catalog[0].schedule.includes("29 - 31") || catalog[0].schedule.includes("29-31"))) 
+                ? catalog[0].schedule 
+                : "29 - 31 Oktober 2026"
+            } : {
               id: 1,
               title: "Pendaftaran Delegasi Silatnas BEM PTMAI 2026",
               schedule: "29 - 31 Oktober 2026",
@@ -1370,19 +1388,28 @@ export default function Silatnas({ db }) {
                     { key: 'stage4', stg: stagesData.stage4 }
                   ].map(({ key, stg }) => {
                     const isActive = activeStage === key;
+                    const isLocked = !stg.isOpen;
                     return (
                       <button
                         key={key}
                         type="button"
-                        onClick={() => setActiveStage(key)}
+                        disabled={isLocked}
+                        onClick={() => {
+                          if (!isLocked) {
+                            setActiveStage(key);
+                          }
+                        }}
                         className={`p-3.5 sm:p-4 rounded-xl border text-left transition-all duration-300 relative flex flex-col justify-between ${
-                          isActive 
-                            ? 'bg-[#0EA5E9]/20 border-[#0EA5E9] shadow-[0_0_25px_rgba(14,165,233,0.3)] ring-1 ring-[#0EA5E9]' 
-                            : 'bg-neutral-900/60 border-white/5 hover:border-white/20 text-neutral-400 hover:text-white'
+                          isLocked 
+                            ? 'opacity-40 cursor-not-allowed bg-neutral-900/30 border-white/5 text-neutral-500 hover:border-white/5 select-none' 
+                            : isActive 
+                              ? 'bg-[#0EA5E9]/20 border-[#0EA5E9] shadow-[0_0_25px_rgba(14,165,233,0.3)] ring-1 ring-[#0EA5E9] cursor-pointer' 
+                              : 'bg-neutral-900/60 border-white/5 hover:border-white/20 text-neutral-400 hover:text-white cursor-pointer'
                         }`}
+                        title={isLocked ? `${stg.title} (Tahap Ditutup / Terkunci)` : stg.title}
                       >
                         <div className="flex items-center justify-between gap-1 mb-1.5">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-[#38BDF8]' : 'text-neutral-500'}`}>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isActive ? 'text-[#38BDF8]' : isLocked ? 'text-neutral-600' : 'text-neutral-500'}`}>
                             {stg.phaseLabel}
                           </span>
                           {stg.isOpen ? (
@@ -1397,7 +1424,7 @@ export default function Silatnas({ db }) {
                             </span>
                           )}
                         </div>
-                        <div className={`text-xs sm:text-sm font-heading font-extrabold uppercase tracking-tight line-clamp-1 ${isActive ? 'text-white' : 'text-neutral-300'}`}>
+                        <div className={`text-xs sm:text-sm font-heading font-extrabold uppercase tracking-tight line-clamp-1 ${isActive ? 'text-white' : isLocked ? 'text-neutral-500' : 'text-neutral-300'}`}>
                           {stg.title}
                         </div>
                         <div className="text-[10px] text-neutral-400 font-body line-clamp-1 mt-0.5 hidden sm:block">

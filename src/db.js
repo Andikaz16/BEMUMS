@@ -417,7 +417,10 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         const kData = docSnap.data();
         combinedData.kegiatan = kData.kegiatan || [];
         combinedData.volunteerCatalog = kData.volunteerCatalog || [];
-        combinedData.silatnasCatalog = kData.silatnasCatalog || [];
+        combinedData.silatnasCatalog = (kData.silatnasCatalog || []).map(cat => ({
+          ...cat,
+          schedule: (cat.schedule && (cat.schedule.includes("29 - 31") || cat.schedule.includes("29-31"))) ? cat.schedule : "29 - 31 Oktober 2026"
+        }));
         combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
         combinedData.silatnasShuttle = kData.silatnasShuttle || [];
         combinedData.silatnasGroupWaLink = kData.silatnasGroupWaLink || '';
