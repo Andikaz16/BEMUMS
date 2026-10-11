@@ -204,15 +204,28 @@ function playSplashAudio(isUserGesture = false) {
 
 export default function SplashScreen({ onComplete }) {
   const [show, setShow] = useState(true);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
+  const handleDismiss = () => {
+    setShow(false);
+    if (onCompleteRef.current) {
+      onCompleteRef.current();
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(false);
-      setTimeout(onComplete, 800); // Beri waktu untuk animasi fade out
-    }, 3000); // Tayang selama 3 detik
+      setTimeout(() => {
+        if (onCompleteRef.current) {
+          onCompleteRef.current();
+        }
+      }, 400); // Waktu animasi fade out yang responsif
+    }, 1800); // Tayang 1.8 detik yang cepat dan elegan
 
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, []); // Hanya jalankan sekali saat mount, jangan reset jika ada re-render
 
   return (
     <AnimatePresence>
@@ -220,8 +233,10 @@ export default function SplashScreen({ onComplete }) {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center pointer-events-none select-none overflow-hidden"
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          onClick={handleDismiss}
+          className="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center select-none overflow-hidden cursor-pointer"
+          title="Klik untuk melewati"
         >
           {/* Center Branding Area */}
           <div className="flex flex-col items-center gap-6">

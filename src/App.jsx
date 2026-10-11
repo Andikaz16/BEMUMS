@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Hero from './components/Hero.jsx';
@@ -26,6 +26,18 @@ export default function App() {
   const [isFirebaseLoaded, setIsFirebaseLoaded] = useState(false);
   const [activePage, setActivePage] = useState('beranda');
   const [isSplashComplete, setIsSplashComplete] = useState(false);
+
+  const handleSplashComplete = useCallback(() => {
+    setIsSplashComplete(true);
+  }, []);
+
+  // Safety fallback: pastikan splash screen tidak pernah mengunci layar lebih dari 2.5 detik
+  useEffect(() => {
+    const safetyTimer = setTimeout(() => {
+      setIsSplashComplete(true);
+    }, 2500);
+    return () => clearTimeout(safetyTimer);
+  }, []);
   
   // Auth state for Admin CMS
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
@@ -134,7 +146,7 @@ export default function App() {
       activePage === 'silatnas' ? 'bg-[#082F49]' : 'bg-gradient-to-br from-[#3B0505] to-black'
     }`}>
       {(!isSplashComplete || !db) && (
-        <SplashScreen onComplete={() => setIsSplashComplete(true)} />
+        <SplashScreen onComplete={handleSplashComplete} />
       )}
 
       {db && (
