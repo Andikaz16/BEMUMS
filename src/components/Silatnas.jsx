@@ -1028,13 +1028,14 @@ export default function Silatnas({ db }) {
         </div>
 
         {/* MASCOT SECTION */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col items-center justify-center text-center space-y-4 pt-12"
-        >
+        <div className="flex flex-col items-center justify-center text-center space-y-3 pt-12">
+          {/* STATIC MASCOT TITLE: ARJUNA (TIDAK BERGERAK) */}
+          <div className="text-center select-none">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display uppercase tracking-widest text-white drop-shadow-[0_4px_20px_rgba(56,189,248,0.5)]">
+              ARJUNA
+            </h2>
+          </div>
+
           <div className="relative w-72 md:w-80 h-[380px] md:h-[480px] flex items-center justify-center">
             {frames.map((f, idx) => (
               <img 
@@ -1054,7 +1055,7 @@ export default function Silatnas({ db }) {
               Representasi ketangguhan, persatuan, dan intelektualisme mahasiswa Indonesia dalam menyongsong Silaturahmi Nasional 2026.
             </p>
           </div>
-        </motion.div>
+        </div>
 
         {/* 2. GRAND TEMA SILATNAS */}
         <motion.div 
