@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
   Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation, MessageCircle,
-  Lock, Unlock, ClipboardCheck
+  Lock, Unlock, ClipboardCheck, Upload
 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -3288,15 +3288,53 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, location: e.target.value })}
                     />
                   </div>
-                  <div className="flex flex-col gap-1 md:col-span-2">
-                    <label className="text-[10px] font-bold uppercase text-neutral-400">URL Gambar / Foto</label>
-                    <input
-                      type="text"
-                      className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs"
-                      placeholder="https://... atau /assets/..."
-                      value={newSilatnasCulture.image}
-                      onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, image: e.target.value })}
-                    />
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <label className="text-[10px] font-bold uppercase text-neutral-400 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Upload size={12} className="text-[#38BDF8]" />
+                        Upload Media / Foto Destinasi
+                      </span>
+                      {newSilatnasCulture.image && (
+                        <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1 font-bold">
+                          <Check size={12} /> Media Terpilih
+                        </span>
+                      )}
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          handleImageUpload(e, (url) => setNewSilatnasCulture(prev => ({ ...prev, image: url })));
+                          e.target.value = null;
+                        }}
+                        className="w-full text-xs text-neutral-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#0EA5E9]/20 file:text-[#38BDF8] hover:file:bg-[#0EA5E9] hover:file:text-white cursor-pointer transition-all bg-black/60 border border-neutral-800 p-2 rounded-xl"
+                      />
+                      <input
+                        type="text"
+                        className="bg-black border border-neutral-800 text-white px-3 py-2 rounded-lg text-xs placeholder-neutral-600 focus:border-[#0EA5E9]"
+                        placeholder="Atau tempel URL gambar langsung (https://... atau /assets/...)"
+                        value={newSilatnasCulture.image}
+                        onChange={(e) => setNewSilatnasCulture({ ...newSilatnasCulture, image: e.target.value })}
+                      />
+                    </div>
+                    {newSilatnasCulture.image && (
+                      <div className="relative inline-block mt-1 w-fit group">
+                        <img
+                          src={newSilatnasCulture.image}
+                          alt="Preview Destinasi"
+                          className="h-28 w-44 object-cover rounded-xl border border-sky-500/30 shadow-lg shadow-sky-950/40"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setNewSilatnasCulture(prev => ({ ...prev, image: '' }))}
+                          className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-transform hover:scale-110 cursor-pointer"
+                          title="Hapus gambar"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="md:col-span-2 flex gap-2 pt-2">
                     <button
