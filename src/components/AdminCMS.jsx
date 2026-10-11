@@ -2857,7 +2857,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                         </span>
                                         {app.sizeKaos && (
                                           <span className="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold text-[10px] uppercase border border-sky-500/30 shrink-0">
-                                            Kaos: {app.sizeKaos} ({app.tipeLengan || 'Pendek'})
+                                            Kaos: {app.sizeKaos} ({app.tipeLengan || 'Lengan Panjang'})
                                           </span>
                                         )}
                                         {app.nowa && (

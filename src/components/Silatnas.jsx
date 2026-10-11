@@ -44,7 +44,7 @@ export default function Silatnas({ db }) {
     jabatan: '', 
     nowa: '', 
     sizeKaos: '', 
-    tipeLengan: '', 
+    tipeLengan: 'Lengan Panjang', 
     buktiSWO: '', 
     buktiSWOFileName: '',
     buktiSWP: '', 
@@ -664,10 +664,6 @@ export default function Silatnas({ db }) {
       alert("Mohon pilih Ukuran Kaos (Size Chart) terlebih dahulu!");
       return;
     }
-    if (!formData.tipeLengan) {
-      alert("Mohon pilih Tipe Lengan Kaos (Lengan Pendek atau Lengan Panjang)!");
-      return;
-    }
     if (!formData.buktiSWO) {
       alert("Mohon upload Bukti Pembayaran SWO (Sumbangan Wajib Organisasi)!");
       return;
@@ -678,7 +674,12 @@ export default function Silatnas({ db }) {
     }
 
     try {
-      const applicantData = { ...formData, ...extraFields, submittedAt: new Date().toISOString() };
+      const applicantData = { 
+        ...formData, 
+        tipeLengan: 'Lengan Panjang', 
+        ...extraFields, 
+        submittedAt: new Date().toISOString() 
+      };
       await addSilatnasApplicant(selectedEvent.id, applicantData);
       setSubmitted(true);
 
@@ -1552,7 +1553,7 @@ export default function Silatnas({ db }) {
                                   jabatan: '', 
                                   nowa: '', 
                                   sizeKaos: '', 
-                                  tipeLengan: '', 
+                                  tipeLengan: 'Lengan Panjang', 
                                   buktiSWO: '', 
                                   buktiSWOFileName: '',
                                   buktiSWP: '', 
@@ -2934,21 +2935,30 @@ export default function Silatnas({ db }) {
                         </select>
                       </div>
 
-                      {/* Kanan: Tipe Lengan */}
+                      {/* Kanan: Tipe Lengan Kaos (Paten Lengan Panjang) */}
                       <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
-                          Tipe Lengan Kaos *
-                        </label>
-                        <select
-                          required
-                          className="w-full bg-black border border-neutral-800 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body text-sm cursor-pointer"
-                          value={formData.tipeLengan}
-                          onChange={(e) => setFormData({ ...formData, tipeLengan: e.target.value })}
-                        >
-                          <option value="" disabled>-- Pilih Tipe Lengan --</option>
-                          <option value="Lengan Pendek">Lengan Pendek</option>
-                          <option value="Lengan Panjang">Lengan Panjang</option>
-                        </select>
+                        <div className="flex items-center justify-between">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
+                            Tipe Lengan Kaos *
+                          </label>
+                          <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <CheckCircle className="w-2.5 h-2.5" /> Paten Resmi
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            readOnly
+                            value="Lengan Panjang"
+                            className="w-full bg-neutral-900/80 border border-neutral-700/80 text-white font-semibold px-4 py-3.5 rounded-xl font-body text-sm cursor-not-allowed select-none focus:outline-none shadow-inner"
+                          />
+                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] text-neutral-400 font-medium flex items-center gap-1 bg-black/60 px-2.5 py-1 rounded-lg border border-white/10">
+                            <Lock className="w-3 h-3 text-sky-400" /> Seragam
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-neutral-400 font-body">
+                          *Kaos official delegasi Silatnas 2026 diproduksi seragam berformat <strong>Lengan Panjang</strong>.
+                        </p>
                       </div>
                     </div>
 
