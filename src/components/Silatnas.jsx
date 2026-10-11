@@ -1536,7 +1536,7 @@ export default function Silatnas({ db }) {
                                 Ketentuan Mandataris Delegasi Kampus
                               </h5>
                               <p className="text-xs md:text-sm font-body text-sky-100 leading-relaxed font-medium">
-                                Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong className="text-white font-bold">2 (dua) orang</strong> (wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO dan SWP).
+                                Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong className="text-white font-bold">2 (dua) orang</strong> wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO setiap kampus dan SWP setiap delegasi.
                               </p>
                             </div>
                           </div>
@@ -2809,7 +2809,7 @@ export default function Silatnas({ db }) {
                           Pemberitahuan: Ketentuan Mandataris Delegasi Kampus
                         </h4>
                         <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
-                          Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong>2 (dua) orang</strong> (wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran official merchandise/kaos, serta tertib administrasi kehadiran Silatnas PTMAI 2026).
+                          Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong className="text-white font-bold">2 (dua) orang</strong> wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO setiap kampus dan SWP setiap delegasi.
                         </p>
                       </div>
                     </div>
