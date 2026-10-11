@@ -2968,7 +2968,7 @@ export default function Silatnas({ db }) {
                       <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-200">
                         <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                         <span className="leading-relaxed">
-                          <strong>Ketentuan Transfer:</strong> Bukti pembayaran SWO dan SWP wajib diunggah masing-masing secara terpisah. Pentransferan wajib <strong>terpisah dengan rekan sesama mandat kampus</strong> (1 delegasi = transfer terpisah per individu).
+                          <strong>Ketentuan Transfer:</strong> Bukti pembayaran SWO dan SWP wajib diunggah masing-masing secara terpisah. Pentransferan wajib <strong>terpisah dengan rekan sesama mandat kampus</strong> (2 delegasi = 2 transfer terpisah per individu).
                         </span>
                       </div>
 
