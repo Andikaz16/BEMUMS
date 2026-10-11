@@ -2505,33 +2505,7 @@ export default function Silatnas({ db }) {
             ))}
           </div>
 
-          {/* Special Host Commitment Banner */}
-          <div className="max-w-6xl mx-auto bg-gradient-to-r from-sky-950/60 via-black/80 to-slate-950/60 border border-[#0EA5E9]/30 p-6 md:p-8 rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden">
-            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-[#0EA5E9]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="space-y-2 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-bold text-[#38BDF8] uppercase tracking-widest">
-                  <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" /> Jaminan Keramahan Tuan Rumah BEM UMS
-                </div>
-                <h3 className="text-xl md:text-2xl font-heading font-bold text-white uppercase">
-                  "Solo Kota Ramah & Berbudaya: Berwacana Tajam, Bersilaturahmi Hangat"
-                </h3>
-                <p className="text-xs font-body text-[#E0F2FE]/80 max-w-3xl leading-relaxed">
-                  Panitia Silatnas BEM UMS 2026 berkomitmen penuh memberikan pelayanan terbaik, pendampingan Liaison Officer (LO) 24 jam, serta akomodasi terbaik demi kenyamanan seluruh saudara mahasiswa dari Sabang sampai Merauke.
-                </p>
-              </div>
-                <div className="shrink-0 w-full md:w-auto">
-                  <a 
-                    href="https://wa.me/6281234567890?text=Halo%20LO%20Silatnas%20BEM%20UMS%202026!%20Saya%20peserta%20Silatnas%2C%20boleh%20minta%20rekomendasi%20tempat%20wisata%20atau%20eksplorasi%20budaya%20yang%20bagus%20di%20Kota%20Solo%3F" 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-6 py-3.5 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
-                  >
-                    <Phone className="w-4 h-4 shrink-0" /> Tanya Panitia / LO
-                  </a>
-                </div>
-            </div>
-          </div>
+
         </div>
 
         {/* 7. FAQ (PERTANYAAN UMUM) */}
