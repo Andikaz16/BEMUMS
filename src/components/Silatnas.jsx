@@ -994,7 +994,7 @@ export default function Silatnas({ db }) {
                 </div>
                 <div>
                   <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Lokasi Utama</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">Kampus UMS, Solo</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">Kampus UMS, di Kota Surakarta</div>
                 </div>
               </div>
 
