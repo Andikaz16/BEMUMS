@@ -2296,7 +2296,7 @@ export default function Silatnas({ db }) {
                       Wisma Pesantren Mahasiswa — Kampus 4 UMS
                     </h3>
                     <p className="text-xs md:text-sm font-body text-neutral-300 leading-relaxed">
-                      Seluruh kontingen delegasi BEM Perguruan Tinggi se-Indonesia secara resmi ditempatkan di <strong>Wisma Pesantren Mahasiswa (Kompleks Kampus 4 UMS)</strong>. Lokasi penginapan terpadu yang nyaman, bersih, representatif, bernuansa islami, serta terintegrasi langsung dengan layanan shuttle bus panitia menuju Edutorium UMS.
+                      Seluruh kontingen delegasi BEM Perguruan Tinggi se-Indonesia secara resmi ditempatkan di <strong>Wisma Pesantren Mahasiswa (Kompleks Kampus 4 UMS)</strong>. Lokasi penginapan terpadu yang nyaman, bersih, representatif, bernuansa islami, serta terintegrasi langsung dengan layanan shuttle bus panitia menuju Kampus UMS.
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
@@ -2330,7 +2330,7 @@ export default function Silatnas({ db }) {
                     Terletak di Kompleks Kampus 4 UMS (Jl. KH. Ahmad Dahlan, Gonilan / Kartasura). Berdampingan dengan Fakultas Kedokteran, RSGM, dan Pesantren Mahasiswa KH. Mas Mansur UMS.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-amber-400 font-bold flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> ~3-5 Menit ke Edutorium UMS
+                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> ~3-5 Menit ke Kampus UMS
                   </div>
                 </div>
 
@@ -2340,7 +2340,7 @@ export default function Silatnas({ db }) {
                   </div>
                   <h4 className="text-base font-heading font-bold text-white uppercase">Fasilitas Wisma Pesantren</h4>
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
-                    Kamar tidur representatif, ranjang & kasur bersih, pendingin ruangan (AC), kamar mandi bersih, akses Wi-Fi kencang UMS, musala/masjid, serta area parkir luas untuk armada kontingen.
+                    Kamar tidur representatif, ranjang & kasur bersih, kamar mandi bersih, akses Wi-Fi kencang UMS, musala/masjid, serta area parkir luas untuk armada kontingen.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-[#38BDF8] font-bold flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" /> Nyaman & Siap Huni Delegasi
@@ -2353,7 +2353,7 @@ export default function Silatnas({ db }) {
                   </div>
                   <h4 className="text-base font-heading font-bold text-white uppercase">Shuttle & Keamanan 24 Jam</h4>
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
-                    Layanan armada shuttle bus khusus antar-jemput dari Wisma Pesantren Mahasiswa Kampus 4 ke Edutorium UMS selama rangkaian acara berlangsung, didukung posko keamanan & LO 24 jam penuh.
+                    Layanan armada shuttle bus khusus antar-jemput dari Wisma Pesantren Mahasiswa Kampus 4 ke Kampus UMS selama rangkaian acara berlangsung, didukung posko keamanan & LO 24 jam penuh.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Standby Pendampingan LO
