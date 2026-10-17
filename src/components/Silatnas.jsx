@@ -44,7 +44,7 @@ export default function Silatnas({ db }) {
     jabatan: '', 
     nowa: '', 
     sizeKaos: '', 
-    tipeLengan: 'Lengan Panjang', 
+    tipeLengan: '', 
     buktiSWO: '', 
     buktiSWOFileName: '',
     buktiSWP: '', 
@@ -664,6 +664,10 @@ export default function Silatnas({ db }) {
       alert("Mohon pilih Ukuran Kaos (Size Chart) terlebih dahulu!");
       return;
     }
+    if (!formData.tipeLengan) {
+      alert("Mohon pilih Tipe Lengan Kaos (Lengan Pendek atau Lengan Panjang)!");
+      return;
+    }
     if (!formData.buktiSWO) {
       alert("Mohon upload Bukti Pembayaran SWO (Sumbangan Wajib Organisasi)!");
       return;
@@ -676,7 +680,7 @@ export default function Silatnas({ db }) {
     try {
       const applicantData = { 
         ...formData, 
-        tipeLengan: 'Lengan Panjang', 
+        tipeLengan: formData.tipeLengan || 'Lengan Pendek', 
         ...extraFields, 
         submittedAt: new Date().toISOString() 
       };
@@ -1554,7 +1558,7 @@ export default function Silatnas({ db }) {
                                   jabatan: '', 
                                   nowa: '', 
                                   sizeKaos: '', 
-                                  tipeLengan: 'Lengan Panjang', 
+                                  tipeLengan: '', 
                                   buktiSWO: '', 
                                   buktiSWOFileName: '',
                                   buktiSWP: '', 
@@ -2867,7 +2871,7 @@ export default function Silatnas({ db }) {
                         title="Klik untuk memperbesar gambar Size Chart"
                       >
                         <img 
-                          src="/assets/size_chart_silatnas.png" 
+                          src="/assets/size_chart_silatnas.jpg?v=2" 
                           alt="Size Chart Kaos Dewasa Silatnas" 
                           className="w-full max-h-72 object-contain rounded-lg transition-transform duration-300 group-hover:scale-[1.01]"
                         />
@@ -2879,7 +2883,7 @@ export default function Silatnas({ db }) {
                       </div>
 
                       <p className="text-[11px] text-neutral-400 font-body leading-relaxed">
-                        *Harap cermati tabel panduan ukuran (Lebar, Tinggi, dan Panjang Lengan) di atas sebelum menentukan pilihan ukuran kaos Anda di bawah ini.
+                        *Harap cermati tabel panduan ukuran (Width/Lebar dan Length/Panjang) di atas sebelum menentukan pilihan ukuran kaos Anda di bawah ini (Toleransi 1-2 cm).
                       </p>
                     </div>
 
@@ -2897,42 +2901,33 @@ export default function Silatnas({ db }) {
                           onChange={(e) => setFormData({ ...formData, sizeKaos: e.target.value })}
                         >
                           <option value="" disabled>-- Pilih Ukuran Kaos --</option>
-                          <option value="XS">XS (Lebar 45 cm, Tinggi 65 cm)</option>
-                          <option value="S">S (Lebar 48 cm, Tinggi 68 cm)</option>
-                          <option value="M">M (Lebar 51 cm, Tinggi 71 cm)</option>
-                          <option value="L">L (Lebar 54 cm, Tinggi 75 cm)</option>
-                          <option value="XL">XL (Lebar 57 cm, Tinggi 78 cm)</option>
-                          <option value="XXL">XXL (Lebar 60 cm, Tinggi 81 cm)</option>
-                          <option value="3XL">3XL (Lebar 63 cm, Tinggi 84 cm)</option>
-                          <option value="4XL">4XL (Lebar 66 cm, Tinggi 87 cm)</option>
-                          <option value="5XL">5XL (Lebar 69 cm, Tinggi 90 cm)</option>
-                          <option value="6XL">6XL (Lebar 72 cm, Tinggi 93 cm)</option>
+                          <option value="S">S (Lebar 48 cm, Panjang 68 cm)</option>
+                          <option value="M">M (Lebar 50 cm, Panjang 70 cm)</option>
+                          <option value="L">L (Lebar 52 cm, Panjang 72 cm)</option>
+                          <option value="XL">XL (Lebar 54 cm, Panjang 74 cm)</option>
+                          <option value="XXL">XXL (Lebar 56 cm, Panjang 76 cm)</option>
+                          <option value="3XL">3XL (Ukuran Khusus di atas XXL)</option>
+                          <option value="XS">XS (Ukuran Khusus di bawah S)</option>
                         </select>
                       </div>
 
-                      {/* Kanan: Tipe Lengan Kaos (Paten Lengan Panjang) */}
+                      {/* Kanan: Tipe Lengan Kaos (Pilihan Lengan Pendek / Lengan Panjang) */}
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
-                            Tipe Lengan Kaos *
-                          </label>
-                          <span className="text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <CheckCircle className="w-2.5 h-2.5" /> Paten Resmi
-                          </span>
-                        </div>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            readOnly
-                            value="Lengan Panjang"
-                            className="w-full bg-neutral-900/80 border border-neutral-700/80 text-white font-semibold px-4 py-3.5 rounded-xl font-body text-sm cursor-not-allowed select-none focus:outline-none shadow-inner"
-                          />
-                          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] text-neutral-400 font-medium flex items-center gap-1 bg-black/60 px-2.5 py-1 rounded-lg border border-white/10">
-                            <Lock className="w-3 h-3 text-sky-400" /> Seragam
-                          </span>
-                        </div>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
+                          Tipe Lengan Kaos *
+                        </label>
+                        <select
+                          required
+                          className="w-full bg-black border border-neutral-800 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body text-sm cursor-pointer"
+                          value={formData.tipeLengan}
+                          onChange={(e) => setFormData({ ...formData, tipeLengan: e.target.value })}
+                        >
+                          <option value="" disabled>-- Pilih Tipe Lengan --</option>
+                          <option value="Lengan Pendek">Lengan Pendek</option>
+                          <option value="Lengan Panjang">Lengan Panjang</option>
+                        </select>
                         <p className="text-[10px] text-neutral-400 font-body">
-                          *Kaos official delegasi Silatnas 2026 diproduksi seragam berformat <strong>Lengan Panjang</strong>.
+                          *Silakan pilih tipe lengan kaos official sesuai kenyamanan Anda (Lengan Pendek / Lengan Panjang).
                         </p>
                       </div>
                     </div>
@@ -3164,7 +3159,7 @@ export default function Silatnas({ db }) {
                 </button>
               </div>
               <img 
-                src="/assets/size_chart_silatnas.png" 
+                src="/assets/size_chart_silatnas.jpg?v=2" 
                 alt="Size Chart Kaos Silatnas" 
                 className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
               />
