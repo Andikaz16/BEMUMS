@@ -2143,7 +2143,7 @@ export default function Silatnas({ db }) {
                   </div>
                   <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl space-y-1 sm:col-span-2 hover:border-amber-400/30 transition">
                     <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase">
-                      <Navigation className="w-3.5 h-3.5" /> Stasiun Purwosari / Jebres
+                      <Navigation className="w-3.5 h-3.5" /> Stasiun Purwosari
                     </div>
                     <p className="text-[11px] text-neutral-400 font-body">Penjemputan Kereta Api Ekonomi & Commuter Line.</p>
                   </div>
@@ -2214,7 +2214,7 @@ export default function Silatnas({ db }) {
                           <option value="Bandara Adi Soemarmo (SOC)">Bandara Adi Soemarmo (SOC)</option>
                           <option value="Terminal Tirtonadi">Terminal Tirtonadi</option>
                           <option value="Terminal Kartasura">Terminal Kartasura</option>
-                          <option value="Stasiun Purwosari / Jebres">Stasiun Purwosari / Jebres</option>
+                          <option value="Stasiun Purwosari">Stasiun Purwosari</option>
                           <option value="Kendaraan Pribadi / Bus Kontingen">Kendaraan Pribadi / Bus Kontingen</option>
                         </select>
                       </div>
