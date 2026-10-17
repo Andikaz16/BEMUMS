@@ -228,7 +228,7 @@ export default function Silatnas({ db }) {
   const [shuttleForm, setShuttleForm] = useState({
     campus: '',
     count: '2',
-    point: 'Stasiun Solo Balapan',
+    point: 'Bandara Adi Soemarmo (SOC)',
     date: '',
     time: '',
     leaderName: '',
@@ -2112,17 +2112,11 @@ export default function Silatnas({ db }) {
                   <span className="text-amber-400 text-xs font-bold uppercase tracking-widest block mb-1">Pick-up Points & Shuttle LO</span>
                   <h3 className="text-2xl font-heading font-extrabold text-white uppercase">Titik Penjemputan Resmi Delegasi</h3>
                   <p className="text-xs font-body text-neutral-400 mt-2 leading-relaxed">
-                    Panitia Silatnas BEM UMS menyediakan tim Liaison Officer (LO) & Armada Penjemputan di seluruh gerbang masuk utama Kota Surakarta & Kartasura secara gratis untuk seluruh kontingen resmi.
+                    Panitia Silatnas BEM UMS menyediakan tim Liaison Officer (LO) & Armada Penjemputan di seluruh gerbang masuk utama Kota Surakarta secara gratis untuk seluruh kontingen resmi.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl space-y-1 hover:border-amber-400/30 transition">
-                    <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase">
-                      <Navigation className="w-3.5 h-3.5" /> Stasiun Solo Balapan
-                    </div>
-                    <p className="text-[11px] text-neutral-400 font-body">Penjemputan Armada Kereta Api Eksekutif & Bisnis.</p>
-                  </div>
                   <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl space-y-1 hover:border-amber-400/30 transition">
                     <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase">
                       <Navigation className="w-3.5 h-3.5" /> Bandara Adi Soemarmo (SOC)
@@ -2137,11 +2131,11 @@ export default function Silatnas({ db }) {
                   </div>
                   <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl space-y-1 hover:border-amber-400/30 transition">
                     <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase">
-                      <Navigation className="w-3.5 h-3.5" /> Terminal Kartasura
+                      <Navigation className="w-3.5 h-3.5" /> Stasiun Solo Balapan
                     </div>
-                    <p className="text-[11px] text-neutral-400 font-body">Penjemputan Delegasi Bus & Travel Jalur Barat.</p>
+                    <p className="text-[11px] text-neutral-400 font-body">Penjemputan Armada Kereta Api Eksekutif & Bisnis.</p>
                   </div>
-                  <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl space-y-1 sm:col-span-2 hover:border-amber-400/30 transition">
+                  <div className="bg-white/5 border border-white/10 p-3.5 rounded-2xl space-y-1 hover:border-amber-400/30 transition">
                     <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase">
                       <Navigation className="w-3.5 h-3.5" /> Stasiun Purwosari
                     </div>
@@ -2210,10 +2204,9 @@ export default function Silatnas({ db }) {
                           value={shuttleForm.point}
                           onChange={(e) => setShuttleForm({...shuttleForm, point: e.target.value})}
                         >
-                          <option value="Stasiun Solo Balapan">Stasiun Solo Balapan</option>
                           <option value="Bandara Adi Soemarmo (SOC)">Bandara Adi Soemarmo (SOC)</option>
                           <option value="Terminal Tirtonadi">Terminal Tirtonadi</option>
-                          <option value="Terminal Kartasura">Terminal Kartasura</option>
+                          <option value="Stasiun Solo Balapan">Stasiun Solo Balapan</option>
                           <option value="Stasiun Purwosari">Stasiun Purwosari</option>
                           <option value="Kendaraan Pribadi / Bus Kontingen">Kendaraan Pribadi / Bus Kontingen</option>
                         </select>
