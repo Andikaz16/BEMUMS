@@ -133,7 +133,7 @@ export default function Silatnas({ db }) {
     nowa: '',
     jabatan: 'Presiden Mahasiswa',
     sesi: 'Opening Ceremony & Sambutan (Pagi)',
-    status: 'Hadir di Lokasi (Edutorium UMS)',
+    status: 'Hadir di Lokasi (Kampus Universitas Muhammadiyah Surakarta (UMS))',
     notes: ''
   });
   const [presensiHari1Loading, setPresensiHari1Loading] = useState(false);
@@ -382,8 +382,8 @@ export default function Silatnas({ db }) {
     {
       id: 5,
       category: "Landmark Kampus UMS",
-      title: "Edutorium Universitas Muhammadiyah Surakarta",
-      desc: "Gedung convention hall termegah di Jawa Tengah milik UMS dengan kapasitas puluhan ribu orang, dilengkapi museum sejarah kebudayaan dan fasilitas konvensi internasional. Tempat digelarnya Pembukaan & Malam Puncak Silatnas BEM UMS 2026.",
+      title: "Kampus Universitas Muhammadiyah Surakarta (UMS)",
+      desc: "Gedung konvensi megah milik UMS yang menjadi venue utama perhelatan dan pusat agenda akbar Silatnas BEM PTMAI 2026.",
       highlight: "Lokasi Utama Silatnas",
       location: "Kampus UMS, Surakarta",
       image: "/assets/artefak/edutorium.png"
@@ -464,7 +464,7 @@ export default function Silatnas({ db }) {
       x: 36.0,
       y: 77.0,
       badgePos: "top",
-      scope: "Jawa Tengah, D.I. Yogyakarta (Edutorium UMS Surakarta)",
+      scope: "Jawa Tengah, D.I. Yogyakarta (Kampus Universitas Muhammadiyah Surakarta (UMS))",
       status: "Tuan Rumah Silatnas 2026 (Host)",
       target: "12+ Kampus (Host)",
       isHost: true
@@ -1155,7 +1155,7 @@ export default function Silatnas({ db }) {
             <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-5 rounded-2xl text-center space-y-1 hover:border-sky-400/40 transition duration-300">
               <div className="text-xl md:text-2xl font-heading font-black text-white pt-1">BEM UMS</div>
               <div className="text-xs font-bold uppercase tracking-widest text-[#38BDF8]">Tuan Rumah Resmi</div>
-              <div className="text-[10px] text-neutral-400 font-mono">Edutorium UMS Surakarta</div>
+              <div className="text-[10px] text-neutral-400 font-mono">Kampus Universitas Muhammadiyah Surakarta (UMS)</div>
             </div>
           </div>
 
@@ -1375,7 +1375,7 @@ export default function Silatnas({ db }) {
                 phaseLabel: "HARI PERTAMA",
                 title: "Presensi Grand Opening & Seminar",
                 subTitle: "Opening Ceremony & Seminar Nasional",
-                desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Edutorium Universitas Muhammadiyah Surakarta.",
+                desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Kampus Universitas Muhammadiyah Surakarta (UMS).",
                 isOpen: false
               },
               stage3: {
@@ -1419,7 +1419,7 @@ export default function Silatnas({ db }) {
               id: 1,
               title: "Pendaftaran Delegasi Silatnas BEM PTMAI 2026",
               schedule: "29 - 31 Oktober 2026",
-              location: "Edutorium & Kampus UMS Surakarta",
+              location: "Kampus Universitas Muhammadiyah Surakarta (UMS)",
               description: "Pendaftaran resmi delegasi pimpinan BEM (Presma, Wapresma, Menteri) dari Perguruan Tinggi Muhammadiyah 'Aisyiyah dan mitra kampus se-Indonesia."
             };
 
@@ -1561,7 +1561,7 @@ export default function Silatnas({ db }) {
                                 <MapPin className="w-4 h-4 text-sky-400" /> Lokasi Pelaksanaan
                               </h5>
                               <p className="text-base font-heading font-bold text-white drop-shadow-sm">
-                                {activeEvent.location || "Edutorium & Kampus UMS Surakarta"}
+                                {activeEvent.location || "Kampus Universitas Muhammadiyah Surakarta (UMS)"}
                               </p>
                             </div>
                             <div className="bg-white/[0.07] backdrop-blur-xl p-5 rounded-2xl border border-white/20 space-y-1.5 shadow-lg">
@@ -1636,7 +1636,7 @@ export default function Silatnas({ db }) {
                                     name: '', campus: '', nim: '', nowa: '',
                                     jabatan: 'Presiden Mahasiswa',
                                     sesi: 'Opening Ceremony & Sambutan (Pagi)',
-                                    status: 'Hadir di Lokasi (Edutorium UMS)',
+                                    status: 'Hadir di Lokasi (Kampus Universitas Muhammadiyah Surakarta (UMS))',
                                     notes: ''
                                   });
                                 }}
@@ -1649,7 +1649,7 @@ export default function Silatnas({ db }) {
                             <form onSubmit={(e) => handlePresensiSubmit(e, 1)} className="space-y-5 text-left">
                               <div className="p-4 bg-sky-500/15 backdrop-blur-md rounded-2xl border border-sky-400/30 text-xs md:text-sm text-sky-100 font-medium flex items-center gap-3">
                                 <Info className="w-5 h-5 text-sky-300 shrink-0" />
-                                <span>Silakan isi formulir presensi kehadiran di bawah ini saat mengikuti rangkaian Grand Opening di Edutorium UMS.</span>
+                                <span>Silakan isi formulir presensi kehadiran di bawah ini saat mengikuti rangkaian Grand Opening di Kampus Universitas Muhammadiyah Surakarta (UMS).</span>
                               </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1752,7 +1752,7 @@ export default function Silatnas({ db }) {
                                     onChange={e => setPresensiHari1Form({ ...presensiHari1Form, status: e.target.value })}
                                     className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
                                   >
-                                    <option value="Hadir di Lokasi (Edutorium UMS)" className="bg-slate-900 text-white">Hadir di Lokasi (Edutorium UMS)</option>
+                                    <option value="Hadir di Lokasi (Kampus Universitas Muhammadiyah Surakarta (UMS))" className="bg-slate-900 text-white">Hadir di Lokasi (Kampus Universitas Muhammadiyah Surakarta (UMS))</option>
                                     <option value="Hadir di Sesi Seminar Saja" className="bg-slate-900 text-white">Hadir di Sesi Seminar Saja</option>
                                     <option value="Izin Terlambat" className="bg-slate-900 text-white">Izin Terlambat</option>
                                   </select>
@@ -2414,7 +2414,7 @@ export default function Silatnas({ db }) {
                   <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5">
                     <Heart className="w-3.5 h-3.5 fill-red-500/20 text-red-400" /> Posko Utama Venue
                   </span>
-                  <h4 className="text-sm font-heading font-bold text-white uppercase">Posko Medis Edutorium UMS</h4>
+                  <h4 className="text-sm font-heading font-bold text-white uppercase">Posko Medis Kampus Universitas Muhammadiyah Surakarta (UMS)</h4>
                   <p className="text-xs text-neutral-400 font-body">Dokter, Perawat & Obat-obatan gratis di lantai 1 venue utama.</p>
                 </div>
                 <div className="bg-red-950/20 border border-red-900/30 p-5 rounded-2xl space-y-2">
@@ -2641,7 +2641,7 @@ export default function Silatnas({ db }) {
           {/* Edutorium UMS (Far Left, deepest layer, viewport-bound) */}
           <img 
             src="/assets/artefak/edutorium.png" 
-            alt="Edutorium UMS" 
+            alt="Kampus Universitas Muhammadiyah Surakarta (UMS)" 
             className="hidden md:block absolute left-[-28%] lg:left-[-22%] xl:left-[-16%] bottom-[-25px] md:bottom-[-42px] w-[320px] md:w-[460px] lg:w-[580px] xl:w-[660px] h-auto object-contain z-0 opacity-80"
           />
 

@@ -176,7 +176,7 @@ const DEFAULT_DATA = {
       title: "Pendaftaran Delegasi Silatnas BEM PTMAI 2026",
       schedule: "29 - 31 Oktober 2026",
       isOpen: true,
-      location: "Edutorium & Kampus UMS Surakarta",
+      location: "Kampus Universitas Muhammadiyah Surakarta (UMS)",
       description: "Pendaftaran resmi delegasi pimpinan BEM (Presma, Wapresma, Menteri) dari Perguruan Tinggi Muhammadiyah 'Aisyiyah dan mitra kampus se-Indonesia.",
       applicants: []
     }
@@ -198,7 +198,7 @@ const DEFAULT_DATA = {
       phaseLabel: "HARI PERTAMA",
       title: "Presensi Grand Opening & Seminar",
       subTitle: "Opening Ceremony & Seminar Nasional",
-      desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Edutorium Universitas Muhammadiyah Surakarta.",
+      desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Kampus Universitas Muhammadiyah Surakarta (UMS).",
       isOpen: false
     },
     stage3: {
@@ -290,8 +290,8 @@ const DEFAULT_DATA = {
     {
       id: 5,
       category: "Landmark Kampus UMS",
-      title: "Edutorium Universitas Muhammadiyah Surakarta",
-      desc: "Gedung convention hall termegah di Jawa Tengah milik UMS dengan kapasitas puluhan ribu orang, dilengkapi museum sejarah kebudayaan dan fasilitas konvensi internasional. Tempat digelarnya Pembukaan & Malam Puncak Silatnas BEM UMS 2026.",
+      title: "Kampus Universitas Muhammadiyah Surakarta (UMS)",
+      desc: "Gedung konvensi megah milik UMS yang menjadi venue utama perhelatan dan pusat agenda akbar Silatnas BEM PTMAI 2026.",
       highlight: "Lokasi Utama Silatnas",
       location: "Kampus UMS, Surakarta",
       badgeColor: "sky",

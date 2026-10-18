@@ -928,7 +928,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       speakerRole: 'Mandataris BEM PTMAI Se-Indonesia',
       date: 'Kamis, 29 Oktober 2026',
       time: '08:00 - 15:00 WIB',
-      location: 'Edutorium KH. Ahmad Dahlan UMS, Surakarta',
+      location: 'Kampus Universitas Muhammadiyah Surakarta (UMS)',
       customUrl: ''
     },
     stage3: {
@@ -940,7 +940,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       speakerRole: 'Pembahasan Tata Tertib, AD/ART & Rekomendasi Nasional',
       date: 'Jumat, 30 Oktober 2026',
       time: '08:00 - 22:00 WIB',
-      location: 'Kampus Universitas Muhammadiyah Surakarta',
+      location: 'Kampus Universitas Muhammadiyah Surakarta (UMS)',
       customUrl: ''
     },
     stage4: {
@@ -952,7 +952,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       speakerRole: 'Pembacaan Naskah Deklarasi Silatnas BEM PTMAI 2026',
       date: 'Sabtu, 31 Oktober 2026',
       time: '08:00 - 21:00 WIB',
-      location: 'Edutorium & Kampus UMS, Surakarta',
+      location: 'Kampus Universitas Muhammadiyah Surakarta (UMS)',
       customUrl: ''
     },
     stage1: {
@@ -1099,7 +1099,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const handleToggleStage = (stageKey) => {
     const currentStages = db.silatnasStages || {
       stage1: { id: "stage1", phaseNumber: "01", phaseLabel: "PENDAFTARAN RESMI", title: "Pendaftaran Delegasi Silatnas", subTitle: "Registrasi Mandataris & Berkas Administrasi", desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.", isOpen: true },
-      stage2: { id: "stage2", phaseNumber: "02", phaseLabel: "HARI PERTAMA", title: "Presensi Grand Opening & Seminar", subTitle: "Opening Ceremony & Seminar Nasional", desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Edutorium Universitas Muhammadiyah Surakarta.", isOpen: false },
+      stage2: { id: "stage2", phaseNumber: "02", phaseLabel: "HARI PERTAMA", title: "Presensi Grand Opening & Seminar", subTitle: "Opening Ceremony & Seminar Nasional", desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Kampus Universitas Muhammadiyah Surakarta (UMS).", isOpen: false },
       stage3: { id: "stage3", phaseNumber: "03", phaseLabel: "HARI KEDUA", title: "Presensi Persidangan Nasional", subTitle: "Sidang Pleno & Sidang Komisi", desc: "Presensi kehadiran mandataris kampus dalam agenda persidangan, pembahasan tata tertib, sidang komisi isu strategis, dan rekomendasi nasional.", isOpen: false },
       stage4: { id: "stage4", phaseNumber: "04", phaseLabel: "HARI KETIGA", title: "Presensi Penutupan & Resolusi", subTitle: "Closing Ceremony & Malam Keakraban", desc: "Presensi kehadiran malam puncak penutupan Silatnas PTMAI 2026, pembacaan naskah deklarasi resolusi bersama, serta evaluasi kegiatan.", isOpen: false }
     };
@@ -4568,7 +4568,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             type="text"
                             value={qrEditForm.location || ''}
                             onChange={(e) => setQrEditForm({ ...qrEditForm, location: e.target.value })}
-                            placeholder="Contoh: Edutorium KH. Ahmad Dahlan UMS"
+                            placeholder="Contoh: Kampus Universitas Muhammadiyah Surakarta (UMS)"
                             className="w-full p-2.5 rounded-xl bg-black/50 border border-white/15 text-white text-xs focus:outline-none focus:border-amber-400"
                           />
                         </div>
@@ -5196,7 +5196,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                               type="text"
                               value={qrEditForm.location || ''}
                               onChange={(e) => setQrEditForm({ ...qrEditForm, location: e.target.value })}
-                              placeholder="Contoh: Edutorium KH. Ahmad Dahlan UMS"
+                              placeholder="Contoh: Kampus Universitas Muhammadiyah Surakarta (UMS)"
                               className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
                             />
                           </div>
