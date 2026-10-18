@@ -70,11 +70,47 @@ export default function Silatnas({ db }) {
     }
   }, [selectedEvent, showSizeChartModal]);
 
-  // 4 Stages Stepper State
-  const [activeStage, setActiveStage] = useState('stage1');
+  // Helper deteksi parameter QR Presensi (?presensi=stage2 / #silatnas?presensi=stage2)
+  const getQrStageFromUrl = () => {
+    if (typeof window === 'undefined') return null;
+    const searchParams = new URLSearchParams(window.location.search);
+    const fromSearch = searchParams.get('presensi');
+    if (fromSearch && ['stage1', 'stage2', 'stage3', 'stage4'].includes(fromSearch)) return fromSearch;
+    const hash = window.location.hash || '';
+    const qIdx = hash.indexOf('?');
+    if (qIdx !== -1) {
+      const hashParams = new URLSearchParams(hash.substring(qIdx + 1));
+      const fromHash = hashParams.get('presensi');
+      if (fromHash && ['stage1', 'stage2', 'stage3', 'stage4'].includes(fromHash)) return fromHash;
+    }
+    return null;
+  };
 
-  // Pastikan activeStage selalu mengarah ke tahap yang DIBUKA (tidak terkunci)
+  // 4 Stages Stepper State
+  const [qrScannedStage, setQrScannedStage] = useState(() => getQrStageFromUrl());
+  const [activeStage, setActiveStage] = useState(() => getQrStageFromUrl() || 'stage1');
+
+  // Auto-select & auto-scroll jika delegasi masuk melalui Scan QR Code Presensi
   useEffect(() => {
+    const syncFromUrl = () => {
+      const detected = getQrStageFromUrl();
+      if (detected) {
+        setQrScannedStage(detected);
+        setActiveStage(detected);
+        setTimeout(() => {
+          const el = document.getElementById('catalog-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 600);
+      }
+    };
+    syncFromUrl();
+    window.addEventListener('hashchange', syncFromUrl);
+    return () => window.removeEventListener('hashchange', syncFromUrl);
+  }, []);
+
+  // Pastikan activeStage selalu mengarah ke tahap yang DIBUKA (tidak terkunci), kecuali dibuka via QR
+  useEffect(() => {
+    if (qrScannedStage && activeStage === qrScannedStage) return;
     const isStage1Open = db?.silatnasStages?.stage1?.isOpen !== undefined 
       ? db.silatnasStages.stage1.isOpen 
       : (catalog[0]?.isOpen ?? true);
@@ -87,7 +123,7 @@ export default function Silatnas({ db }) {
         setActiveStage(openKey);
       }
     }
-  }, [db?.silatnasStages, db?.silatnasCatalog, activeStage]);
+  }, [db?.silatnasStages, db?.silatnasCatalog, activeStage, qrScannedStage]);
 
   // Presensi Hari 1 State
   const [presensiHari1Form, setPresensiHari1Form] = useState({
@@ -1366,9 +1402,13 @@ export default function Silatnas({ db }) {
               ? db.silatnasStages.stage1.isOpen 
               : (catalog && catalog[0] ? catalog[0].isOpen : true);
 
-            const activeStageInfo = activeStage === 'stage1' 
+            const rawActiveStage = activeStage === 'stage1' 
               ? { ...stagesData.stage1, isOpen: isStage1Open }
               : stagesData[activeStage];
+            const activeStageInfo = {
+              ...rawActiveStage,
+              isOpen: rawActiveStage?.isOpen || qrScannedStage === activeStage
+            };
 
             const activeEvent = catalog && catalog[0] ? {
               ...catalog[0],
@@ -1388,10 +1428,10 @@ export default function Silatnas({ db }) {
                 {/* 4 HORIZONTAL STEPPER TABS (Glassmorphism & High-Contrast Typography) */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-white/[0.08] border border-white/20 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
                   {[
-                    { key: 'stage1', stg: { ...stagesData.stage1, isOpen: isStage1Open } },
-                    { key: 'stage2', stg: stagesData.stage2 },
-                    { key: 'stage3', stg: stagesData.stage3 },
-                    { key: 'stage4', stg: stagesData.stage4 }
+                    { key: 'stage1', stg: { ...stagesData.stage1, isOpen: isStage1Open || qrScannedStage === 'stage1' } },
+                    { key: 'stage2', stg: { ...stagesData.stage2, isOpen: stagesData.stage2?.isOpen || qrScannedStage === 'stage2' } },
+                    { key: 'stage3', stg: { ...stagesData.stage3, isOpen: stagesData.stage3?.isOpen || qrScannedStage === 'stage3' } },
+                    { key: 'stage4', stg: { ...stagesData.stage4, isOpen: stagesData.stage4?.isOpen || qrScannedStage === 'stage4' } }
                   ].map(({ key, stg }) => {
                     const isActive = activeStage === key;
                     const isLocked = !stg.isOpen;

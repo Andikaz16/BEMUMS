@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, FileText, Image, Phone, UserCheck, AlertTriangle, 
   Settings, Layers, Plus, Trash2, Edit3, Check, X, Download, Calendar, BarChart3, Navigation, MessageCircle,
-  Lock, Unlock, ClipboardCheck, Upload
+  Lock, Unlock, ClipboardCheck, Upload, QrCode, Maximize2, Minimize2, Clock, MapPin, Sparkles, ArrowLeft, Copy, ExternalLink
 } from 'lucide-react';
+import QRCode from 'qrcode';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import StatistikAdmin from './StatistikAdmin.jsx';
@@ -914,6 +915,185 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const [adminPresensiTab, setAdminPresensiTab] = useState('hari1');
+
+  // --- SISTEM QR CODE VIDEOTRON PRESENSI DELEGASI ---
+  const DEFAULT_QR_SESSIONS = {
+    stage2: {
+      key: 'stage2',
+      dropdownLabel: 'Hari Pertama — Presensi Grand Opening & Seminar Nasional',
+      category: 'AGENDA HARI PERTAMA',
+      title: 'Presensi Grand Opening & Seminar Nasional',
+      speaker: 'Opening Ceremony & Seminar Nasional Kebangsaan',
+      speakerRole: 'Mandataris BEM PTMAI Se-Indonesia',
+      date: 'Kamis, 29 Oktober 2026',
+      time: '08:00 - 15:00 WIB',
+      location: 'Edutorium KH. Ahmad Dahlan UMS, Surakarta',
+      customUrl: ''
+    },
+    stage3: {
+      key: 'stage3',
+      dropdownLabel: 'Hari Kedua — Presensi Persidangan Nasional (Pleno & Komisi)',
+      category: 'AGENDA HARI KEDUA',
+      title: 'Presensi Persidangan Nasional Silatnas',
+      speaker: 'Sidang Pleno & Sidang Komisi Strategis',
+      speakerRole: 'Pembahasan Tata Tertib, AD/ART & Rekomendasi Nasional',
+      date: 'Jumat, 30 Oktober 2026',
+      time: '08:00 - 22:00 WIB',
+      location: 'Kampus Universitas Muhammadiyah Surakarta',
+      customUrl: ''
+    },
+    stage4: {
+      key: 'stage4',
+      dropdownLabel: 'Hari Ketiga — Presensi Penutupan & Deklarasi Resolusi',
+      category: 'AGENDA HARI KETIGA',
+      title: 'Presensi Penutupan & Deklarasi Resolusi',
+      speaker: 'Closing Ceremony, Resolusi Bersama & Malam Keakraban',
+      speakerRole: 'Pembacaan Naskah Deklarasi Silatnas BEM PTMAI 2026',
+      date: 'Sabtu, 31 Oktober 2026',
+      time: '08:00 - 21:00 WIB',
+      location: 'Edutorium & Kampus UMS, Surakarta',
+      customUrl: ''
+    },
+    stage1: {
+      key: 'stage1',
+      dropdownLabel: 'Tahap 1 — Pendaftaran Resmi Delegasi Silatnas',
+      category: 'REGISTRASI MANDATARIS',
+      title: 'Pendaftaran Resmi Delegasi Silatnas 2026',
+      speaker: 'Registrasi Mandataris & Berkas Administrasi',
+      speakerRole: 'Pendaftaran Delegasi Kampus PTMAI Se-Indonesia',
+      date: '29 - 31 Oktober 2026',
+      time: 'Terbuka 24 Jam',
+      location: 'Universitas Muhammadiyah Surakarta',
+      customUrl: ''
+    }
+  };
+
+  const [isVideotronOpen, setIsVideotronOpen] = useState(false);
+  const [selectedQrStage, setSelectedQrStage] = useState('stage2');
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [isVideotronFullscreen, setIsVideotronFullscreen] = useState(false);
+  const [videotronClock, setVideotronClock] = useState('');
+  const [isEditingQrConfig, setIsEditingQrConfig] = useState(false);
+  const [qrEditForm, setQrEditForm] = useState(DEFAULT_QR_SESSIONS.stage2);
+  const [qrCopied, setQrCopied] = useState(false);
+
+  const getStageQrConfig = React.useCallback((stageKey) => {
+    const base = DEFAULT_QR_SESSIONS[stageKey] || DEFAULT_QR_SESSIONS.stage2;
+    const saved = db?.silatnasQrConfig?.[stageKey] || {};
+    return { ...base, ...saved };
+  }, [db?.silatnasQrConfig]);
+
+  const getStageQrUrl = React.useCallback((stageKey) => {
+    const cfg = getStageQrConfig(stageKey);
+    if (cfg.customUrl && cfg.customUrl.trim()) return cfg.customUrl.trim();
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://bemums.id';
+    return `${origin}/#silatnas?presensi=${stageKey}`;
+  }, [getStageQrConfig]);
+
+  // Generate Static QR Code (Tanpa Durasi / Fiks)
+  useEffect(() => {
+    const targetUrl = getStageQrUrl(selectedQrStage);
+    QRCode.toDataURL(targetUrl, {
+      width: 520,
+      margin: 2,
+      color: {
+        dark: '#001F3F',
+        light: '#FFFFFF',
+      },
+      errorCorrectionLevel: 'H',
+    })
+      .then((url) => setQrDataUrl(url))
+      .catch((err) => console.error('QR generation failed:', err));
+  }, [selectedQrStage, getStageQrUrl]);
+
+  // Live Clock di Layar Videotron
+  useEffect(() => {
+    if (!isVideotronOpen) return;
+    const updateClock = () => {
+      setVideotronClock(
+        new Date().toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      );
+    };
+    updateClock();
+    const timer = setInterval(updateClock, 1000);
+    return () => clearInterval(timer);
+  }, [isVideotronOpen]);
+
+  // Pantau status Fullscreen browser
+  useEffect(() => {
+    const onFsChange = () => setIsVideotronFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  const toggleVideotronFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
+  const handleOpenVideotron = (stageKey = 'stage2', openEditor = false) => {
+    setSelectedQrStage(stageKey);
+    setQrEditForm(getStageQrConfig(stageKey));
+    setIsEditingQrConfig(openEditor);
+    setIsVideotronOpen(true);
+  };
+
+  const handleOpenQrEditor = (stageKey = selectedQrStage) => {
+    setQrEditForm(getStageQrConfig(stageKey));
+    setIsEditingQrConfig(true);
+  };
+
+  const handleSaveQrConfig = (e) => {
+    if (e) e.preventDefault();
+    const currentAll = db.silatnasQrConfig || {};
+    const updatedAll = {
+      ...currentAll,
+      [selectedQrStage]: {
+        category: qrEditForm.category || '',
+        title: qrEditForm.title || '',
+        speaker: qrEditForm.speaker || '',
+        speakerRole: qrEditForm.speakerRole || '',
+        date: qrEditForm.date || '',
+        time: qrEditForm.time || '',
+        location: qrEditForm.location || '',
+        customUrl: (qrEditForm.customUrl || '').trim()
+      }
+    };
+    save({ silatnasQrConfig: updatedAll });
+    setIsEditingQrConfig(false);
+    showCustomAlert('Tampilan informasi & QR Presensi berhasil diperbarui!');
+  };
+
+  const handleResetQrConfig = () => {
+    const def = DEFAULT_QR_SESSIONS[selectedQrStage] || DEFAULT_QR_SESSIONS.stage2;
+    setQrEditForm(def);
+  };
+
+  const handleCopyQrUrl = () => {
+    const url = getStageQrUrl(selectedQrStage);
+    navigator.clipboard.writeText(url);
+    setQrCopied(true);
+    showCustomAlert('Link presensi QR berhasil disalin ke clipboard!');
+    setTimeout(() => setQrCopied(false), 2500);
+  };
+
+  const handleDownloadQrPng = () => {
+    if (!qrDataUrl) return;
+    const cfg = getStageQrConfig(selectedQrStage);
+    const safeTitle = (cfg.title || selectedQrStage).replace(/[^a-zA-Z0-9]+/g, '_').toLowerCase();
+    const link = document.createElement('a');
+    link.href = qrDataUrl;
+    link.download = `qr_presensi_${safeTitle}.png`;
+    link.click();
+    showCustomAlert('Gambar Kode QR berhasil didownload!');
+  };
 
   const handleToggleStage = (stageKey) => {
     const currentStages = db.silatnasStages || {
@@ -2461,31 +2641,713 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             </div>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => handleToggleStage(item.key)}
-                            className={`w-full py-2.5 px-3 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-1.5 shadow-sm ${
-                              item.isOpen
-                                ? 'bg-red-900/40 hover:bg-red-800 text-red-200 border border-red-700/60'
-                                : 'bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500/50'
-                            }`}
-                          >
-                            {item.isOpen ? (
-                              <>
-                                <Lock className="w-3.5 h-3.5" /> Tutup Tahap Ini
-                              </>
-                            ) : (
-                              <>
-                                <Unlock className="w-3.5 h-3.5" /> Buka Tahap Ini
-                              </>
-                            )}
-                          </button>
+                          <div className="space-y-2">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleStage(item.key)}
+                              className={`w-full py-2.5 px-3 rounded-xl font-bold uppercase tracking-wider text-xs transition flex items-center justify-center gap-1.5 shadow-sm ${
+                                item.isOpen
+                                  ? 'bg-red-900/40 hover:bg-red-800 text-red-200 border border-red-700/60'
+                                  : 'bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500/50'
+                              }`}
+                            >
+                              {item.isOpen ? (
+                                <>
+                                  <Lock className="w-3.5 h-3.5" /> Tutup Tahap Ini
+                                </>
+                              ) : (
+                                <>
+                                  <Unlock className="w-3.5 h-3.5" /> Buka Tahap Ini
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleOpenVideotron(item.key, false)}
+                              className="w-full py-2 px-3 rounded-xl font-bold uppercase tracking-wider text-[11px] transition flex items-center justify-center gap-1.5 bg-[#002855]/80 hover:bg-[#003366] text-amber-300 border border-amber-400/30 shadow-sm"
+                            >
+                              <QrCode className="w-3.5 h-3.5 text-amber-400" /> Layar QR Videotron
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
                   );
                 })()}
               </div>
+
+              {/* CARD: SISTEM QR CODE VIDEOTRON PRESENSI DELEGASI */}
+              <div className="p-5 md:p-6 border-2 border-amber-400/30 rounded-2xl bg-gradient-to-br from-[#001F3F]/90 via-[#001428]/95 to-neutral-900 text-white space-y-5 shadow-2xl relative overflow-hidden">
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/10 pb-4 relative z-10">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
+                      <QrCode className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-display text-base md:text-lg uppercase font-bold text-white tracking-wide">
+                          Sistem QR Code Layar Proyektor / Videotron Presensi
+                        </h3>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                          Kode QR Fiks • Tanpa Durasi
+                        </span>
+                      </div>
+                      <p className="text-xs text-neutral-300 font-body mt-1 max-w-2xl">
+                        Tampilkan layar QR Code Presensi Delegasi di Videotron / Proyektor ruangan sidang. Kode QR bersifat tetap (tanpa batas hitung mundur), dilengkapi penghitung kehadiran real-time dan teks agenda yang dapat disesuaikan sepenuhnya.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenVideotron(selectedQrStage, true)}
+                      className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition"
+                    >
+                      <Edit3 className="w-4 h-4 text-amber-400" /> Sesuaikan Teks & Info
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenVideotron(selectedQrStage, false)}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#001428] text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(251,191,36,0.35)] transition"
+                    >
+                      <Maximize2 className="w-4 h-4" /> Buka Layar Videotron QR
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick Session Selector & Preview Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 relative z-10">
+                  {[
+                    { key: 'stage2', badge: 'HARI PERTAMA', count: (db.silatnasPresensiHari1 || []).length },
+                    { key: 'stage3', badge: 'HARI KEDUA', count: (db.silatnasPresensiHari2 || []).length },
+                    { key: 'stage4', badge: 'HARI KETIGA', count: (db.silatnasPresensiHari3 || []).length },
+                  ].map((ses) => {
+                    const cfg = getStageQrConfig(ses.key);
+                    const isSelected = selectedQrStage === ses.key;
+                    return (
+                      <div
+                        key={ses.key}
+                        onClick={() => setSelectedQrStage(ses.key)}
+                        className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col justify-between gap-3 ${
+                          isSelected
+                            ? 'bg-[#002855]/90 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.2)]'
+                            : 'bg-black/40 border-white/10 hover:border-white/25'
+                        }`}
+                      >
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                              {cfg.category || ses.badge}
+                            </span>
+                            <span className="text-xs font-bold text-emerald-400">
+                              {ses.count} Hadir
+                            </span>
+                          </div>
+                          <h4 className="font-display text-sm font-bold text-white leading-snug line-clamp-1">
+                            {cfg.title}
+                          </h4>
+                          <p className="text-[11px] text-neutral-300 line-clamp-1">
+                            {cfg.date} • {cfg.time}
+                          </p>
+                          <p className="text-[11px] text-neutral-400 line-clamp-1">
+                            📍 {cfg.location}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenVideotron(ses.key, false);
+                            }}
+                            className="flex-1 py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#001428] font-extrabold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition"
+                          >
+                            <QrCode className="w-3.5 h-3.5" /> Tampilkan QR
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenVideotron(ses.key, true);
+                            }}
+                            className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 transition"
+                            title="Sesuaikan Teks Sesi Ini"
+                          >
+                            <Edit3 className="w-3.5 h-3.5 text-amber-300" /> Edit
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* FULL-SCREEN LAYAR PROYEKTOR / VIDEOTRON QR PRESENSI MODAL */}
+              {isVideotronOpen && (() => {
+                const cfg = getStageQrConfig(selectedQrStage);
+                const targetUrl = getStageQrUrl(selectedQrStage);
+                const attendeeList =
+                  selectedQrStage === 'stage2'
+                    ? (db.silatnasPresensiHari1 || [])
+                    : selectedQrStage === 'stage3'
+                    ? (db.silatnasPresensiHari2 || [])
+                    : selectedQrStage === 'stage4'
+                    ? (db.silatnasPresensiHari3 || [])
+                    : (db.silatnasCatalog?.[0]?.applicants || []);
+                const recentAttendees = [...attendeeList].slice(-3).reverse();
+                const isStageCurrentlyOpen =
+                  selectedQrStage === 'stage1'
+                    ? (db.silatnasStages?.stage1?.isOpen ?? db.silatnasCatalog?.[0]?.isOpen ?? true)
+                    : Boolean(db.silatnasStages?.[selectedQrStage]?.isOpen);
+
+                return (
+                  <div className="fixed inset-0 z-[9990] bg-[#001428] text-white flex flex-col justify-between p-4 sm:p-6 lg:p-8 overflow-y-auto select-none font-body">
+                    {/* Ambient Background Glows */}
+                    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-[#0047AB]/25 blur-[130px]" />
+                      <div className="absolute top-1/2 -right-32 w-[500px] h-[500px] rounded-full bg-amber-500/15 blur-[140px]" />
+                      <div className="absolute -bottom-32 left-1/3 w-[600px] h-[400px] rounded-full bg-[#003366]/40 blur-[120px]" />
+                      <div
+                        className="absolute inset-0 opacity-[0.04]"
+                        style={{
+                          backgroundImage:
+                            'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)',
+                          backgroundSize: '48px 48px',
+                        }}
+                      />
+                    </div>
+
+                    {/* 1. TOP BAR (HEADER) */}
+                    <header className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+                      <div className="flex items-center gap-3.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (document.fullscreenElement) {
+                              document.exitFullscreen().catch(() => {});
+                            }
+                            setIsVideotronOpen(false);
+                          }}
+                          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white/80 hover:text-white transition-all cursor-pointer"
+                        >
+                          <ArrowLeft className="w-4 h-4" />
+                          <span className="hidden sm:inline">Kembali</span>
+                        </button>
+
+                        <div className="h-8 w-[1px] bg-white/15 hidden sm:block" />
+
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-white/10 border border-amber-400/30 flex items-center justify-center p-1.5 shadow-inner">
+                            <img
+                              src="/assets/logo_silatnas.png"
+                              alt="Logo Silatnas"
+                              className="w-full h-full object-contain"
+                              onError={(e) => { e.currentTarget.src = '/assets/kabinet.png'; }}
+                            />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm sm:text-base font-bold tracking-wide text-white uppercase">
+                                LAYAR PROYEKTOR PRESENSI
+                              </span>
+                              <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                QR FIKS AKTIF
+                              </span>
+                            </div>
+                            <p className="text-[11px] sm:text-xs text-amber-400 font-medium tracking-wider uppercase">
+                              SILATNAS BEM PTMAI 2026 — UNIVERSITAS MUHAMMADIYAH SURAKARTA
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Controls: Clock + Edit + Fullscreen */}
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-md">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                          <Clock className="w-4 h-4 text-amber-400" />
+                          <span className="font-mono text-sm sm:text-base font-bold tracking-wider text-white">
+                            {videotronClock || '--:--:--'}
+                          </span>
+                          <span className="text-[10px] font-semibold text-white/60 uppercase">
+                            WIB
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleOpenQrEditor(selectedQrStage)}
+                          className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer"
+                          title="Sesuaikan Teks & Informasi Agenda"
+                        >
+                          <Edit3 className="w-4 h-4 text-amber-400" />
+                          <span className="hidden md:inline">Sesuaikan Tampilan</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={toggleVideotronFullscreen}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#001F3F] font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(251,191,36,0.3)] transition-all cursor-pointer"
+                          title="Tampilkan Layar Penuh (Videotron / Proyektor)"
+                        >
+                          {isVideotronFullscreen ? (
+                            <>
+                              <Minimize2 className="w-4 h-4" />
+                              <span className="hidden sm:inline">Keluar Fullscreen</span>
+                            </>
+                          ) : (
+                            <>
+                              <Maximize2 className="w-4 h-4" />
+                              <span className="hidden sm:inline">Mode Videotron</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </header>
+
+                    {/* 2. ACTIVITY SELECTOR BAR */}
+                    <div className="relative z-10 my-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white/[0.04] border border-white/10 rounded-2xl p-3 backdrop-blur-md">
+                      <div className="flex items-center gap-2.5 flex-1">
+                        <Calendar className="w-4 h-4 text-amber-400 shrink-0 ml-1" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-white/70 shrink-0">
+                          PILIH KEGIATAN AKTIF:
+                        </span>
+                        <select
+                          value={selectedQrStage}
+                          onChange={(e) => {
+                            setSelectedQrStage(e.target.value);
+                            setQrEditForm(getStageQrConfig(e.target.value));
+                          }}
+                          className="flex-1 bg-[#001F3F] text-white text-xs sm:text-sm font-semibold rounded-xl px-3.5 py-2 border border-white/15 focus:outline-none focus:border-amber-400 cursor-pointer"
+                        >
+                          {Object.values(DEFAULT_QR_SESSIONS).map((ses) => {
+                            const customCfg = getStageQrConfig(ses.key);
+                            return (
+                              <option key={ses.key} value={ses.key} className="bg-[#001F3F] text-white">
+                                {customCfg.category} — {customCfg.title} ({customCfg.date})
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2.5 pr-1">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleStage(selectedQrStage)}
+                          className={`px-3 py-1.5 rounded-xl text-[11px] font-extrabold uppercase tracking-wider border flex items-center gap-1.5 transition cursor-pointer ${
+                            isStageCurrentlyOpen
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 hover:bg-emerald-500/30'
+                              : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
+                          }`}
+                          title="Klik untuk membuka/menutup akses tab tahap ini di halaman publik"
+                        >
+                          {isStageCurrentlyOpen ? (
+                            <>
+                              <Unlock className="w-3.5 h-3.5" /> Status Tahap: Dibuka
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="w-3.5 h-3.5" /> Status Tahap: Ditutup (QR Tetap Aktif)
+                            </>
+                          )}
+                        </button>
+
+                        <span className="hidden xl:inline-flex items-center gap-1.5 text-[11px] text-white/60">
+                          <QrCode className="w-3.5 h-3.5 text-amber-400" />
+                          Kode QR Fiks (Tanpa Batas Waktu)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 3. MAIN CONTENT GRID (LEFT: INFO & COUNTER, RIGHT: GIANT STATIC QR) */}
+                    <div className="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-auto py-2">
+                      {/* LEFT COLUMN (5 Cols): Event Info + Real-Time Counter */}
+                      <div className="lg:col-span-5 flex flex-col justify-between bg-gradient-to-br from-[#002855]/80 via-[#001F3F]/80 to-[#001428]/90 backdrop-blur-xl border border-white/15 rounded-3xl p-6 lg:p-8 shadow-2xl h-full">
+                        <div>
+                          {/* Category Badge */}
+                          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4">
+                            <span>{cfg.category}</span>
+                          </div>
+
+                          {/* Title */}
+                          <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-4">
+                            {cfg.title}
+                          </h1>
+
+                          {/* Sub-agenda / Pemateri */}
+                          {cfg.speaker && (
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 mb-5 flex items-center gap-3.5">
+                              <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                                <Users className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="text-xs text-white/60 uppercase tracking-wider font-semibold">
+                                  Agenda / Keterangan Sesi
+                                </p>
+                                <p className="text-sm sm:text-base font-bold text-white">
+                                  {cfg.speaker}
+                                </p>
+                                {cfg.speakerRole && (
+                                  <p className="text-xs text-amber-300/90">{cfg.speakerRole}</p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Date, Time, Location */}
+                          <div className="space-y-2.5 text-xs sm:text-sm text-white/80 mb-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 shrink-0">
+                                <Calendar className="w-4 h-4" />
+                              </div>
+                              <span className="font-medium">{cfg.date}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 shrink-0">
+                                <Clock className="w-4 h-4" />
+                              </div>
+                              <span className="font-medium">{cfg.time}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 shrink-0">
+                                <MapPin className="w-4 h-4" />
+                              </div>
+                              <span className="font-medium">{cfg.location}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Real-Time Attendance Counter Box */}
+                        <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-2 border-amber-400/40 rounded-2xl p-4 lg:p-5">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-[11px] font-bold uppercase tracking-widest text-amber-300 block mb-1">
+                                TOTAL PRESENSI HADIR
+                              </span>
+                              <div className="flex items-baseline gap-2.5">
+                                <span className="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                                  {attendeeList.length}
+                                </span>
+                                <span className="text-sm font-semibold text-amber-300">
+                                  Delegasi
+                                </span>
+                              </div>
+                            </div>
+                            <div className="w-14 h-14 rounded-2xl bg-amber-400 text-[#001F3F] flex items-center justify-center shadow-[0_0_25px_rgba(251,191,36,0.4)]">
+                              <Users className="w-7 h-7" />
+                            </div>
+                          </div>
+
+                          {/* Latest Attendees Ticker */}
+                          {recentAttendees.length > 0 ? (
+                            <div className="mt-4 pt-3 border-t border-white/10 space-y-1.5">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-white/60 block">
+                                Baru Saja Presensi:
+                              </span>
+                              {recentAttendees.map((att, idx) => (
+                                <div
+                                  key={att.id || idx}
+                                  className="flex items-center justify-between text-xs bg-white/5 rounded-lg px-2.5 py-1.5"
+                                >
+                                  <div className="flex items-center gap-2 truncate pr-2">
+                                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                    <span className="font-semibold text-white truncate">
+                                      {att.name}
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] text-amber-300/90 shrink-0 truncate max-w-[140px]">
+                                    {att.campus || 'Delegasi PTMAI'}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-white/60">
+                              <span>Menunggu delegasi melakukan scan QR...</span>
+                              <span className="text-emerald-300 font-semibold">Real-Time Aktif</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* RIGHT COLUMN (7 Cols): Giant Static QR Display */}
+                      <div className="lg:col-span-7 flex flex-col items-center justify-center bg-white text-[#001F3F] rounded-3xl p-6 lg:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.6)] border-4 border-amber-400/80 relative overflow-hidden h-full">
+                        {/* Top Accent Pill */}
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#003366]/10 text-[#003366] text-xs font-extrabold uppercase tracking-widest mb-3">
+                          <Sparkles className="w-4 h-4 text-amber-500" />
+                          <span>ARAHKAN KAMERA HP KE LAYAR</span>
+                        </div>
+
+                        <h2 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-[#001F3F] text-center mb-1">
+                          Scan Kode QR untuk Mengisi Presensi
+                        </h2>
+                        <p className="text-xs sm:text-sm text-slate-500 text-center max-w-md mb-5">
+                          Gunakan kamera HP, Google Lens, atau pemindai QR untuk langsung membuka formulir presensi delegasi.
+                        </p>
+
+                        {/* QR Frame with Corner Accents */}
+                        <div className="relative p-4 sm:p-5 rounded-3xl bg-white shadow-[0_10px_40px_rgba(0,31,63,0.12)] border-2 border-slate-100 my-1">
+                          {/* Corner Borders */}
+                          <div className="absolute -top-1.5 -left-1.5 w-8 h-8 border-t-4 border-l-4 border-[#003366] rounded-tl-2xl" />
+                          <div className="absolute -top-1.5 -right-1.5 w-8 h-8 border-t-4 border-r-4 border-[#003366] rounded-tr-2xl" />
+                          <div className="absolute -bottom-1.5 -left-1.5 w-8 h-8 border-b-4 border-l-4 border-[#003366] rounded-bl-2xl" />
+                          <div className="absolute -bottom-1.5 -right-1.5 w-8 h-8 border-b-4 border-r-4 border-[#003366] rounded-br-2xl" />
+
+                          {qrDataUrl ? (
+                            <div className="relative">
+                              <img
+                                src={qrDataUrl}
+                                alt="QR Code Presensi Silatnas"
+                                className="w-[230px] h-[230px] sm:w-[280px] sm:h-[280px] lg:w-[310px] lg:h-[310px] object-contain"
+                              />
+                              {/* Center Logo Overlay */}
+                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white p-1.5 shadow-lg border-2 border-[#003366] flex items-center justify-center">
+                                  <img
+                                    src="/assets/logo_silatnas.png"
+                                    alt="Logo"
+                                    className="w-full h-full object-contain"
+                                    onError={(e) => { e.currentTarget.src = '/assets/kabinet.png'; }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="w-[260px] h-[260px] flex items-center justify-center text-slate-400">
+                              Memuat Kode QR...
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Static QR Status & Quick Action Bar (No Countdown / Fixed QR) */}
+                        <div className="w-full max-w-md mt-4">
+                          <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2">
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              Kode QR Fiks • Tanpa Batas Durasi
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={handleCopyQrUrl}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-[#001F3F] border border-slate-300 text-[11px] font-bold transition cursor-pointer"
+                              >
+                                {qrCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                                <span>{qrCopied ? 'Tersalin' : 'Salin Link'}</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleDownloadQrPng}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#003366] hover:bg-[#002855] text-white text-[11px] font-bold transition cursor-pointer"
+                              >
+                                <Download className="w-3 h-3" />
+                                <span>Unduh QR</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 3-Step Guide */}
+                        <div className="grid grid-cols-3 gap-2.5 w-full max-w-lg mt-5 pt-4 border-t border-slate-200 text-center">
+                          <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/80">
+                            <span className="text-[10px] font-extrabold uppercase text-amber-600 block">
+                              1. Scan QR Code
+                            </span>
+                            <span className="text-[11px] text-slate-600 font-medium">
+                              Arahkan kamera HP ke layar
+                            </span>
+                          </div>
+                          <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/80">
+                            <span className="text-[10px] font-extrabold uppercase text-amber-600 block">
+                              2. Isi Data Delegasi
+                            </span>
+                            <span className="text-[11px] text-slate-600 font-medium">
+                              Masukkan nama & asal kampus
+                            </span>
+                          </div>
+                          <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/80">
+                            <span className="text-[10px] font-extrabold uppercase text-amber-600 block">
+                              3. Tercatat Otomatis
+                            </span>
+                            <span className="text-[11px] text-slate-600 font-medium">
+                              Presensi langsung terverifikasi
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* MODAL PENYESUAIAN TAMPILAN & INFORMASI QR PRESENSI */}
+                    {isEditingQrConfig && (
+                      <div className="fixed inset-0 z-[9995] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                        <div className="bg-[#001F3F] border-2 border-amber-400/50 rounded-3xl max-w-xl w-full p-6 sm:p-7 text-white shadow-2xl space-y-5 my-auto">
+                          <div className="flex items-center justify-between border-b border-white/15 pb-4">
+                            <div>
+                              <h3 className="font-display text-lg font-bold uppercase text-white flex items-center gap-2">
+                                <Edit3 className="w-5 h-5 text-amber-400" />
+                                Sesuaikan Tampilan Layar QR Presensi
+                              </h3>
+                              <p className="text-xs text-white/70 mt-0.5">
+                                Ubah teks judul, kategori, sub-agenda, jadwal, maupun lokasi yang tampil di Videotron.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setIsEditingQrConfig(false)}
+                              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          <form onSubmit={handleSaveQrConfig} className="space-y-3.5 text-left">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                              <div>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                  Label Kategori Atas
+                                </label>
+                                <input
+                                  type="text"
+                                  value={qrEditForm.category || ''}
+                                  onChange={(e) => setQrEditForm({ ...qrEditForm, category: e.target.value })}
+                                  placeholder="Contoh: AGENDA HARI PERTAMA"
+                                  className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                  Tanggal Pelaksanaan
+                                </label>
+                                <input
+                                  type="text"
+                                  value={qrEditForm.date || ''}
+                                  onChange={(e) => setQrEditForm({ ...qrEditForm, date: e.target.value })}
+                                  placeholder="Contoh: Kamis, 29 Oktober 2026"
+                                  className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                Judul Utama Kegiatan
+                              </label>
+                              <input
+                                type="text"
+                                value={qrEditForm.title || ''}
+                                onChange={(e) => setQrEditForm({ ...qrEditForm, title: e.target.value })}
+                                placeholder="Contoh: Presensi Grand Opening & Seminar Nasional"
+                                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-sm font-bold focus:outline-none focus:border-amber-400"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                              <div>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                  Sub-Agenda / Pemateri / Sesi
+                                </label>
+                                <input
+                                  type="text"
+                                  value={qrEditForm.speaker || ''}
+                                  onChange={(e) => setQrEditForm({ ...qrEditForm, speaker: e.target.value })}
+                                  placeholder="Contoh: Opening Ceremony & Seminar Nasional"
+                                  className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                  Keterangan / Peserta Sesi
+                                </label>
+                                <input
+                                  type="text"
+                                  value={qrEditForm.speakerRole || ''}
+                                  onChange={(e) => setQrEditForm({ ...qrEditForm, speakerRole: e.target.value })}
+                                  placeholder="Contoh: Mandataris BEM PTMAI Se-Indonesia"
+                                  className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                              <div>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                  Waktu Pelaksanaan
+                                </label>
+                                <input
+                                  type="text"
+                                  value={qrEditForm.time || ''}
+                                  onChange={(e) => setQrEditForm({ ...qrEditForm, time: e.target.value })}
+                                  placeholder="Contoh: 08:00 - 15:00 WIB"
+                                  className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                  Lokasi Kegiatan
+                                </label>
+                                <input
+                                  type="text"
+                                  value={qrEditForm.location || ''}
+                                  onChange={(e) => setQrEditForm({ ...qrEditForm, location: e.target.value })}
+                                  placeholder="Contoh: Edutorium KH. Ahmad Dahlan UMS"
+                                  className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-1">
+                                Link Tujuan QR Code (Kosongkan untuk Otomatis ke Form Presensi)
+                              </label>
+                              <input
+                                type="text"
+                                value={qrEditForm.customUrl || ''}
+                                onChange={(e) => setQrEditForm({ ...qrEditForm, customUrl: e.target.value })}
+                                placeholder={`Otomatis: ${typeof window !== 'undefined' ? window.location.origin : ''}/#silatnas?presensi=${selectedQrStage}`}
+                                className="w-full p-2.5 rounded-xl bg-black/40 border border-white/20 text-white text-xs font-mono focus:outline-none focus:border-amber-400"
+                              />
+                              <p className="text-[10px] text-white/50 mt-1">
+                                Default mengarah langsung ke formulir <strong>{selectedQrStage}</strong> di halaman Silatnas.
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/15">
+                              <button
+                                type="button"
+                                onClick={handleResetQrConfig}
+                                className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white/80 transition"
+                              >
+                                Reset ke Default
+                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setIsEditingQrConfig(false)}
+                                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition"
+                                >
+                                  Batal
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#001428] text-xs font-extrabold uppercase tracking-wider transition"
+                                >
+                                  Simpan Perubahan
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* CARD: REKAPITULASI DATA PRESENSI PER HARI */}
               <div className="p-5 md:p-6 border border-white/10 rounded-2xl bg-neutral-800/40 backdrop-blur-md text-white space-y-5 shadow-xl">
