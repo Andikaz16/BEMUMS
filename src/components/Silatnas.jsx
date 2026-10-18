@@ -2900,6 +2900,8 @@ export default function Silatnas({ db }) {
                           <option value="XL">XL (Lebar 54 cm, Panjang 74 cm)</option>
                           <option value="XXL">XXL (Lebar 56 cm, Panjang 76 cm)</option>
                           <option value="3XL">3XL (Ukuran Khusus di atas XXL)</option>
+                          <option value="4XL">4XL (Ukuran Khusus)</option>
+                          <option value="5XL">5XL (Ukuran Khusus)</option>
                           <option value="XS">XS (Ukuran Khusus di bawah S)</option>
                         </select>
                       </div>
