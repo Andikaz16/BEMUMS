@@ -2500,47 +2500,63 @@ export default function Silatnas({ db }) {
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {cultureList.map((item, idx) => (
-              <div 
-                key={item.id || idx} 
-                className={`group relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#38BDF8]/40 transition-all duration-300 shadow-xl flex flex-col justify-between ${idx === cultureList.length - 1 && cultureList.length % 3 !== 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
-              >
-                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 flex items-center justify-center">
-                  {item.image ? (
-                    <img 
-                      src={item.image} 
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                    />
-                  ) : (
-                    <Compass className="w-12 h-12 text-[#38BDF8]/40 animate-pulse" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-[#0EA5E9] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> {item.category || 'Destinasi Solo'}
-                    </span>
+            {cultureList.map((item, idx) => {
+              const searchLocation = (item.location || 'Surakarta').toLowerCase().includes('solo') || (item.location || 'Surakarta').toLowerCase().includes('surakarta')
+                ? (item.location || 'Surakarta')
+                : `${item.location || ''} Surakarta`;
+              const mapQuery = encodeURIComponent(`${item.title || ''} ${searchLocation}`.trim());
+              const mapsUrl = (item.mapsUrl && item.mapsUrl.trim())
+                ? item.mapsUrl.trim()
+                : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+
+              return (
+                <a 
+                  key={item.id || idx}
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`Buka lokasi ${item.title} di Google Maps`}
+                  className={`group relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-[#38BDF8]/50 hover:-translate-y-1 transition-all duration-300 shadow-xl flex flex-col justify-between cursor-pointer ${idx === cultureList.length - 1 && cultureList.length % 3 !== 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
+                >
+                  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 flex items-center justify-center">
+                    {item.image ? (
+                      <img 
+                        src={item.image} 
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <Compass className="w-12 h-12 text-[#38BDF8]/40 animate-pulse" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-[#0EA5E9] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" /> {item.category || 'Destinasi Solo'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-heading font-bold text-white uppercase group-hover:text-[#38BDF8] transition-colors">
-                      {item.title}
-                    </h4>
-                    <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">
-                      {item.desc || item.description}
-                    </p>
+                  <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <h4 className="text-lg font-heading font-bold text-white uppercase group-hover:text-[#38BDF8] transition-colors">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">
+                        {item.desc || item.description}
+                      </p>
+                    </div>
+                    <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-semibold text-[#38BDF8]">
+                      <span className="flex items-center gap-1.5 group-hover:underline">
+                        <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> {item.highlight || 'Destinasi Field Trip'}
+                      </span>
+                      <span className="text-neutral-400 group-hover:text-[#38BDF8] transition-colors text-[10px] font-mono">
+                        {item.location || 'Surakarta'} ↗
+                      </span>
+                    </div>
                   </div>
-                  <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-semibold text-[#38BDF8]">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#38BDF8]" /> {item.highlight || 'Destinasi Field Trip'}
-                    </span>
-                    <span className="text-neutral-400 text-[10px] font-mono">{item.location || 'Surakarta'}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+                </a>
+              );
+            })}
           </div>
 
 
