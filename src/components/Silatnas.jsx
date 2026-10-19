@@ -1338,7 +1338,47 @@ export default function Silatnas({ db }) {
           </div>
         </div>
 
-        {/* 5. TAHAPAN REGISTRASI & PRESENSI DELEGASI (4-STAGE STEPPER) */}
+        {/* 5. UNDUHAN DOKUMEN PENTING */}
+        <div className="space-y-10 pt-10 border-t border-white/10" id="dokumen-section">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
+              Dokumen & Panduan Penting
+            </h2>
+            <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
+              Unduh kelengkapan administrasi resmi yang dibutuhkan selama proses kegiatan.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {docsList.map((doc, idx) => (
+              <div key={idx} className="bg-black/35 backdrop-blur-xl border border-white/10 p-6 rounded-2xl flex flex-col justify-between hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#38BDF8]">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-lg font-heading font-bold text-white uppercase">{doc.title}</h4>
+                  <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">{doc.desc}</p>
+                </div>
+                <div className="pt-6">
+                  <button 
+                    onClick={() => {
+                      if (doc.url) {
+                        window.open(doc.url, '_blank');
+                      } else {
+                        alert(`Unduhan ${doc.title} simulasi berhasil dilakukan.`);
+                      }
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-black/40 border border-white/5 hover:border-[#0EA5E9]/40 text-neutral-300 font-bold uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition duration-300"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#38BDF8]" /> Unduh Berkas ({doc.size})
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 6. TAHAPAN REGISTRASI & PRESENSI DELEGASI (4-STAGE STEPPER) */}
         <div className="space-y-8 pt-10 border-t border-white/10" id="catalog-section">
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -2447,47 +2487,7 @@ export default function Silatnas({ db }) {
           )}
         </div>
 
-        {/* 6. UNDUHAN DOKUMEN PENTING */}
-        <div className="space-y-10 pt-10 border-t border-white/10">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
-              Dokumen & Panduan Penting
-            </h2>
-            <p className="text-[#E0F2FE] font-body text-sm max-w-xl mx-auto mt-2 font-medium">
-              Unduh kelengkapan administrasi resmi yang dibutuhkan selama proses kegiatan.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {docsList.map((doc, idx) => (
-              <div key={idx} className="bg-black/35 backdrop-blur-xl border border-white/10 p-6 rounded-2xl flex flex-col justify-between hover:border-[#38BDF8]/40 transition duration-300 shadow-xl">
-                <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#38BDF8]">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-lg font-heading font-bold text-white uppercase">{doc.title}</h4>
-                  <p className="text-xs font-body text-[#E0F2FE]/70 leading-relaxed">{doc.desc}</p>
-                </div>
-                <div className="pt-6">
-                  <button 
-                    onClick={() => {
-                      if (doc.url) {
-                        window.open(doc.url, '_blank');
-                      } else {
-                        alert(`Unduhan ${doc.title} simulasi berhasil dilakukan.`);
-                      }
-                    }}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-black/40 border border-white/5 hover:border-[#0EA5E9]/40 text-neutral-300 font-bold uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition duration-300"
-                  >
-                    <Download className="w-3.5 h-3.5 text-[#38BDF8]" /> Unduh Berkas ({doc.size})
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 6.5 SENTUHAN BUDAYA & WISATA SOLO (SOLO CULTURAL & HERITAGE SHOWCASE) */}
+        {/* 7. SENTUHAN BUDAYA & WISATA SOLO (SOLO CULTURAL & HERITAGE SHOWCASE) */}
         <div className="space-y-10 pt-10 border-t border-white/10">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold uppercase tracking-tight text-white drop-shadow-md">
