@@ -2224,132 +2224,62 @@ export default function Silatnas({ db }) {
                 </div>
               </div>
 
-              {/* Form Konfirmasi Kedatangan */}
-              <div className="lg:col-span-6 bg-gradient-to-b from-neutral-900 to-black p-6 rounded-2xl border border-white/10 space-y-4">
-                <div className="border-b border-white/10 pb-3">
-                  <h4 className="text-base font-heading font-bold text-white uppercase flex items-center gap-2">
-                    <Send className="w-4 h-4 text-amber-400" /> Form Konfirmasi Kedatangan Delegasi
-                  </h4>
-                  <p className="text-[11px] text-neutral-400 font-body mt-1">
-                    Isi data kedatangan kontingen Anda agar tim LO penjemputan siap menyambut di lokasi tiba.
-                  </p>
+              {/* Konfirmasi Kedatangan Delegasi */}
+              <div className="lg:col-span-6 bg-gradient-to-b from-neutral-900 to-black p-6 md:p-8 rounded-2xl border border-white/10 space-y-5 flex flex-col justify-between">
+                <div className="space-y-5">
+                  <div className="border-b border-white/10 pb-3">
+                    <h4 className="text-base md:text-lg font-heading font-bold text-white uppercase flex items-center gap-2">
+                      <Send className="w-4 h-4 text-amber-400" /> Konfirmasi Kedatangan Delegasi
+                    </h4>
+                    <p className="text-xs text-neutral-400 font-body mt-1">
+                      Kebutuhan penjemputan konfirmasi ke LO yang telah menghubungi anda.
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Info className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <h5 className="text-sm font-heading font-bold text-amber-300">
+                        Kebutuhan penjemputan konfirmasi ke LO yang telah menghubungi anda
+                      </h5>
+                      <p className="text-xs text-neutral-300 leading-relaxed font-body">
+                        Seluruh kontingen delegasi resmi diharapkan berkoordinasi langsung dengan petugas Liaison Officer (LO) pendamping masing-masing perihal jadwal kedatangan, titik penjemputan, serta moda transportasi yang digunakan.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-white/5 border border-white/10 p-3.5 rounded-xl space-y-1">
+                      <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Terhubung Langsung
+                      </div>
+                      <p className="text-[11px] text-neutral-400 font-body">
+                        Petugas LO menghubungi kontak koordinator kontingen yang terdaftar secara berkala.
+                      </p>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 p-3.5 rounded-xl space-y-1">
+                      <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase">
+                        <Car className="w-3.5 h-3.5" /> Armada Standby
+                      </div>
+                      <p className="text-[11px] text-neutral-400 font-body">
+                        Penjemputan disesuaikan dengan konfirmasi waktu dan titik tiba bersama LO.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                {shuttleSubmitted ? (
-                  <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-6 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
-                      <CheckCircle className="w-6 h-6" />
-                    </div>
-                    <h4 className="text-base font-heading font-bold text-white uppercase">Konfirmasi Kedatangan Terkirim!</h4>
-                    <p className="text-xs text-emerald-200/90 leading-relaxed font-body">
-                      Terima kasih! Data jadwal kedatangan kontingen Anda telah berhasil tersimpan di sistem tim Liaison Officer (LO) Silatnas BEM UMS. Petugas LO penjemputan kami akan segera menghubungi nomor WhatsApp koordinator Anda untuk koordinasi teknis penjemputan armada.
-                    </p>
-                    <button
-                      onClick={() => setShuttleSubmitted(false)}
-                      className="mt-3 inline-block px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-amber-400 text-xs font-bold uppercase tracking-wider transition"
-                    >
-                      Kirim Konfirmasi Tambahan / Kontingen Lain
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleShuttleSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Nama BEM / Perguruan Tinggi *</label>
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="Contoh: BEM UMS / BEM Universitas Muhammadiyah Jakarta"
-                        className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                        value={shuttleForm.campus}
-                        onChange={(e) => setShuttleForm({...shuttleForm, campus: e.target.value})}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Jumlah Delegasi *</label>
-                        <input 
-                          type="number" 
-                          min="1"
-                          required
-                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                          value={shuttleForm.count}
-                          onChange={(e) => setShuttleForm({...shuttleForm, count: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Titik Kedatangan *</label>
-                        <select
-                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                          value={shuttleForm.point}
-                          onChange={(e) => setShuttleForm({...shuttleForm, point: e.target.value})}
-                        >
-                          <option value="Bandara Adi Soemarmo (SOC)">Bandara Adi Soemarmo (SOC)</option>
-                          <option value="Terminal Tirtonadi">Terminal Tirtonadi</option>
-                          <option value="Stasiun Solo Balapan">Stasiun Solo Balapan</option>
-                          <option value="Stasiun Purwosari">Stasiun Purwosari</option>
-                          <option value="Kendaraan Pribadi / Bus Kontingen">Kendaraan Pribadi / Bus Kontingen</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Tanggal Tiba *</label>
-                        <input 
-                          type="date" 
-                          required
-                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                          value={shuttleForm.date}
-                          onChange={(e) => setShuttleForm({...shuttleForm, date: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Estimasi Jam Tiba *</label>
-                        <input 
-                          type="time" 
-                          required
-                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                          value={shuttleForm.time}
-                          onChange={(e) => setShuttleForm({...shuttleForm, time: e.target.value})}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">Nama Koordinator *</label>
-                        <input 
-                          type="text" 
-                          required
-                          placeholder="Nama Ketua Delegasi"
-                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                          value={shuttleForm.leaderName}
-                          onChange={(e) => setShuttleForm({...shuttleForm, leaderName: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-neutral-400 mb-1">No. WhatsApp *</label>
-                        <input 
-                          type="tel" 
-                          required
-                          placeholder="0812xxxx"
-                          className="w-full bg-black/80 border border-neutral-800 text-white text-xs px-3.5 py-2.5 rounded-xl focus:border-amber-400 focus:outline-none"
-                          value={shuttleForm.phone}
-                          onChange={(e) => setShuttleForm({...shuttleForm, phone: e.target.value})}
-                        />
-                      </div>
-                    </div>
-
-                    <button 
-                      type="submit"
-                      disabled={shuttleLoading}
-                      className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                      <Send className="w-4 h-4" /> {shuttleLoading ? "Menyimpan ke Sistem LO..." : "Kirim Konfirmasi Kedatangan"}
-                    </button>
-                  </form>
-                )}
+                <div className="pt-2">
+                  <a
+                    href="https://wa.me/6281234567890?text=Halo%20Admin%20LO%20Silatnas%20BEM%20UMS%2C%20kami%20dari%20kontingen%20ingin%20mengonfirmasi%20kebutuhan%20penjemputan%20delegasi..."
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)] flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Hubungi Helpdesk LO Silatnas
+                  </a>
+                </div>
               </div>
             </div>
           )}
@@ -2705,7 +2635,6 @@ export default function Silatnas({ db }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             data-lenis-prevent="true"
-            data-lenis-prevent
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
             style={{ overscrollBehavior: 'contain' }}
@@ -2723,7 +2652,6 @@ export default function Silatnas({ db }) {
               onWheel={(e) => e.stopPropagation()}
               onTouchMove={(e) => e.stopPropagation()}
               data-lenis-prevent="true"
-              data-lenis-prevent
               tabIndex={-1}
               style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' }}
               className="bg-[#0a0a0a] border border-neutral-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain shadow-2xl relative custom-scrollbar focus:outline-none"
@@ -3179,7 +3107,6 @@ export default function Silatnas({ db }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             data-lenis-prevent="true"
-            data-lenis-prevent
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
             style={{ overscrollBehavior: 'contain' }}
@@ -3189,7 +3116,6 @@ export default function Silatnas({ db }) {
             <div 
               className="relative max-w-2xl w-full bg-neutral-900 border border-neutral-700 rounded-3xl p-4 md:p-6 shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain custom-scrollbar focus:outline-none"
               data-lenis-prevent="true"
-              data-lenis-prevent
               tabIndex={-1}
               style={{ overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' }}
               onWheel={(e) => e.stopPropagation()}
