@@ -2224,7 +2224,7 @@ export default function Silatnas({ db }) {
                 </div>
               </div>
 
-              {/* Konfirmasi Kedatangan Delegasi */}
+              {/* Konfirmasi Kedatangan Delegasi (Papan Informasi) */}
               <div className="lg:col-span-6 bg-gradient-to-b from-neutral-900 to-black p-6 md:p-8 rounded-2xl border border-white/10 space-y-5 flex flex-col justify-between">
                 <div className="space-y-5">
                   <div className="border-b border-white/10 pb-3">
@@ -2268,17 +2268,6 @@ export default function Silatnas({ db }) {
                       </p>
                     </div>
                   </div>
-                </div>
-
-                <div className="pt-2">
-                  <a
-                    href="https://wa.me/6281234567890?text=Halo%20Admin%20LO%20Silatnas%20BEM%20UMS%2C%20kami%20dari%20kontingen%20ingin%20mengonfirmasi%20kebutuhan%20penjemputan%20delegasi..."
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)] flex items-center justify-center gap-2"
-                  >
-                    <MessageCircle className="w-4 h-4" /> Hubungi Helpdesk LO Silatnas
-                  </a>
                 </div>
               </div>
             </div>
