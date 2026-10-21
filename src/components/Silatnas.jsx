@@ -2300,7 +2300,7 @@ export default function Silatnas({ db }) {
                     </button>
                     <button 
                       onClick={() => {
-                        const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent('Halo LO Akomodasi Silatnas BEM UMS, kami dari kontingen ingin menanyakan informasi check-in Wisma Pesantren Mahasiswa Kampus 4 UMS.')}`;
+                        const waUrl = `https://wa.me/6281225106818?text=${encodeURIComponent('Halo LO Akomodasi Silatnas BEM UMS, kami dari kontingen ingin menanyakan informasi check-in Wisma Pesantren Mahasiswa Kampus 4 UMS.')}`;
                         window.open(waUrl, '_blank');
                       }}
                       className="bg-white/10 hover:bg-white/15 text-white border border-white/20 text-xs font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
@@ -2537,15 +2537,18 @@ export default function Silatnas({ db }) {
           <p className="text-xs md:text-sm font-body text-[#E0F2FE] max-w-xl mx-auto leading-relaxed font-medium">
             Jika ada kendala pendaftaran, pertanyaan kemitraan, atau urusan akomodasi delegasi, silakan hubungi langsung narahubung panitia Silatnas BEM UMS.
           </p>
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col items-center gap-2">
             <a 
-              href="https://wa.me/6281234567890?text=Halo%20Panitia%20Silatnas%20BEM%20UMS%202026%2C%20saya%20calon%20peserta%20ingin%20bertanya%20seputar%20kegiatan%20ini..." 
+              href="https://wa.me/6281225106818?text=Halo%20Panitia%20Silatnas%20BEM%20UMS%202026%2C%20saya%20calon%20peserta%20ingin%20bertanya%20seputar%20kegiatan%20ini..." 
               target="_blank" 
               rel="noopener noreferrer" 
               className="inline-flex justify-center items-center gap-2 bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-xs px-8 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] w-full md:w-auto text-center"
             >
               <Phone className="w-4 h-4 shrink-0" /> Hubungi WhatsApp Panitia
             </a>
+            <span className="text-xs text-[#BAE6FD]/90 font-body tracking-wider">
+              (+62 812-2510-6818)
+            </span>
           </div>
         </div>
 
