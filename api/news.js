@@ -1,3 +1,5 @@
+import { UMS_FALLBACK_ARTICLES } from '../src/data/umsFallbackNews.js';
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -5,7 +7,6 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
 
   const RSS_SOURCES = [
-    { id: 'ums', name: 'UMS News', color: '#002660', url: 'https://news.ums.ac.id/id/feed/' },
     { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000', url: 'https://www.cnnindonesia.com/nasional/rss' },
     { id: 'antara', name: 'Antara', color: '#E8B500', url: 'https://www.antaranews.com/rss/terkini' },
     { id: 'tempo', name: 'Tempo', color: '#1A56DB', url: 'https://rss.tempo.co/nasional' },
@@ -20,11 +21,18 @@ export default async function handler(req, res) {
     const allArticles = [];
 
     const fetchTasks = [
+      fetchUmsNews(),
       ...RSS_SOURCES.map(async (source) => {
         try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 6000);
           const response = await fetch(source.url, {
-            headers: { 'User-Agent': 'Mozilla/5.0 BEM-UMS-News-Aggregator/1.0' }
+            headers: { 
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' 
+            },
+            signal: controller.signal
           });
+          clearTimeout(timeout);
           if (!response.ok) return [];
           const xmlText = await response.text();
           return parseRSS(xmlText, source);
@@ -45,6 +53,12 @@ export default async function handler(req, res) {
       }
     });
 
+    // Guaranteed fallback if UMS network request was blocked by server firewall
+    const hasUms = allArticles.some(a => a.source === 'ums');
+    if (!hasUms && Array.isArray(UMS_FALLBACK_ARTICLES)) {
+      allArticles.push(...UMS_FALLBACK_ARTICLES);
+    }
+
     allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
     return res.status(200).json({ 
@@ -55,6 +69,127 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ status: 'error', message: err.message });
   }
+}
+
+async function fetchUmsNews() {
+  const source = { id: 'ums', name: 'UMS News', color: '#002660' };
+  const headers = { 
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7'
+  };
+
+  // 1. Coba REST API WordPress resmi UMS /id/
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    const response = await fetch('https://news.ums.ac.id/id/wp-json/wp/v2/posts?_embed&per_page=15', {
+      headers,
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (response.ok) {
+      const posts = await response.json();
+      if (Array.isArray(posts) && posts.length > 0) {
+        return posts.map((post, idx) => {
+          let thumbnail = null;
+          const embedded = post._embedded || {};
+          const media = embedded['wp:featuredmedia'] || [];
+          if (media.length > 0) {
+            const mediaObj = media[0];
+            const sizes = mediaObj.media_details?.sizes || {};
+            thumbnail = sizes.medium_large?.source_url || sizes.medium?.source_url || sizes.full?.source_url || mediaObj.source_url;
+          }
+
+          const rawExcerpt = post.excerpt?.rendered || post.content?.rendered || '';
+          const description = cleanText(rawExcerpt).substring(0, 200);
+
+          return {
+            id: `${source.id}-${idx}`,
+            source: source.id,
+            sourceName: source.name,
+            sourceColor: source.color,
+            title: cleanText(post.title?.rendered || ''),
+            description,
+            link: post.link,
+            thumbnail,
+            pubDate: post.date ? new Date(post.date).toISOString() : new Date().toISOString()
+          };
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch UMS REST /id/:', err.message);
+  }
+
+  // 2. Coba REST API WordPress root
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const response = await fetch('https://news.ums.ac.id/wp-json/wp/v2/posts?_embed&per_page=15', {
+      headers,
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (response.ok) {
+      const posts = await response.json();
+      if (Array.isArray(posts) && posts.length > 0) {
+        return posts.map((post, idx) => {
+          let thumbnail = null;
+          const embedded = post._embedded || {};
+          const media = embedded['wp:featuredmedia'] || [];
+          if (media.length > 0) {
+            const mediaObj = media[0];
+            const sizes = mediaObj.media_details?.sizes || {};
+            thumbnail = sizes.medium_large?.source_url || sizes.medium?.source_url || sizes.full?.source_url || mediaObj.source_url;
+          }
+
+          const rawExcerpt = post.excerpt?.rendered || post.content?.rendered || '';
+          const description = cleanText(rawExcerpt).substring(0, 200);
+
+          return {
+            id: `${source.id}-${idx}`,
+            source: source.id,
+            sourceName: source.name,
+            sourceColor: source.color,
+            title: cleanText(post.title?.rendered || ''),
+            description,
+            link: post.link,
+            thumbnail,
+            pubDate: post.date ? new Date(post.date).toISOString() : new Date().toISOString()
+          };
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch UMS REST root:', err.message);
+  }
+
+  // 3. Coba RSS feed /id/feed/
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const response = await fetch('https://news.ums.ac.id/id/feed/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (response.ok) {
+      const xmlText = await response.text();
+      const parsed = parseRSS(xmlText, source);
+      if (parsed.length > 0) return parsed;
+    }
+  } catch (err) {
+    console.error('Failed to fetch UMS RSS feed:', err.message);
+  }
+
+  // 4. Fallback jika seluruh request jaringan ke server UMS diblokir/dibatasi firewall
+  return UMS_FALLBACK_ARTICLES || [];
 }
 
 async function fetchLensaMu() {
@@ -243,7 +378,7 @@ function extractTag(xml, tag) {
 }
 
 function cleanText(text) {
-  return text
+  return (text || '')
     .replace(/<!\[CDATA\[/g, '')
     .replace(/\]\]>/g, '')
     .replace(/<[^>]*>/g, '')
@@ -252,6 +387,10 @@ function cleanText(text) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+    .replace(/&#8211;/g, '-')
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
     .replace(/&nbsp;/g, ' ')
     .trim();
 }

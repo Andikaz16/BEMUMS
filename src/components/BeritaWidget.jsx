@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { UMS_FALLBACK_ARTICLES } from '../data/umsFallbackNews';
 
 export default function BeritaWidget({ setActivePage }) {
   const [articles, setArticles] = useState([]);
@@ -13,9 +14,20 @@ export default function BeritaWidget({ setActivePage }) {
         const data = await res.json();
 
         if (data.status === 'ok' && data.articles) {
-          setArticles(data.articles.slice(0, 6));
+          let loaded = data.articles;
+          if (!loaded.some(a => a.source === 'ums') && Array.isArray(UMS_FALLBACK_ARTICLES)) {
+            loaded = [...loaded, ...UMS_FALLBACK_ARTICLES];
+            loaded.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+          }
+          setArticles(loaded.slice(0, 6));
+        } else if (Array.isArray(UMS_FALLBACK_ARTICLES)) {
+          setArticles(UMS_FALLBACK_ARTICLES.slice(0, 6));
         }
-      } catch { /* silent */ }
+      } catch {
+        if (Array.isArray(UMS_FALLBACK_ARTICLES)) {
+          setArticles(UMS_FALLBACK_ARTICLES.slice(0, 6));
+        }
+      }
       finally { setLoading(false); }
     };
 

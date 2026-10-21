@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { UMS_FALLBACK_ARTICLES } from '../data/umsFallbackNews';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -47,13 +48,27 @@ export default function BeritaNasional() {
       const data = await response.json();
 
       if (data.status === 'ok' && data.articles.length > 0) {
-        setArticles(data.articles);
+        let loaded = data.articles;
+        const umsCount = loaded.filter(a => a.source === 'ums').length;
+        if (umsCount === 0 && Array.isArray(UMS_FALLBACK_ARTICLES)) {
+          loaded = [...loaded, ...UMS_FALLBACK_ARTICLES];
+          loaded.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        }
+        setArticles(loaded);
+        setLastUpdated(new Date());
+      } else if (Array.isArray(UMS_FALLBACK_ARTICLES) && UMS_FALLBACK_ARTICLES.length > 0) {
+        setArticles(UMS_FALLBACK_ARTICLES);
         setLastUpdated(new Date());
       } else {
         setError('Tidak dapat memuat berita saat ini. Silakan coba lagi nanti.');
       }
     } catch (err) {
-      setError('Terjadi kesalahan saat memuat berita. Silakan coba lagi.');
+      if (Array.isArray(UMS_FALLBACK_ARTICLES) && UMS_FALLBACK_ARTICLES.length > 0) {
+        setArticles(UMS_FALLBACK_ARTICLES);
+        setLastUpdated(new Date());
+      } else {
+        setError('Terjadi kesalahan saat memuat berita. Silakan coba lagi.');
+      }
     } finally {
       setLoading(false);
     }
