@@ -7,6 +7,7 @@ import {
   Lock, Unlock, ClipboardCheck, Upload, QrCode, Maximize2, Minimize2, Clock, MapPin, Sparkles, ArrowLeft, Copy, ExternalLink
 } from 'lucide-react';
 import QRCode from 'qrcode';
+import * as XLSX from 'xlsx';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import StatistikAdmin from './StatistikAdmin.jsx';
@@ -1240,23 +1241,16 @@ export default function AdminCMS({ db, onUpdateDB }) {
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     }
     
-    // Create CSV rows
-    const csvRows = [];
-    
-    // Push headers row (using mapped names, or raw if not mapped)
-    const headers = rawKeys.map(k => headerMapping[k] || k);
-    // Menggunakan pemisah TITIK KOMA (;) agar terbaca rapi sebagai kolom di Excel (Indonesia)
-    csvRows.push(headers.join(';'));
-    
-    // Push data rows
-    for (const row of processedData) {
-      const values = rawKeys.map(key => {
+    // Siapkan baris objek rapi untuk Excel (.xlsx)
+    const formattedRows = processedData.map(row => {
+      const rowObj = {};
+      rawKeys.forEach(key => {
+        const headerTitle = headerMapping[key] || key;
         let val = row[key];
         
-        // Format waktu (id biasanya unix timestamp)
+        // Format waktu
         if (key === 'id' && typeof val === 'number') {
-          const date = new Date(val);
-          val = date.toLocaleString('id-ID'); // Format tanggal Indonesia
+          val = new Date(val).toLocaleString('id-ID');
         }
         if (key === 'submittedAt' && typeof val === 'string') {
           const date = new Date(val);
@@ -1265,7 +1259,61 @@ export default function AdminCMS({ db, onUpdateDB }) {
           }
         }
         
-        // Escape quotes and wrap in quotes to prevent issue with semicolon/commas inside text
+        // Pastikan nomor telepon/wa tetap sebagai string agar angka 0 di depan tidak terpotong Excel
+        if (key === 'nowa' || key === 'phone') {
+          val = val ? String(val).trim() : '';
+        }
+        
+        rowObj[headerTitle] = val != null ? val : '';
+      });
+      return rowObj;
+    });
+
+    // 1. Ekspor langsung sebagai file native Microsoft Excel (.xlsx)
+    // Format .xlsx dijamin terbuka rapi di SEMUA versi Excel (lama/baru) & semua pengaturan regional tanpa masalah titik koma!
+    try {
+      const ws = XLSX.utils.json_to_sheet(formattedRows);
+      
+      // Auto-fit lebar kolom
+      const colWidths = Object.keys(formattedRows[0] || {}).map(headerKey => {
+        let maxLen = headerKey.length;
+        formattedRows.forEach(r => {
+          const cellLen = String(r[headerKey] || '').length;
+          if (cellLen > maxLen) maxLen = cellLen;
+        });
+        return { wch: Math.min(Math.max(maxLen + 3, 12), 48) };
+      });
+      ws['!cols'] = colWidths;
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Rekap Data");
+
+      const xlsxFilename = filename.endsWith('.csv') 
+        ? filename.replace(/\.csv$/, '.xlsx') 
+        : (filename.endsWith('.xlsx') ? filename : `${filename}.xlsx`);
+
+      XLSX.writeFile(wb, xlsxFilename);
+      showCustomAlert(`File Excel (${xlsxFilename}) berhasil didownload dan tertata rapi!`);
+      return;
+    } catch (err) {
+      console.warn("Ekspor XLSX beralih ke fallback CSV:", err);
+    }
+
+    // 2. Fallback CSV: Disertai direktif 'sep=;\r\n' agar Excel English/US tetap otomatis memisahkan kolom titik koma
+    const csvRows = [];
+    const headers = rawKeys.map(k => headerMapping[k] || k);
+    csvRows.push(headers.join(';'));
+    
+    for (const row of processedData) {
+      const values = rawKeys.map(key => {
+        let val = row[key];
+        if (key === 'id' && typeof val === 'number') {
+          val = new Date(val).toLocaleString('id-ID');
+        }
+        if (key === 'submittedAt' && typeof val === 'string') {
+          const date = new Date(val);
+          if (!isNaN(date.getTime())) val = date.toLocaleString('id-ID');
+        }
         const stringVal = val ? String(val) : '';
         const escaped = stringVal.replace(/"/g, '""');
         return `"${escaped}"`;
@@ -1273,8 +1321,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
       csvRows.push(values.join(';'));
     }
     
-    // Tambahkan BOM (\uFEFF) agar Excel mengenali karakter UTF-8 dengan benar
-    const csvString = '\uFEFF' + csvRows.join('\n');
+    const csvString = '\uFEFFsep=;\r\n' + csvRows.join('\r\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     
@@ -2751,7 +2798,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                           disabled={presensiList.length === 0}
                           className="bg-primary hover:bg-primary/80 text-white border border-primary/50 text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
                         >
-                          <Download className="w-3.5 h-3.5" /> Download Rekap Presensi (CSV)
+                          <Download className="w-3.5 h-3.5" /> Download Rekap Presensi (Excel)
                         </button>
                       </div>
 
@@ -3004,7 +3051,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             className="bg-primary hover:bg-primary/80 text-white border border-primary/50 text-[10px] md:text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
                             disabled={!v.applicants || v.applicants.length === 0}
                           >
-                            <Download className="w-3.5 h-3.5" /> Download Seluruh Rekap (CSV)
+                            <Download className="w-3.5 h-3.5" /> Download Seluruh Rekap (Excel)
                           </button>
                         </div>
 
@@ -3157,7 +3204,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                     className="bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-wider text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg disabled:opacity-40"
                     disabled={!db.silatnasShuttle || db.silatnasShuttle.length === 0}
                   >
-                    <Download className="w-4 h-4" /> Download Excel LO (CSV)
+                    <Download className="w-4 h-4" /> Download Rekap LO (Excel)
                   </button>
                 </div>
 
@@ -4616,10 +4663,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       {currentRekap.data.length > 0 && currentRekap.dayNumber > 0 && (
                         <button
                           type="button"
-                          onClick={() => exportPresensiCSV(currentRekap.dayNumber, currentRekap.filename)}
+                          onClick={() => downloadCSV(currentRekap.data, currentRekap.filename)}
                           className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition cursor-pointer self-start sm:self-auto"
                         >
-                          <Download className="w-4 h-4" /> Export CSV ({currentRekap.data.length})
+                          <Download className="w-4 h-4" /> Export Excel ({currentRekap.data.length})
                         </button>
                       )}
                     </div>
