@@ -2170,7 +2170,7 @@ export default function Silatnas({ db }) {
                   : 'bg-black/40 text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
               }`}
             >
-              <Hotel className="w-4 h-4" /> 2. Penginapan Delegasi (Wisma Pesantren Mahasiswa)
+              <Hotel className="w-4 h-4" /> 2. Penginapan Delegasi (BBGTK Karanganyar)
             </button>
             <button
               onClick={() => setHospitalityTab('medical')}
@@ -2273,10 +2273,10 @@ export default function Silatnas({ db }) {
             </div>
           )}
 
-          {/* TAB 2: INFORMASI AKOMODASI & WISMA PESANTREN MAHASISWA (KAMPUS 4 UMS) */}
+          {/* TAB 2: INFORMASI AKOMODASI & PENGINAPAN BBGTK JATENG (KARANGANYAR) */}
           {hospitalityTab === 'hotel' && (
             <div className="max-w-6xl mx-auto space-y-6">
-              {/* Header Hero Banner for Wisma Pesantren Mahasiswa UMS */}
+              {/* Header Hero Banner for BBGTK Karanganyar */}
               <div className="bg-gradient-to-r from-neutral-900/90 via-sky-950/40 to-neutral-900/90 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-3xl shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -2285,22 +2285,22 @@ export default function Silatnas({ db }) {
                       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> PENGINAPAN RESMI KONTINGEN SILATNAS 2026
                     </span>
                     <h3 className="text-2xl md:text-3xl font-heading font-black text-white uppercase tracking-tight">
-                      Wisma Pesantren Mahasiswa — Kampus 4 UMS
+                      BBGTK JAWA TENGAH — KARANGANYAR
                     </h3>
                     <p className="text-xs md:text-sm font-body text-neutral-300 leading-relaxed">
-                      Seluruh kontingen delegasi BEM Perguruan Tinggi se-Indonesia secara resmi ditempatkan di <strong>Wisma Pesantren Mahasiswa (Kompleks Kampus 4 UMS)</strong>. Lokasi penginapan terpadu yang nyaman, bersih, representatif, bernuansa islami, serta terintegrasi langsung dengan layanan shuttle bus panitia menuju Kampus UMS.
+                      Seluruh kontingen delegasi BEM Perguruan Tinggi se-Indonesia secara resmi ditempatkan di <strong>Balai Besar Guru dan Tenaga Kependidikan (BBGTK) Provinsi Jawa Tengah</strong> (Kompleks Balai Diklat Gondangrejo, Karanganyar). Lokasi penginapan asrama yang representatif, nyaman, sejuk, aman, serta terintegrasi langsung dengan armada shuttle bus panitia menuju Kampus UMS.
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
                     <button 
-                      onClick={() => window.open('https://maps.google.com/?q=Pesantren+Mahasiswa+KH+Mas+Mansur+UMS+Surakarta', '_blank')}
+                      onClick={() => window.open('https://maps.google.com/?q=BBGTK+Provinsi+Jawa+Tengah+Gondangrejo+Karanganyar', '_blank')}
                       className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-xs font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl transition shadow-[0_0_20px_rgba(14,165,233,0.3)] flex items-center justify-center gap-2"
                     >
                       <MapPin className="w-4 h-4" /> Buka Rute Google Maps
                     </button>
                     <button 
                       onClick={() => {
-                        const waUrl = `https://wa.me/6281225106818?text=${encodeURIComponent('Halo LO Akomodasi Silatnas BEM UMS, kami dari kontingen ingin menanyakan informasi check-in Wisma Pesantren Mahasiswa Kampus 4 UMS.')}`;
+                        const waUrl = `https://wa.me/6281225106818?text=${encodeURIComponent('Halo LO Akomodasi Silatnas BEM UMS, kami dari kontingen ingin menanyakan informasi check-in penginapan BBGTK Karanganyar.')}`;
                         window.open(waUrl, '_blank');
                       }}
                       className="bg-white/10 hover:bg-white/15 text-white border border-white/20 text-xs font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl transition flex items-center justify-center gap-2"
@@ -2311,18 +2311,18 @@ export default function Silatnas({ db }) {
                 </div>
               </div>
 
-              {/* 3 Detail Feature Cards for Wisma Pesantren Mahasiswa */}
+              {/* 3 Detail Feature Cards for BBGTK Karanganyar */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-6 rounded-2xl space-y-3 hover:border-amber-400/40 transition duration-300">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
                     <MapPin className="w-5 h-5" />
                   </div>
-                  <h4 className="text-base font-heading font-bold text-white uppercase">Lokasi Kampus 4 UMS</h4>
+                  <h4 className="text-base font-heading font-bold text-white uppercase">Lokasi BBGTK Karanganyar</h4>
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
-                    Terletak di Kompleks Kampus 4 UMS (Jl. KH. Ahmad Dahlan, Gonilan / Kartasura). Berdampingan dengan Fakultas Kedokteran, RSGM, dan Pesantren Mahasiswa KH. Mas Mansur UMS.
+                    Berlokasi di Kp. Dadapan, Desa Jatikuwung, Kec. Gondangrejo, Kab. Karanganyar, Jawa Tengah. Lingkungan tenang, asri, dan tertata rapi dengan akses arteri Solo Raya.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-amber-400 font-bold flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> ~3-5 Menit ke Kampus UMS
+                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> Terhubung Langsung Shuttle Panitia
                   </div>
                 </div>
 
@@ -2330,12 +2330,12 @@ export default function Silatnas({ db }) {
                   <div className="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-[#38BDF8]">
                     <Hotel className="w-5 h-5" />
                   </div>
-                  <h4 className="text-base font-heading font-bold text-white uppercase">Fasilitas Wisma Pesantren</h4>
+                  <h4 className="text-base font-heading font-bold text-white uppercase">Fasilitas Asrama & Kompleks</h4>
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
-                    Kamar tidur representatif, ranjang & kasur bersih, kamar mandi bersih, akses Wi-Fi kencang UMS, musala/masjid, serta area parkir luas untuk armada kontingen.
+                    Kamar asrama ber-AC, ranjang & kasur bersih, kamar mandi higienis, aula pertemuan, masjid balai, ruang makan bersama, serta area parkir luas untuk seluruh armada kontingen.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-[#38BDF8] font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" /> Nyaman & Siap Huni Delegasi
+                    <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" /> Standar Wisma Diklat Nasional
                   </div>
                 </div>
 
@@ -2345,7 +2345,7 @@ export default function Silatnas({ db }) {
                   </div>
                   <h4 className="text-base font-heading font-bold text-white uppercase">Shuttle & Keamanan 24 Jam</h4>
                   <p className="text-xs font-body text-neutral-300 leading-relaxed">
-                    Layanan armada shuttle bus khusus antar-jemput dari Wisma Pesantren Mahasiswa Kampus 4 ke Kampus UMS selama rangkaian acara berlangsung, didukung posko keamanan & LO 24 jam penuh.
+                    Armada shuttle bus khusus antar-jemput dari lokasi penginapan BBGTK Karanganyar menuju venue Kampus UMS selama rangkaian acara berlangsung, didukung posko keamanan & LO 24 jam penuh.
                   </p>
                   <div className="pt-2 text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Standby Pendampingan LO
