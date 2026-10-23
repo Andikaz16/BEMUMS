@@ -1146,7 +1146,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
     link.click();
   };
 
-  // Export CSV (for spreadsheets)
+  // Export Data to Excel (.xlsx) / CSV
   const downloadCSV = (data, filename) => {
     if (!data || !data.length) return;
     
@@ -1236,45 +1236,78 @@ export default function AdminCMS({ db, onUpdateDB }) {
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     } else if (filename.includes('silatnas')) {
-      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'sizeKaos', 'tipeLengan', 'buktiSWO', 'buktiSWP', 'submittedAt'];
+      const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'sizeKaos', 'tipeLengan', 'buktiSWO', 'buktiSWP', 'buktiSWOFileName', 'buktiSWPFileName', 'submittedAt'];
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     }
+
+    // Fungsi pembersih sel agar Excel tidak rusak oleh teks Base64 raksasa atau karakter newline (\n)
+    const sanitizeCell = (val, key, row) => {
+      if (val == null) return '';
+      let str = String(val);
+
+      // Tangani data URI Base64 (seperti unggahan berkas PDF atau gambar lokal berukuran ratusan ribu karakter)
+      if (str.startsWith('data:')) {
+        const fileName = (key === 'buktiSWO' ? row.buktiSWOFileName : row.buktiSWPFileName) || row.buktiFileName || '';
+        const isPdf = str.includes('application/pdf') || (fileName && fileName.toLowerCase().endsWith('.pdf'));
+        if (isPdf) {
+          return fileName ? `[File PDF: ${fileName}]` : '[File PDF Terlampir]';
+        }
+        return fileName ? `[Gambar: ${fileName}]` : '[Gambar Terlampir]';
+      }
+
+      // Hapus karakter baris baru (\r, \n) agar tidak memecah baris tabel Excel
+      str = str.replace(/[\r\n]+/g, ' ').trim();
+
+      // Format tanggal / waktu jika berupa integer timestamp
+      if (key === 'id' && typeof val === 'number') {
+        str = new Date(val).toLocaleString('id-ID');
+      }
+      if (key === 'submittedAt' && typeof val === 'string') {
+        const date = new Date(val);
+        if (!isNaN(date.getTime())) {
+          str = date.toLocaleString('id-ID');
+        }
+      }
+
+      // Batasi panjang maksimal per sel (Excel memiliki batas 32.767 karakter)
+      if (str.length > 32000) {
+        str = str.substring(0, 32000) + '...';
+      }
+
+      return str;
+    };
     
-    // Siapkan baris objek rapi untuk Excel (.xlsx)
+    // Siapkan baris objek bersih untuk Excel (.xlsx)
     const formattedRows = processedData.map(row => {
       const rowObj = {};
       rawKeys.forEach(key => {
         const headerTitle = headerMapping[key] || key;
-        let val = row[key];
-        
-        // Format waktu
-        if (key === 'id' && typeof val === 'number') {
-          val = new Date(val).toLocaleString('id-ID');
-        }
-        if (key === 'submittedAt' && typeof val === 'string') {
-          const date = new Date(val);
-          if (!isNaN(date.getTime())) {
-            val = date.toLocaleString('id-ID');
-          }
-        }
-        
-        // Pastikan nomor telepon/wa tetap sebagai string agar angka 0 di depan tidak terpotong Excel
-        if (key === 'nowa' || key === 'phone') {
-          val = val ? String(val).trim() : '';
-        }
-        
-        rowObj[headerTitle] = val != null ? val : '';
+        rowObj[headerTitle] = sanitizeCell(row[key], key, row);
       });
       return rowObj;
     });
 
     // 1. Ekspor langsung sebagai file native Microsoft Excel (.xlsx)
-    // Format .xlsx dijamin terbuka rapi di SEMUA versi Excel (lama/baru) & semua pengaturan regional tanpa masalah titik koma!
+    // Format .xlsx dijamin terbuka rapi di SEMUA versi Excel (lama/baru) & semua locale Windows
     try {
       const ws = XLSX.utils.json_to_sheet(formattedRows);
+
+      // Kunci kolom nomor telepon agar tidak diubah menjadi notasi ilmiah (8,22E+10) & angka 0 di depan tetap utuh
+      for (const cellAddr in ws) {
+        if (cellAddr[0] === '!') continue;
+        const cell = ws[cellAddr];
+        if (cell && (typeof cell.v === 'string' || typeof cell.v === 'number')) {
+          const valStr = String(cell.v).trim();
+          if (/^0\d{8,}/.test(valStr) || /^\+62\d+/.test(valStr)) {
+            cell.t = 's'; // Tipe data teks murni
+            cell.v = valStr; // Nilai string asli
+            cell.z = '@'; // Format Text Excel
+          }
+        }
+      }
       
-      // Auto-fit lebar kolom
+      // Auto-fit lebar kolom agar rapi dan tidak terpotong
       const colWidths = Object.keys(formattedRows[0] || {}).map(headerKey => {
         let maxLen = headerKey.length;
         formattedRows.forEach(r => {
@@ -1299,21 +1332,20 @@ export default function AdminCMS({ db, onUpdateDB }) {
       console.warn("Ekspor XLSX beralih ke fallback CSV:", err);
     }
 
-    // 2. Fallback CSV: Disertai direktif 'sep=;\r\n' agar Excel English/US tetap otomatis memisahkan kolom titik koma
+    // 2. Fallback CSV: Disertai direktif 'sep=;\r\n' & formula teks agar Excel tetap rapi
     const csvRows = [];
     const headers = rawKeys.map(k => headerMapping[k] || k);
     csvRows.push(headers.join(';'));
     
     for (const row of processedData) {
       const values = rawKeys.map(key => {
-        let val = row[key];
-        if (key === 'id' && typeof val === 'number') {
-          val = new Date(val).toLocaleString('id-ID');
+        let val = sanitizeCell(row[key], key, row);
+        
+        // Proteksi nomor telepon di CSV: gunakan formula ="08..." agar Excel tidak mengubah ke scientific notation
+        if ((key === 'nowa' || key === 'phone') && /^0\d+/.test(val)) {
+          return `="` + val.replace(/"/g, '""') + `"`;
         }
-        if (key === 'submittedAt' && typeof val === 'string') {
-          const date = new Date(val);
-          if (!isNaN(date.getTime())) val = date.toLocaleString('id-ID');
-        }
+        
         const stringVal = val ? String(val) : '';
         const escaped = stringVal.replace(/"/g, '""');
         return `"${escaped}"`;
@@ -1324,12 +1356,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
     const csvString = '\uFEFFsep=;\r\n' + csvRows.join('\r\n');
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
     const link = document.createElement("a");
     link.href = url;
     link.download = filename;
     link.click();
-    
     URL.revokeObjectURL(url);
   };
 
