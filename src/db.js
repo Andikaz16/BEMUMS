@@ -607,28 +607,29 @@ export const addSilatnasApplicant = async (eventId, applicantData) => {
         const normCampus = String(applicantData.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
 
         // Cari apakah peserta ini sudah pernah terdaftar (berdasarkan no WA atau nama + kampus)
-        const existingIdx = currentApplicants.findIndex(app => {
-          const appPhone = String(app.nowa || app.phone || '').replace(/[^0-9]/g, '');
+        let cleanPhone = normPhone;
+        if (cleanPhone.startsWith('62')) cleanPhone = '0' + cleanPhone.substring(2);
+
+        const existingApp = currentApplicants.find(app => {
+          const rawAppPhone = String(app.nowa || app.phone || '').replace(/[^0-9]/g, '');
+          let appPhone = rawAppPhone;
+          if (appPhone.startsWith('62')) appPhone = '0' + appPhone.substring(2);
+
           const appName = String(app.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
           const appCampus = String(app.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
 
-          const phoneMatch = normPhone && appPhone && (normPhone === appPhone || normPhone.endsWith(appPhone) || appPhone.endsWith(normPhone));
-          const nameMatch = normName && appName && normName === appName;
-          const campusMatch = normCampus && appCampus && normCampus === appCampus;
+          const phoneMatch = cleanPhone.length >= 9 && appPhone.length >= 9 && cleanPhone === appPhone;
+          const nameCampusMatch = normName.length >= 3 && normCampus.length >= 3 && normName === appName && normCampus === appCampus;
+          const phoneNameMatch = cleanPhone.length >= 9 && normName.length >= 3 && cleanPhone === appPhone && normName === appName;
 
-          return (phoneMatch && nameMatch) || (nameMatch && campusMatch);
+          return phoneMatch || nameCampusMatch || phoneNameMatch;
         });
 
-        let updatedApplicants;
-        if (existingIdx !== -1) {
-          // Timpa data lama dengan kiriman data terbaru (menghindari duplikasi)
-          updatedApplicants = [...currentApplicants];
-          updatedApplicants[existingIdx] = applicantData;
-        } else {
-          updatedApplicants = [...currentApplicants, applicantData];
+        if (existingApp) {
+          throw new Error("Nomor WhatsApp atau Nama Delegasi ini sudah terdaftar sebelumnya. Anda tidak diperkenankan mengisi formulir ganda. Jika terdapat kesalahan data atau ingin mengubah berkas, silakan hubungi panitia melalui WhatsApp di nomor +62 857-3625-3118.");
         }
 
-        return { ...v, applicants: updatedApplicants };
+        return { ...v, applicants: [...currentApplicants, applicantData] };
       }
       return v;
     });

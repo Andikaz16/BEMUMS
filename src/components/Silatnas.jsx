@@ -6,7 +6,7 @@ import {
   Award, Clock, CheckSquare, Sparkles, Send, GraduationCap,
   Compass, Utensils, Landmark, Camera, Heart,
   Car, Bus, Hotel, ShieldAlert, Navigation, Search, Building2, Map, Star,
-  Info, AlertCircle, Upload, ExternalLink, Image as ImageIcon, MessageCircle,
+  Info, AlertCircle, AlertTriangle, Upload, ExternalLink, Image as ImageIcon, MessageCircle,
   Lock, Unlock, CheckCircle2, ClipboardCheck
 } from 'lucide-react';
 import { addSilatnasApplicant, addSilatnasShuttle, addSilatnasPresensi } from '../db';
@@ -53,6 +53,33 @@ export default function Silatnas({ db }) {
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alreadyRegisteredData, setAlreadyRegisteredData] = useState(null);
+
+  // Helper cek apakah delegasi dengan nomor WA atau Nama & Kampus sudah pernah mendaftar
+  const checkDuplicateApplicant = (nowa, name, campus) => {
+    const applicants = selectedEvent?.applicants || (catalog[0]?.applicants) || (db?.silatnasCatalog?.[0]?.applicants) || [];
+    const normPhone = String(nowa || '').replace(/[^0-9]/g, '');
+    let cleanPhone = normPhone;
+    if (cleanPhone.startsWith('62')) cleanPhone = '0' + cleanPhone.substring(2);
+
+    const normName = String(name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const normCampus = String(campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+    return applicants.find(app => {
+      const rawAppPhone = String(app.nowa || app.phone || '').replace(/[^0-9]/g, '');
+      let appPhone = rawAppPhone;
+      if (appPhone.startsWith('62')) appPhone = '0' + appPhone.substring(2);
+
+      const appName = String(app.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const appCampus = String(app.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+      const phoneMatch = cleanPhone.length >= 9 && appPhone.length >= 9 && cleanPhone === appPhone;
+      const nameCampusMatch = normName.length >= 3 && normCampus.length >= 3 && normName === appName && normCampus === appCampus;
+      const phoneNameMatch = cleanPhone.length >= 9 && normName.length >= 3 && cleanPhone === appPhone && normName === appName;
+
+      return phoneMatch || nameCampusMatch || phoneNameMatch;
+    });
+  };
   const [activeFaq, setActiveFaq] = useState(null);
   const [showSizeChartModal, setShowSizeChartModal] = useState(false);
   const [uploadingSWO, setUploadingSWO] = useState(false);
@@ -257,7 +284,15 @@ export default function Silatnas({ db }) {
       setCampusSubmitted(true);
     } catch (err) {
       console.error(err);
-      alert("Gagal mengirim pendaftaran, pastikan koneksi internet stabil lalu coba lagi.");
+      if (err.message && err.message.includes('terdaftar')) {
+        setAlreadyRegisteredData({
+          name: formData.name,
+          campus: formData.campus,
+          nowa: formData.nowa
+        });
+      } else {
+        alert(err.message || "Gagal mengirim pendaftaran, pastikan koneksi internet stabil lalu coba lagi.");
+      }
     } finally {
       setIsCampusSubmitting(false);
     }
@@ -701,6 +736,13 @@ export default function Silatnas({ db }) {
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!selectedEvent || isSubmitting) return;
+
+    // CEK VALIDASI: Jika delegasi sudah pernah mengisi, tolak pengisian dan arahkan ke panitia
+    const existingApplicant = checkDuplicateApplicant(formData.nowa, formData.name, formData.campus);
+    if (existingApplicant) {
+      setAlreadyRegisteredData(existingApplicant);
+      return;
+    }
 
     if (!formData.sizeKaos) {
       alert("Mohon pilih Ukuran Kaos (Size Chart) terlebih dahulu!");
@@ -2643,6 +2685,7 @@ export default function Silatnas({ db }) {
             onClick={() => {
               setSelectedEvent(null);
               setSubmitted(false);
+              setAlreadyRegisteredData(null);
             }}
           >
             <motion.div 
@@ -2666,7 +2709,8 @@ export default function Silatnas({ db }) {
                 <button 
                   onClick={() => {
                     setSelectedEvent(null);
-                    setSubmitted(false);
+              setSubmitted(false);
+              setAlreadyRegisteredData(null);
                   }}
                   className="w-10 h-10 bg-black/50 hover:bg-[#0EA5E9] text-white rounded-full flex items-center justify-center transition-colors border border-neutral-700 hover:border-transparent"
                 >
@@ -2675,7 +2719,68 @@ export default function Silatnas({ db }) {
               </div>
 
               <div className="p-6 md:p-10">
-                {submitted ? (
+                {alreadyRegisteredData ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-6 md:py-8 space-y-5"
+                  >
+                    <div className="w-20 h-20 bg-amber-950/40 border border-amber-500/50 rounded-full flex items-center justify-center mx-auto mb-2 shadow-[0_0_30px_rgba(245,158,11,0.25)]">
+                      <AlertTriangle className="text-amber-400 w-10 h-10" />
+                    </div>
+                    <div className="space-y-2">
+                      <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold uppercase tracking-wider">
+                        Pendaftaran Tidak Diizinkan
+                      </span>
+                      <h3 className="text-2xl md:text-3xl font-heading font-bold text-white uppercase pt-1">
+                        Anda Sudah Pernah Mengisi Formulir
+                      </h3>
+                      <p className="text-neutral-300 font-body text-sm leading-relaxed max-w-lg mx-auto">
+                        Data delegasi atas nama <strong>{alreadyRegisteredData.name}</strong> ({alreadyRegisteredData.campus || 'Delegasi'}) dengan No. WhatsApp <strong>{alreadyRegisteredData.nowa}</strong> sudah tercatat di sistem panitia{alreadyRegisteredData.submittedAt ? ` pada ${new Date(alreadyRegisteredData.submittedAt).toLocaleString('id-ID')}` : ''}.
+                      </p>
+                    </div>
+
+                    <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-950/40 to-neutral-900 border border-amber-500/30 text-left space-y-3.5 shadow-xl max-w-lg mx-auto">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                          <Phone className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="text-sm font-heading font-bold text-white uppercase tracking-wider">
+                            Ada Kesalahan Data Pendaftaran?
+                          </h4>
+                          <p className="text-xs text-neutral-300 font-body leading-relaxed">
+                            Sesuai aturan panitia, setiap delegasi hanya diperkenankan mengisi formulir 1 (satu) kali. Jika terdapat kesalahan penulisan data, revisi ukuran kaos, atau perbaikan bukti pembayaran, silakan langsung menghubungi nomor resmi panitia di bawah ini:
+                          </p>
+                        </div>
+                      </div>
+
+                      <a 
+                        href="https://wa.me/6285736253118?text=Halo%20Panitia%20Silatnas%20BEM%20PTMAI,%20saya%20sudah%20mendaftar%20tetapi%20terdapat%20kesalahan%20data%20yang%20ingin%20diperbaiki."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs transition shadow-lg shadow-emerald-950/50"
+                      >
+                        <Phone className="w-4 h-4" />
+                        Hubungi Panitia via WhatsApp (+62 857-3625-3118)
+                        <ExternalLink className="w-3.5 h-3.5 ml-1" />
+                      </a>
+                    </div>
+
+                    <div className="pt-2">
+                      <button 
+                        onClick={() => {
+                          setSelectedEvent(null);
+                          setSubmitted(false);
+                          setAlreadyRegisteredData(null);
+                        }}
+                        className="px-8 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold uppercase tracking-widest text-xs rounded-full transition-colors border border-neutral-800"
+                      >
+                        Tutup Jendela
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : submitted ? (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -2746,7 +2851,8 @@ export default function Silatnas({ db }) {
                       <button 
                         onClick={() => {
                           setSelectedEvent(null);
-                          setSubmitted(false);
+              setSubmitted(false);
+              setAlreadyRegisteredData(null);
                         }}
                         className="px-8 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold uppercase tracking-widest text-xs rounded-full transition-colors border border-neutral-800"
                       >
@@ -2761,13 +2867,25 @@ export default function Silatnas({ db }) {
                       <div className="p-2 rounded-xl bg-[#0EA5E9]/20 text-[#38BDF8] shrink-0 mt-0.5">
                         <AlertCircle className="w-5 h-5" />
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         <h4 className="text-xs md:text-sm font-heading font-bold uppercase tracking-wider text-white">
                           Pemberitahuan: Ketentuan Mandataris Delegasi Kampus
                         </h4>
                         <p className="text-xs font-body text-[#BAE6FD] leading-relaxed">
                           Diisi oleh mandataris perwakilan kampus sesuai dengan syarat dan ketentuan mandat per kampus terdiri sebanyak <strong className="text-white font-bold">2 (dua) orang</strong> wajib diisi secara individu per delegasi demi kelengkapan data identitas, pemesanan ukuran kaos official, serta verifikasi SWO setiap kampus dan SWP setiap delegasi.
                         </p>
+                        <div className="pt-2 border-t border-sky-500/20 text-xs font-body text-amber-300 flex items-center flex-wrap gap-1.5">
+                          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span><strong>Penting:</strong> Setiap delegasi <strong>hanya boleh mengisi formulir 1 (satu) kali</strong>. Jika sudah pernah mengisi atau terdapat kesalahan data, tidak boleh mengisi ulang dan silakan hubungi Panitia melalui WhatsApp di</span>
+                          <a 
+                            href="https://wa.me/6285736253118?text=Halo%20Panitia%20Silatnas%20BEM%20PTMAI,%20saya%20sudah%20mendaftar%20tetapi%20terdapat%20kesalahan%20data%20yang%20ingin%20diperbaiki."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold underline text-amber-200 hover:text-white transition inline-flex items-center gap-1"
+                          >
+                            <Phone className="w-3 h-3" /> +62 857-3625-3118
+                          </a>.
+                        </div>
                       </div>
                     </div>
 
@@ -3084,13 +3202,46 @@ export default function Silatnas({ db }) {
                     )}
 
                     <div className="pt-4 border-t border-neutral-800 flex justify-end">
-                      <button 
-                        type="submit"
-                        disabled={uploadingSWO || uploadingSWP || isSubmitting}
-                        className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {isSubmitting ? 'Mengirim Pendaftaran...' : (uploadingSWO || uploadingSWP) ? 'Mohon Tunggu...' : 'Kirim Pendaftaran'}
-                      </button>
+                      {(() => {
+                        const duplicateApplicant = checkDuplicateApplicant(formData.nowa, formData.name, formData.campus);
+                        return (
+                          <div className="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-4 w-full">
+                            {duplicateApplicant && (
+                              <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-2 rounded-xl">
+                                <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+                                <span>
+                                  Nomor/Identitas sudah terdaftar. Hubungi panitia:{" "}
+                                  <a 
+                                    href="https://wa.me/6285736253118?text=Halo%20Panitia%20Silatnas,%20saya%20sudah%20mendaftar%20tetapi%20ada%20kesalahan%20data" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="underline font-bold text-white hover:text-amber-300"
+                                  >
+                                    +62 857-3625-3118
+                                  </a>
+                                </span>
+                              </div>
+                            )}
+                            <button 
+                              type="submit"
+                              disabled={uploadingSWO || uploadingSWP || isSubmitting || Boolean(duplicateApplicant)}
+                              className={`font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${
+                                duplicateApplicant 
+                                  ? 'bg-amber-600 text-white cursor-not-allowed' 
+                                  : 'bg-[#0EA5E9] hover:bg-[#0369A1] text-white shadow-[0_0_20px_rgba(14,165,233,0.3)]'
+                              }`}
+                            >
+                              {duplicateApplicant 
+                                ? 'Sudah Terdaftar (Hubungi Panitia)' 
+                                : isSubmitting 
+                                  ? 'Mengirim Pendaftaran...' 
+                                  : (uploadingSWO || uploadingSWP) 
+                                    ? 'Mohon Tunggu...' 
+                                    : 'Kirim Pendaftaran'}
+                            </button>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </form>
                 )}
