@@ -600,7 +600,36 @@ export const addSilatnasApplicant = async (eventId, applicantData) => {
     if (!docSnap.exists()) throw new Error("Database kosong!");
     const data = docSnap.data();
     const updatedCatalog = (data.silatnasCatalog || []).map(v => {
-      if (v.id === eventId) return { ...v, applicants: [...(v.applicants || []), applicantData] };
+      if (v.id === eventId) {
+        const currentApplicants = v.applicants || [];
+        const normPhone = String(applicantData.nowa || applicantData.phone || '').replace(/[^0-9]/g, '');
+        const normName = String(applicantData.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const normCampus = String(applicantData.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+        // Cari apakah peserta ini sudah pernah terdaftar (berdasarkan no WA atau nama + kampus)
+        const existingIdx = currentApplicants.findIndex(app => {
+          const appPhone = String(app.nowa || app.phone || '').replace(/[^0-9]/g, '');
+          const appName = String(app.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+          const appCampus = String(app.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+          const phoneMatch = normPhone && appPhone && (normPhone === appPhone || normPhone.endsWith(appPhone) || appPhone.endsWith(normPhone));
+          const nameMatch = normName && appName && normName === appName;
+          const campusMatch = normCampus && appCampus && normCampus === appCampus;
+
+          return (phoneMatch && nameMatch) || (nameMatch && campusMatch);
+        });
+
+        let updatedApplicants;
+        if (existingIdx !== -1) {
+          // Timpa data lama dengan kiriman data terbaru (menghindari duplikasi)
+          updatedApplicants = [...currentApplicants];
+          updatedApplicants[existingIdx] = applicantData;
+        } else {
+          updatedApplicants = [...currentApplicants, applicantData];
+        }
+
+        return { ...v, applicants: updatedApplicants };
+      }
       return v;
     });
     transaction.update(DOC_REF, { silatnasCatalog: updatedCatalog });
@@ -631,8 +660,36 @@ export const addSilatnasPresensi = async (dayNumber, presensiData) => {
     if (!docSnap.exists()) throw new Error("Database kosong!");
     const data = docSnap.data();
     const currentList = data[fieldKey] || [];
+
+    const normPhone = String(presensiData.nowa || presensiData.phone || '').replace(/[^0-9]/g, '');
+    const normNim = String(presensiData.nim || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const normName = String(presensiData.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const normCampus = String(presensiData.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+    const existingIdx = currentList.findIndex(item => {
+      const itemPhone = String(item.nowa || item.phone || '').replace(/[^0-9]/g, '');
+      const itemNim = String(item.nim || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const itemName = String(item.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const itemCampus = String(item.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+      const phoneMatch = normPhone && itemPhone && (normPhone === itemPhone || normPhone.endsWith(itemPhone) || itemPhone.endsWith(normPhone));
+      const nimMatch = normNim && itemNim && normNim === itemNim && normCampus && itemCampus && normCampus === itemCampus;
+      const nameMatch = normName && itemName && normName === itemName && normCampus && itemCampus && normCampus === itemCampus;
+
+      return (phoneMatch && nameMatch) || nimMatch || nameMatch;
+    });
+
+    const newEntry = { ...presensiData, id: Date.now(), submittedAt: new Date().toISOString() };
+    let updatedList;
+    if (existingIdx !== -1) {
+      updatedList = [...currentList];
+      updatedList[existingIdx] = newEntry; // Perbarui dengan presensi terbaru
+    } else {
+      updatedList = [...currentList, newEntry];
+    }
+
     transaction.update(DOC_REF, { 
-      [fieldKey]: [...currentList, { ...presensiData, id: Date.now(), submittedAt: new Date().toISOString() }] 
+      [fieldKey]: updatedList 
     });
   });
 };

@@ -52,6 +52,7 @@ export default function Silatnas({ db }) {
   });
   const [extraFields, setExtraFields] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
   const [showSizeChartModal, setShowSizeChartModal] = useState(false);
   const [uploadingSWO, setUploadingSWO] = useState(false);
@@ -231,9 +232,12 @@ export default function Silatnas({ db }) {
     motivasi: ''
   });
   const [campusSubmitted, setCampusSubmitted] = useState(false);
+  const [isCampusSubmitting, setIsCampusSubmitting] = useState(false);
 
   const handleCampusSignup = async (e) => {
     e.preventDefault();
+    if (isCampusSubmitting) return;
+    setIsCampusSubmitting(true);
     try {
       const applicantData = {
         name: campusFormData.leaderName,
@@ -254,6 +258,8 @@ export default function Silatnas({ db }) {
     } catch (err) {
       console.error(err);
       alert("Gagal mengirim pendaftaran, pastikan koneksi internet stabil lalu coba lagi.");
+    } finally {
+      setIsCampusSubmitting(false);
     }
   };
 
@@ -694,7 +700,7 @@ export default function Silatnas({ db }) {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    if (!selectedEvent) return;
+    if (!selectedEvent || isSubmitting) return;
 
     if (!formData.sizeKaos) {
       alert("Mohon pilih Ukuran Kaos (Size Chart) terlebih dahulu!");
@@ -713,6 +719,7 @@ export default function Silatnas({ db }) {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const applicantData = { 
         ...formData, 
@@ -735,6 +742,8 @@ export default function Silatnas({ db }) {
     } catch (err) {
       console.error(err);
       alert("Gagal mengirim pendaftaran, pastikan koneksi internet stabil lalu coba lagi.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -3077,10 +3086,10 @@ export default function Silatnas({ db }) {
                     <div className="pt-4 border-t border-neutral-800 flex justify-end">
                       <button 
                         type="submit"
-                        disabled={uploadingSWO || uploadingSWP}
+                        disabled={uploadingSWO || uploadingSWP || isSubmitting}
                         className="bg-[#0EA5E9] hover:bg-[#0369A1] text-white font-bold uppercase tracking-widest text-sm px-10 py-4 rounded-xl transition duration-300 shadow-[0_0_20px_rgba(14,165,233,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {(uploadingSWO || uploadingSWP) ? 'Mohon Tunggu...' : 'Kirim Pendaftaran'}
+                        {isSubmitting ? 'Mengirim Pendaftaran...' : (uploadingSWO || uploadingSWP) ? 'Mohon Tunggu...' : 'Kirim Pendaftaran'}
                       </button>
                     </div>
                   </form>

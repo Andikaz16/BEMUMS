@@ -743,6 +743,96 @@ export default function AdminCMS({ db, onUpdateDB }) {
     });
   };
 
+  // Fungsi utilitas deduplikasi pendaftar delegasi (menghapus data ganda dan mempertahankan data kiriman terbaru)
+  const deduplicateApplicants = (list) => {
+    if (!Array.isArray(list) || list.length === 0) return [];
+
+    const map = new Map();
+
+    list.forEach((app, index) => {
+      const rawPhone = String(app.nowa || app.phone || '').replace(/[^0-9]/g, '');
+      let normPhone = rawPhone;
+      if (normPhone.startsWith('62')) normPhone = '0' + normPhone.substring(2);
+
+      const normName = String(app.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const normCampus = String(app.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const normNim = String(app.nim || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+      let key;
+      if (normPhone.length >= 9) {
+        key = `phone:${normPhone}`;
+      } else if (normNim && normCampus) {
+        key = `nim:${normNim}@${normCampus}`;
+      } else {
+        key = `name:${normName}@${normCampus}`;
+      }
+
+      if (!map.has(key)) {
+        map.set(key, { ...app, _index: index });
+      } else {
+        const existing = map.get(key);
+        const timeExisting = new Date(existing.submittedAt || existing.id || 0).getTime();
+        const timeCurrent = new Date(app.submittedAt || app.id || 0).getTime();
+
+        if (timeCurrent >= timeExisting) {
+          map.set(key, { ...app, _index: index });
+        }
+      }
+    });
+
+    // Secondary pass: sinkronkan jika ada perbedaan minor penulisan no WA tetapi nama & kampus sama persis
+    const secondaryMap = new Map();
+    for (const item of map.values()) {
+      const normName = String(item.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const normCampus = String(item.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const nameCampusKey = `${normName}@${normCampus}`;
+
+      if (!secondaryMap.has(nameCampusKey)) {
+        secondaryMap.set(nameCampusKey, item);
+      } else {
+        const existing = secondaryMap.get(nameCampusKey);
+        const timeExisting = new Date(existing.submittedAt || existing.id || 0).getTime();
+        const timeCurrent = new Date(item.submittedAt || item.id || 0).getTime();
+        if (timeCurrent >= timeExisting) {
+          secondaryMap.set(nameCampusKey, item);
+        }
+      }
+    }
+
+    return Array.from(secondaryMap.values()).map(({ _index, ...cleanItem }) => cleanItem);
+  };
+
+  const handleDeduplicateApplicants = (catalogId) => {
+    const targetCat = (db.silatnasCatalog || []).find(c => c.id === catalogId);
+    if (!targetCat || !targetCat.applicants || targetCat.applicants.length === 0) {
+      showCustomAlert("Belum ada data pendaftar untuk dibersihkan.", "info");
+      return;
+    }
+
+    const currentApplicants = targetCat.applicants || [];
+    const cleanedApplicants = deduplicateApplicants(currentApplicants);
+    const duplicatesCount = currentApplicants.length - cleanedApplicants.length;
+
+    if (duplicatesCount === 0) {
+      showCustomAlert(`Data pendaftar sudah bersih! Tidak ada data ganda ditemukan (semua ${currentApplicants.length} delegasi unik).`, "info");
+      return;
+    }
+
+    confirmAction(
+      `Ditemukan ${duplicatesCount} data pendaftar ganda dari total ${currentApplicants.length} berkas pendaftaran.\n\nApakah Anda ingin menghapus data lama dan menyimpan data terbaru dari masing-masing delegasi?`,
+      () => {
+        const updatedCatalog = (db.silatnasCatalog || []).map(cat => {
+          if (cat.id === catalogId) {
+            return { ...cat, applicants: cleanedApplicants };
+          }
+          return cat;
+        });
+        onUpdateDB({ ...db, silatnasCatalog: updatedCatalog });
+        showCustomAlert(`Berhasil membersihkan ${duplicatesCount} data ganda! Data terbaru dari ${cleanedApplicants.length} delegasi telah disimpan.`, "success");
+      }
+    );
+  };
+
   const handleAddExtraField = () => {
     if (!newFieldLabel.trim()) return;
     const key = newFieldLabel.trim().toLowerCase().replace(/\s+/g, '_');
@@ -1209,7 +1299,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
         no: idx + 1,
         ...row
       }));
-    } else if (filename.includes('silatnas') || processedData.some(d => d.campus)) {
+    } else if (filename.includes('silatnas') || filename.includes('presensi') || processedData.some(d => d.campus)) {
+      // DEDUP: Otomatis buang duplikat jika ada, simpan data terbaru berdasarkan submittedAt / id
+      processedData = deduplicateApplicants(processedData);
+
       // Jika rekap Delegasi Silatnas:
       // Urutkan berdasarkan Asal Kampus (A-Z) agar delegasi dari kampus yang sama langsung sejajar rapi
       processedData.sort((a, b) => {
@@ -3076,13 +3169,25 @@ export default function AdminCMS({ db, onUpdateDB }) {
                               {v.applicants?.length || 0} Pendaftar
                             </span>
                           </div>
-                          <button 
-                            onClick={() => downloadCSV(v.applicants || [], `rekap_silatnas_${v.title.toLowerCase().replace(/\s+/g, '_')}.csv`)}
-                            className="bg-primary hover:bg-primary/80 text-white border border-primary/50 text-[10px] md:text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
-                            disabled={!v.applicants || v.applicants.length === 0}
-                          >
-                            <Download className="w-3.5 h-3.5" /> Download Seluruh Rekap (Excel)
-                          </button>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button 
+                              type="button"
+                              onClick={() => handleDeduplicateApplicants(v.id)}
+                              className="bg-neutral-800 hover:bg-neutral-700 text-amber-300 border border-amber-400/30 text-[10px] md:text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
+                              disabled={!v.applicants || v.applicants.length === 0}
+                              title="Deteksi data ganda dan simpan hanya data terbaru dari setiap delegasi"
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Bersihkan Data Ganda
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => downloadCSV(v.applicants || [], `rekap_silatnas_${v.title.toLowerCase().replace(/\s+/g, '_')}.csv`)}
+                              className="bg-primary hover:bg-primary/80 text-white border border-primary/50 text-[10px] md:text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-sm disabled:opacity-40"
+                              disabled={!v.applicants || v.applicants.length === 0}
+                            >
+                              <Download className="w-3.5 h-3.5" /> Download Seluruh Rekap (Excel)
+                            </button>
+                          </div>
                         </div>
 
                         {/* List Pendaftar (Maksimal 10) */}
@@ -4690,7 +4795,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         </p>
                       </div>
 
-                      {currentRekap.data.length > 0 && currentRekap.dayNumber > 0 && (
+                      {currentRekap.data.length > 0 && (
                         <button
                           type="button"
                           onClick={() => downloadCSV(currentRekap.data, currentRekap.filename)}
