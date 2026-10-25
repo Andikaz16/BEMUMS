@@ -44,7 +44,7 @@ export default function Silatnas({ db }) {
     jabatan: '', 
     nowa: '', 
     sizeKaos: '', 
-    tipeLengan: '', 
+    tipeLengan: 'Lengan Pendek', 
     buktiSWO: '', 
     buktiSWOFileName: '',
     buktiSWP: '', 
@@ -748,10 +748,7 @@ export default function Silatnas({ db }) {
       alert("Mohon pilih Ukuran Kaos (Size Chart) terlebih dahulu!");
       return;
     }
-    if (!formData.tipeLengan) {
-      alert("Mohon pilih Tipe Lengan Kaos (Lengan Pendek atau Lengan Panjang)!");
-      return;
-    }
+
     if (!formData.buktiSWO) {
       alert("Mohon upload Bukti Pembayaran SWO (Sumbangan Wajib Organisasi)!");
       return;
@@ -1689,7 +1686,7 @@ export default function Silatnas({ db }) {
                                   jabatan: '', 
                                   nowa: '', 
                                   sizeKaos: '', 
-                                  tipeLengan: '', 
+                                  tipeLengan: 'Lengan Pendek', 
                                   buktiSWO: '', 
                                   buktiSWOFileName: '',
                                   buktiSWP: '', 
@@ -3009,23 +3006,27 @@ export default function Silatnas({ db }) {
                         </select>
                       </div>
 
-                      {/* Kanan: Tipe Lengan Kaos (Pilihan Lengan Pendek / Lengan Panjang) */}
+                      {/* Kanan: Tipe Lengan Kaos (Dipatenkan Lengan Pendek) */}
                       <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
-                          Tipe Lengan Kaos *
-                        </label>
-                        <select
-                          required
-                          className="w-full bg-black border border-neutral-800 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:border-[#0EA5E9] focus:ring-1 focus:ring-[#0EA5E9] transition-colors font-body text-sm cursor-pointer"
-                          value={formData.tipeLengan}
-                          onChange={(e) => setFormData({ ...formData, tipeLengan: e.target.value })}
-                        >
-                          <option value="" disabled>-- Pilih Tipe Lengan --</option>
-                          <option value="Lengan Pendek">Lengan Pendek</option>
-                          <option value="Lengan Panjang">Lengan Panjang</option>
-                        </select>
+                        <div className="flex justify-between items-center">
+                          <label className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
+                            Tipe Lengan Kaos
+                          </label>
+                          <span className="text-[10px] text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-full font-mono font-bold">
+                            Official Silatnas
+                          </span>
+                        </div>
+                        <div className="w-full bg-neutral-900 border border-neutral-800 text-white px-4 py-3.5 rounded-xl font-body text-sm flex items-center justify-between select-none shadow-sm">
+                          <span className="font-bold text-white flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-sky-400" />
+                            Lengan Pendek
+                          </span>
+                          <span className="text-[11px] text-neutral-400 font-medium">
+                            (Standar Paten)
+                          </span>
+                        </div>
                         <p className="text-[10px] text-neutral-400 font-body">
-                          *Silakan pilih tipe lengan kaos official sesuai kenyamanan Anda (Lengan Pendek / Lengan Panjang).
+                          *Kaos resmi delegasi Silatnas 2026 dipatenkan bertipe <strong>Lengan Pendek</strong>.
                         </p>
                       </div>
                     </div>
