@@ -2932,15 +2932,13 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <div className="space-y-1.5">
+                          <div className="space-y-1.5 max-h-[600px] overflow-y-auto pr-1 custom-scrollbar">
                             {[...presensiList]
                               .sort((a, b) => {
-                                const cA = (a.campus || '').trim().toLowerCase();
-                                const cB = (b.campus || '').trim().toLowerCase();
-                                if (cA !== cB) return cA.localeCompare(cB, 'id');
-                                return (a.name || '').trim().toLowerCase().localeCompare((b.name || '').trim().toLowerCase(), 'id');
+                                const timeA = new Date(a.submittedAt || a.id || 0).getTime();
+                                const timeB = new Date(b.submittedAt || b.id || 0).getTime();
+                                return timeB - timeA;
                               })
-                              .slice(0, 10)
                               .map((att, i) => (
                                 <div key={i} className="bg-neutral-900/90 border border-white/5 p-2.5 sm:p-3 rounded-xl flex items-center justify-between gap-3 hover:border-white/20 transition">
                                   <div className="flex flex-wrap items-center gap-2 min-w-0">
@@ -2995,11 +2993,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
                               ))}
                           </div>
 
-                          {presensiList.length > 10 && (
-                            <div className="text-center py-2 px-3 bg-white/5 border border-white/5 rounded-xl text-neutral-400 text-xs font-body mt-2">
-                              Menampilkan <strong>10 dari {presensiList.length} delegasi yang hadir</strong>. Silakan klik tombol <strong>Download Rekap Presensi (CSV)</strong> di atas untuk melihat seluruh rekap lengkap.
-                            </div>
-                          )}
+                          <div className="text-center py-2 px-3 bg-white/5 border border-white/5 rounded-xl text-neutral-400 text-xs font-body mt-2">
+                            Menampilkan seluruh <strong>{presensiList.length} delegasi yang hadir</strong> (diurutkan dari waktu presensi terbaru di paling atas).
+                          </div>
                         </div>
                       )}
                     </div>
@@ -3198,18 +3194,19 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             </div>
                           ) : (
                             <>
-                              <div className="space-y-1.5">
+                              <div className="space-y-1.5 max-h-[720px] overflow-y-auto pr-1 custom-scrollbar">
                                 {[...(v.applicants || [])]
                                   .sort((a, b) => {
-                                    const cA = (a.campus || '').trim().toLowerCase();
-                                    const cB = (b.campus || '').trim().toLowerCase();
-                                    if (cA !== cB) return cA.localeCompare(cB, 'id');
-                                    return (a.name || '').trim().toLowerCase().localeCompare((b.name || '').trim().toLowerCase(), 'id');
+                                    const timeA = new Date(a.submittedAt || a.id || 0).getTime();
+                                    const timeB = new Date(b.submittedAt || b.id || 0).getTime();
+                                    return timeB - timeA;
                                   })
-                                  .slice(0, 10)
                                   .map((app, i) => (
-                                    <div key={i} className="bg-neutral-900/90 border border-white/5 p-2.5 sm:p-3 rounded-xl flex items-center justify-between gap-3 hover:border-white/20 transition">
+                                    <div key={app.id || app.submittedAt || i} className="bg-neutral-900/90 border border-white/5 p-2.5 sm:p-3 rounded-xl flex items-center justify-between gap-3 hover:border-white/20 transition">
                                       <div className="flex flex-wrap items-center gap-2 min-w-0">
+                                        <span className="w-5 h-5 rounded-md bg-white/10 text-neutral-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                                          {i + 1}
+                                        </span>
                                         <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary font-bold text-[10px] uppercase border border-primary/30 shrink-0">
                                           {app.campus || 'Tanpa Kampus'}
                                         </span>
@@ -3227,6 +3224,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                         {app.nowa && (
                                           <span className="text-neutral-400 font-mono text-[11px] hidden sm:inline shrink-0">
                                             | {app.nowa}
+                                          </span>
+                                        )}
+                                        {app.submittedAt && (
+                                          <span className="text-neutral-500 font-mono text-[10px] hidden md:inline shrink-0">
+                                            | {new Date(app.submittedAt).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                           </span>
                                         )}
                                       </div>
@@ -3290,15 +3292,14 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                   ))}
                               </div>
 
-                              {v.applicants.length > 10 ? (
-                                <div className="text-center py-2 px-3 bg-white/5 border border-white/5 rounded-xl text-neutral-400 text-xs font-body mt-2">
-                                  Menampilkan <strong>10 dari {v.applicants.length} pendaftar</strong>. Untuk melihat dan mengelola seluruh peserta secara lengkap, silakan klik tombol <strong>Download Seluruh Rekap</strong> di atas.
-                                </div>
-                              ) : (
-                                <div className="text-[10px] text-neutral-500 text-right pr-1 pt-1">
-                                  *Menampilkan maksimal 10 pendaftar pada pratinjau ini.
-                                </div>
-                              )}
+                              <div className="text-center py-2 px-3 bg-white/5 border border-white/5 rounded-xl text-neutral-400 text-xs font-body mt-2 flex flex-col sm:flex-row items-center justify-between gap-1.5">
+                                <span>
+                                  Menampilkan seluruh <strong>{v.applicants.length} pendaftar</strong> (diurutkan dari data pendaftar terbaru di paling atas).
+                                </span>
+                                <span className="text-[11px] text-neutral-500">
+                                  Klik tombol <strong>Download Seluruh Rekap (Excel)</strong> di atas untuk menyimpan file lengkap.
+                                </span>
+                              </div>
                             </>
                           )}
                         </div>
