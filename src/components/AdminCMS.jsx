@@ -1010,6 +1010,18 @@ export default function AdminCMS({ db, onUpdateDB }) {
 
   // --- SISTEM QR CODE VIDEOTRON PRESENSI DELEGASI ---
   const DEFAULT_QR_SESSIONS = {
+    stageTransit: {
+      key: 'stageTransit',
+      dropdownLabel: 'Tahap Transit — Presensi Kedatangan & Transit Delegasi',
+      category: 'PRESENSI TRANSIT',
+      title: 'Presensi Kedatangan & Transit Delegasi',
+      speaker: 'Transit & Kedatangan Delegasi',
+      speakerRole: 'Pesma KH Mas Mansur UMS / BBGTK Karanganyar',
+      date: '28 - 29 Oktober 2026',
+      time: 'Terbuka 24 Jam',
+      location: 'Pesma KH Mas Mansur UMS / BBGTK Karanganyar',
+      customUrl: ''
+    },
     stage2: {
       key: 'stage2',
       dropdownLabel: 'Hari Pertama — Presensi Grand Opening & Seminar Nasional',
@@ -1190,6 +1202,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
   const handleToggleStage = (stageKey) => {
     const currentStages = db.silatnasStages || {
       stage1: { id: "stage1", phaseNumber: "01", phaseLabel: "PENDAFTARAN RESMI", title: "Pendaftaran Delegasi Silatnas", subTitle: "Registrasi Mandataris & Berkas Administrasi", desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.", isOpen: true },
+      stageTransit: { id: "stageTransit", phaseNumber: "02", phaseLabel: "PRESENSI TRANSIT", title: "Presensi Transit Delegasi", subTitle: "Kedatangan Pesma / BBGTK Karanganyar", desc: "Presensi kedatangan awal dan pendataan transit delegasi di Pesma KH Mas Mansur UMS atau BBGTK Karanganyar.", isOpen: true },
       stage2: { id: "stage2", phaseNumber: "02", phaseLabel: "HARI PERTAMA", title: "Presensi Grand Opening & Seminar", subTitle: "Opening Ceremony & Seminar Nasional", desc: "Presensi kehadiran delegasi pada pembukaan akbar Silatnas BEM PTMAI 2026 dan Seminar Nasional Kebangsaan di Kampus Universitas Muhammadiyah Surakarta (UMS).", isOpen: false },
       stage3: { id: "stage3", phaseNumber: "03", phaseLabel: "HARI KEDUA", title: "Presensi Persidangan Nasional", subTitle: "Sidang Pleno & Sidang Komisi", desc: "Presensi kehadiran mandataris kampus dalam agenda persidangan, pembahasan tata tertib, sidang komisi isu strategis, dan rekomendasi nasional.", isOpen: false },
       stage4: { id: "stage4", phaseNumber: "04", phaseLabel: "HARI KETIGA", title: "Presensi Penutupan & Resolusi", subTitle: "Closing Ceremony & Malam Keakraban", desc: "Presensi kehadiran malam puncak penutupan Silatnas PTMAI 2026, pembacaan naskah deklarasi resolusi bersama, serta evaluasi kegiatan.", isOpen: false }
@@ -1213,8 +1226,8 @@ export default function AdminCMS({ db, onUpdateDB }) {
   };
 
   const handleDeletePresensi = (dayNumber, itemToDelete) => {
-    confirmAction(`Hapus data presensi "${itemToDelete.name}" (${itemToDelete.campus || 'Tanpa Kampus'})?`, () => {
-      const fieldKey = `silatnasPresensiHari${dayNumber}`;
+    confirmAction(`Hapus data presensi "${itemToDelete.name || itemToDelete.name1 || 'Delegasi'}" (${itemToDelete.campus || 'Tanpa Kampus'})?`, () => {
+      const fieldKey = dayNumber === 'transit' ? 'silatnasPresensiTransit' : `silatnasPresensiHari${dayNumber}`;
       const currentList = db[fieldKey] || [];
       const updated = currentList.filter(item => {
         if (item.id && itemToDelete.id) return item.id !== itemToDelete.id;
@@ -1247,6 +1260,11 @@ export default function AdminCMS({ db, onUpdateDB }) {
       name: "Nama Lengkap",
       jabatan: "Jabatan",
       nowa: "No. WhatsApp",
+      name1: "Nama Delegasi 1",
+      name2: "Nama Delegasi 2",
+      jamTiba: "Jam Tiba / Kedatangan",
+      tempatTransit: "Pilihan Tempat Transit",
+      catatan: "Catatan Kedatangan",
       sizeKaos: "Ukuran Kaos",
       tipeLengan: "Tipe Lengan",
       buktiSWO: "Bukti Pembayaran SWO",
@@ -1330,6 +1348,10 @@ export default function AdminCMS({ db, onUpdateDB }) {
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     } else if (filename.includes('silatnas')) {
       const preferredOrder = ['no', 'campus', 'name', 'jabatan', 'nowa', 'sizeKaos', 'tipeLengan', 'buktiSWO', 'buktiSWP', 'buktiSWOFileName', 'buktiSWPFileName', 'submittedAt'];
+      const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
+      rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
+    } else if (filename.includes('transit')) {
+      const preferredOrder = ['no', 'campus', 'name1', 'name2', 'jamTiba', 'tempatTransit', 'nowa', 'catatan', 'submittedAt'];
       const otherKeys = rawKeys.filter(k => !preferredOrder.includes(k));
       rawKeys = [...preferredOrder.filter(k => rawKeys.includes(k)), ...otherKeys];
     }
@@ -2745,6 +2767,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 {(() => {
                   const stages = db.silatnasStages || {
                     stage1: { id: "stage1", phaseLabel: "PENDAFTARAN RESMI", title: "Pendaftaran Delegasi Silatnas", isOpen: (db.silatnasCatalog && db.silatnasCatalog[0]?.isOpen) ?? true },
+                    stageTransit: { id: "stageTransit", phaseLabel: "PRESENSI TRANSIT", title: "Presensi Transit Delegasi", isOpen: true },
                     stage2: { id: "stage2", phaseLabel: "HARI PERTAMA", title: "Presensi Grand Opening & Seminar", isOpen: false },
                     stage3: { id: "stage3", phaseLabel: "HARI KEDUA", title: "Presensi Persidangan Nasional", isOpen: false },
                     stage4: { id: "stage4", phaseLabel: "HARI KETIGA", title: "Presensi Penutupan & Resolusi", isOpen: false }
@@ -2758,6 +2781,14 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       count: (db.silatnasCatalog && db.silatnasCatalog[0]?.applicants?.length) || 0,
                       countLabel: 'Pendaftar',
                       isOpen: stages.stage1?.isOpen ?? ((db.silatnasCatalog && db.silatnasCatalog[0]?.isOpen) ?? true)
+                    },
+                    { 
+                      key: 'stageTransit', 
+                      label: 'Tahap Transit: Presensi Kedatangan', 
+                      tag: 'TRANSIT',
+                      count: (db.silatnasPresensiTransit || []).length,
+                      countLabel: 'Delegasi',
+                      isOpen: stages.stageTransit?.isOpen ?? true
                     },
                     { 
                       key: 'stage2', 
@@ -2786,7 +2817,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   ];
 
                   return (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
                       {stageItems.map(item => (
                         <div 
                           key={item.key} 
@@ -4352,6 +4383,13 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   : Boolean(db.silatnasStages?.[selectedQrStage]?.isOpen);
 
               const dayMap = {
+                stageTransit: {
+                  id: 'transit',
+                  title: 'Presensi Transit Delegasi (Pesma / BBGTK)',
+                  dayNumber: 'transit',
+                  filename: 'rekap_presensi_transit_delegasi.csv',
+                  data: db.silatnasPresensiTransit || []
+                },
                 stage2: {
                   id: 'hari1',
                   title: 'Presensi Hari Pertama (Grand Opening & Seminar)',
@@ -4442,8 +4480,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
                         </div>
 
                         {/* Attendance Counter Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 pt-2">
                           {[
+                            { key: 'stageTransit', label: 'Transit (Pesma/BBGTK)', count: (db.silatnasPresensiTransit || []).length },
                             { key: 'stage2', label: 'Hari 1 (Opening)', count: (db.silatnasPresensiHari1 || []).length },
                             { key: 'stage3', label: 'Hari 2 (Sidang)', count: (db.silatnasPresensiHari2 || []).length },
                             { key: 'stage4', label: 'Hari 3 (Closing)', count: (db.silatnasPresensiHari3 || []).length },
@@ -4542,7 +4581,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       Pilih Agenda Kegiatan Silatnas
                     </h3>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
                       {Object.values(DEFAULT_QR_SESSIONS).map((ses) => {
                         const customCfg = getStageQrConfig(ses.key);
                         const isSelected = selectedQrStage === ses.key;
@@ -4551,7 +4590,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             ? (db.silatnasStages?.stage1?.isOpen ?? db.silatnasCatalog?.[0]?.isOpen ?? true)
                             : Boolean(db.silatnasStages?.[ses.key]?.isOpen);
                         const count =
-                          ses.key === 'stage2'
+                          ses.key === 'stageTransit'
+                            ? (db.silatnasPresensiTransit || []).length
+                            : ses.key === 'stage2'
                             ? (db.silatnasPresensiHari1 || []).length
                             : ses.key === 'stage3'
                             ? (db.silatnasPresensiHari2 || []).length
@@ -4819,12 +4860,26 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             <tr>
                               <th className="py-3 px-3">No</th>
                               <th className="py-3 px-3">Waktu Presensi</th>
-                              <th className="py-3 px-3">Nama Delegasi</th>
-                              <th className="py-3 px-3">Asal Kampus PTMAI</th>
-                              <th className="py-3 px-3">NIM / Identitas</th>
-                              <th className="py-3 px-3">No WhatsApp</th>
-                              <th className="py-3 px-3">Sesi / Komisi</th>
-                              <th className="py-3 px-3">Status Hadir</th>
+                              {currentRekap.id === 'transit' ? (
+                                <>
+                                  <th className="py-3 px-3">Asal Kampus</th>
+                                  <th className="py-3 px-3">Delegasi 1</th>
+                                  <th className="py-3 px-3">Delegasi 2</th>
+                                  <th className="py-3 px-3">Jam Tiba</th>
+                                  <th className="py-3 px-3">Tempat Transit</th>
+                                  <th className="py-3 px-3">No WhatsApp</th>
+                                  <th className="py-3 px-3">Catatan</th>
+                                </>
+                              ) : (
+                                <>
+                                  <th className="py-3 px-3">Nama Delegasi</th>
+                                  <th className="py-3 px-3">Asal Kampus PTMAI</th>
+                                  <th className="py-3 px-3">NIM / Identitas</th>
+                                  <th className="py-3 px-3">No WhatsApp</th>
+                                  <th className="py-3 px-3">Sesi / Komisi</th>
+                                  <th className="py-3 px-3">Status Hadir</th>
+                                </>
+                              )}
                               <th className="py-3 px-3 text-center">Aksi</th>
                             </tr>
                           </thead>
@@ -4835,22 +4890,40 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                 <td className="py-3 px-3 font-mono text-neutral-300">
                                   {item.submittedAt ? new Date(item.submittedAt).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
                                 </td>
-                                <td className="py-3 px-3 font-bold text-white">{item.name}</td>
-                                <td className="py-3 px-3 text-amber-300">{item.campus || '-'}</td>
-                                <td className="py-3 px-3 font-mono text-neutral-300">{item.nim || '-'}</td>
-                                <td className="py-3 px-3 font-mono text-neutral-300">{item.nowa || '-'}</td>
-                                <td className="py-3 px-3 text-neutral-300">{item.sesi || item.komisi || item.jabatan || '-'}</td>
-                                <td className="py-3 px-3">
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                    {item.status || item.statusSuara || 'Hadir'}
-                                  </span>
-                                </td>
+                                {currentRekap.id === 'transit' ? (
+                                  <>
+                                    <td className="py-3 px-3 text-amber-300 font-bold">{item.campus || '-'}</td>
+                                    <td className="py-3 px-3 font-bold text-white">{item.name1 || '-'}</td>
+                                    <td className="py-3 px-3 font-bold text-white">{item.name2 || '-'}</td>
+                                    <td className="py-3 px-3 text-sky-300 font-semibold">{item.jamTiba || '-'}</td>
+                                    <td className="py-3 px-3">
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                        {item.tempatTransit || 'Pesma KH Mas Mansur UMS'}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 font-mono text-neutral-300">{item.nowa || '-'}</td>
+                                    <td className="py-3 px-3 text-neutral-300 text-[11px] max-w-xs truncate">{item.catatan || '-'}</td>
+                                  </>
+                                ) : (
+                                  <>
+                                    <td className="py-3 px-3 font-bold text-white">{item.name}</td>
+                                    <td className="py-3 px-3 text-amber-300">{item.campus || '-'}</td>
+                                    <td className="py-3 px-3 font-mono text-neutral-300">{item.nim || '-'}</td>
+                                    <td className="py-3 px-3 font-mono text-neutral-300">{item.nowa || '-'}</td>
+                                    <td className="py-3 px-3 text-neutral-300">{item.sesi || item.komisi || item.jabatan || '-'}</td>
+                                    <td className="py-3 px-3">
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                        {item.status || item.statusSuara || 'Hadir'}
+                                      </span>
+                                    </td>
+                                  </>
+                                )}
                                 <td className="py-3 px-3 text-center">
-                                  {currentRekap.dayNumber > 0 && (
+                                  {currentRekap.dayNumber !== 0 && (
                                     <button
                                       type="button"
                                       onClick={() => handleDeletePresensi(currentRekap.dayNumber, item)}
-                                      className="p-1.5 rounded-lg bg-red-900/30 hover:bg-red-900/60 text-red-400 transition"
+                                      className="p-1.5 rounded-lg bg-red-900/30 hover:bg-red-900/60 text-red-400 transition cursor-pointer"
                                       title="Hapus presensi"
                                     >
                                       <Trash2 className="w-3.5 h-3.5" />
@@ -4875,7 +4948,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
           (() => {
             const cfg = getStageQrConfig(selectedQrStage);
             const attendeeList =
-              selectedQrStage === 'stage2'
+              selectedQrStage === 'stageTransit'
+                ? (db.silatnasPresensiTransit || [])
+                : selectedQrStage === 'stage2'
                 ? (db.silatnasPresensiHari1 || [])
                 : selectedQrStage === 'stage3'
                 ? (db.silatnasPresensiHari2 || [])
@@ -5142,7 +5217,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                               <div className="flex items-center gap-2 truncate pr-2">
                                 <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                                 <span className="font-semibold text-white truncate">
-                                  {att.name}
+                                  {att.name || (att.name1 ? `${att.name1} & ${att.name2 || ''}` : 'Delegasi')}
                                 </span>
                               </div>
                               <span className="text-[10px] text-amber-300/90 shrink-0 truncate max-w-[140px]">

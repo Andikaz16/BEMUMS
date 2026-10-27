@@ -9,7 +9,7 @@ import {
   Info, AlertCircle, AlertTriangle, Upload, ExternalLink, Image as ImageIcon, MessageCircle,
   Lock, Unlock, CheckCircle2, ClipboardCheck
 } from 'lucide-react';
-import { addSilatnasApplicant, addSilatnasShuttle, addSilatnasPresensi } from '../db';
+import { addSilatnasApplicant, addSilatnasShuttle, addSilatnasPresensi, addSilatnasPresensiTransit } from '../db';
 
 
 const faqData = [
@@ -98,23 +98,30 @@ export default function Silatnas({ db }) {
     }
   }, [selectedEvent, showSizeChartModal]);
 
-  // Helper deteksi parameter QR Presensi (?presensi=stage2 / #silatnas?presensi=stage2)
+  // Helper deteksi parameter QR Presensi (?presensi=stageTransit / #silatnas?presensi=stageTransit)
   const getQrStageFromUrl = () => {
     if (typeof window === 'undefined') return null;
+    const validStages = ['stage1', 'stageTransit', 'stage2', 'stage3', 'stage4'];
+    const normalize = (val) => {
+      if (!val) return null;
+      const lower = val.toLowerCase();
+      if (lower === 'stagetransit' || lower === 'transit') return 'stageTransit';
+      return validStages.find(s => s.toLowerCase() === lower) || null;
+    };
     const searchParams = new URLSearchParams(window.location.search);
-    const fromSearch = searchParams.get('presensi');
-    if (fromSearch && ['stage1', 'stage2', 'stage3', 'stage4'].includes(fromSearch)) return fromSearch;
+    const fromSearch = normalize(searchParams.get('presensi'));
+    if (fromSearch) return fromSearch;
     const hash = window.location.hash || '';
     const qIdx = hash.indexOf('?');
     if (qIdx !== -1) {
       const hashParams = new URLSearchParams(hash.substring(qIdx + 1));
-      const fromHash = hashParams.get('presensi');
-      if (fromHash && ['stage1', 'stage2', 'stage3', 'stage4'].includes(fromHash)) return fromHash;
+      const fromHash = normalize(hashParams.get('presensi'));
+      if (fromHash) return fromHash;
     }
     return null;
   };
 
-  // 4 Stages Stepper State
+  // 5 Stages Stepper State
   const [qrScannedStage, setQrScannedStage] = useState(() => getQrStageFromUrl());
   const [activeStage, setActiveStage] = useState(() => getQrStageFromUrl() || 'stage1');
 
@@ -143,15 +150,50 @@ export default function Silatnas({ db }) {
       ? db.silatnasStages.stage1.isOpen 
       : (catalog[0]?.isOpen ?? true);
     const stages = db?.silatnasStages || {};
-    const checkOpen = (k) => k === 'stage1' ? isStage1Open : Boolean(stages[k]?.isOpen);
+    const checkOpen = (k) => {
+      if (k === 'stage1') return isStage1Open;
+      if (k === 'stageTransit') return stages.stageTransit?.isOpen !== undefined ? stages.stageTransit.isOpen : true;
+      return Boolean(stages[k]?.isOpen);
+    };
 
     if (!checkOpen(activeStage)) {
-      const openKey = ['stage1', 'stage2', 'stage3', 'stage4'].find(k => checkOpen(k));
+      const openKey = ['stage1', 'stageTransit', 'stage2', 'stage3', 'stage4'].find(k => checkOpen(k));
       if (openKey) {
         setActiveStage(openKey);
       }
     }
   }, [db?.silatnasStages, db?.silatnasCatalog, activeStage, qrScannedStage]);
+
+  // Presensi Transit State (1 perwakilan mengisi untuk 2 delegasi)
+  const [presensiTransitForm, setPresensiTransitForm] = useState({
+    name1: '',
+    name2: '',
+    campus: '',
+    nowa: '',
+    jamTiba: '',
+    tempatTransit: 'Pesma KH Mas Mansur UMS',
+    catatan: ''
+  });
+  const [presensiTransitLoading, setPresensiTransitLoading] = useState(false);
+  const [presensiTransitSubmitted, setPresensiTransitSubmitted] = useState(false);
+
+  const handlePresensiTransitSubmit = async (e) => {
+    e.preventDefault();
+    if (!presensiTransitForm.name1 || !presensiTransitForm.name2 || !presensiTransitForm.campus || !presensiTransitForm.nowa || !presensiTransitForm.jamTiba || !presensiTransitForm.tempatTransit) {
+      alert("Mohon lengkapi seluruh kolom wajib formulir transit delegasi!");
+      return;
+    }
+    setPresensiTransitLoading(true);
+    try {
+      await addSilatnasPresensiTransit(presensiTransitForm);
+      setPresensiTransitSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mencatat presensi transit, mohon periksa koneksi internet Anda.");
+    } finally {
+      setPresensiTransitLoading(false);
+    }
+  };
 
   // Presensi Hari 1 State
   const [presensiHari1Form, setPresensiHari1Form] = useState({
@@ -1447,7 +1489,7 @@ export default function Silatnas({ db }) {
 
           {/* Stepper Container */}
           {(() => {
-            const stagesData = db?.silatnasStages || {
+            const defaultStages = {
               stage1: {
                 id: "stage1",
                 phaseNumber: "01",
@@ -1457,9 +1499,18 @@ export default function Silatnas({ db }) {
                 desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.",
                 isOpen: (catalog && catalog[0] && catalog[0].isOpen !== undefined) ? catalog[0].isOpen : true
               },
+              stageTransit: {
+                id: "stageTransit",
+                phaseNumber: "02",
+                phaseLabel: "PRESENSI TRANSIT",
+                title: "Presensi Transit Delegasi",
+                subTitle: "Kedatangan Pesma / BBGTK Karanganyar",
+                desc: "Presensi kedatangan awal dan pendataan transit delegasi di Pesma KH Mas Mansur UMS atau BBGTK Karanganyar.",
+                isOpen: true
+              },
               stage2: {
                 id: "stage2",
-                phaseNumber: "02",
+                phaseNumber: "03",
                 phaseLabel: "HARI PERTAMA",
                 title: "Presensi Grand Opening & Seminar",
                 subTitle: "Opening Ceremony & Seminar Nasional",
@@ -1468,7 +1519,7 @@ export default function Silatnas({ db }) {
               },
               stage3: {
                 id: "stage3",
-                phaseNumber: "03",
+                phaseNumber: "04",
                 phaseLabel: "HARI KEDUA",
                 title: "Presensi Persidangan Nasional",
                 subTitle: "Sidang Pleno & Sidang Komisi",
@@ -1477,13 +1528,18 @@ export default function Silatnas({ db }) {
               },
               stage4: {
                 id: "stage4",
-                phaseNumber: "04",
+                phaseNumber: "05",
                 phaseLabel: "HARI KETIGA",
                 title: "Presensi Penutupan & Resolusi",
                 subTitle: "Closing Ceremony & Malam Keakraban",
                 desc: "Presensi kehadiran malam puncak penutupan Silatnas PTMAI 2026, pembacaan naskah deklarasi resolusi bersama, serta evaluasi kegiatan.",
                 isOpen: false
               }
+            };
+
+            const stagesData = {
+              ...defaultStages,
+              ...(db?.silatnasStages || {})
             };
 
             const isStage1Open = db?.silatnasStages?.stage1?.isOpen !== undefined 
@@ -1513,10 +1569,11 @@ export default function Silatnas({ db }) {
 
             return (
               <div className="max-w-4xl mx-auto w-full space-y-6">
-                {/* 4 HORIZONTAL STEPPER TABS (Glassmorphism & High-Contrast Typography) */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-white/[0.08] border border-white/20 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+                {/* 5 HORIZONTAL STEPPER TABS (Glassmorphism & High-Contrast Typography) */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-white/[0.08] border border-white/20 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
                   {[
                     { key: 'stage1', stg: { ...stagesData.stage1, isOpen: isStage1Open || qrScannedStage === 'stage1' } },
+                    { key: 'stageTransit', stg: { ...stagesData.stageTransit, isOpen: stagesData.stageTransit?.isOpen !== undefined ? stagesData.stageTransit.isOpen : true || qrScannedStage === 'stageTransit' } },
                     { key: 'stage2', stg: { ...stagesData.stage2, isOpen: stagesData.stage2?.isOpen || qrScannedStage === 'stage2' } },
                     { key: 'stage3', stg: { ...stagesData.stage3, isOpen: stagesData.stage3?.isOpen || qrScannedStage === 'stage3' } },
                     { key: 'stage4', stg: { ...stagesData.stage4, isOpen: stagesData.stage4?.isOpen || qrScannedStage === 'stage4' } }
@@ -1699,6 +1756,204 @@ export default function Silatnas({ db }) {
                               <Sparkles className="w-4 h-4" /> Buka Formulir Pendaftaran Delegasi
                             </button>
                           </div>
+                        </div>
+                      )}
+
+                      {/* === TAHAP TRANSIT: PRESENSI KEDATANGAN & TRANSIT DELEGASI === */}
+                      {activeStage === 'stageTransit' && (
+                        <div>
+                          {presensiTransitSubmitted ? (
+                            <div className="text-center py-10 space-y-5">
+                              <div className="w-16 h-16 rounded-full bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(52,211,153,0.3)]">
+                                <CheckCircle className="w-8 h-8" />
+                              </div>
+                              <h4 className="text-2xl font-heading font-bold uppercase text-white">
+                                Presensi Transit Berhasil Dicatat!
+                              </h4>
+                              <p className="text-xs md:text-sm font-body text-neutral-300 max-w-lg mx-auto leading-relaxed">
+                                Terima kasih, data kedatangan delegasi dari <strong className="text-sky-300">{presensiTransitForm.campus}</strong> telah berhasil disimpan. Tim LO & Akomodasi telah menerima konfirmasi kedatangan Anda di <strong className="text-amber-300">{presensiTransitForm.tempatTransit}</strong>.
+                              </p>
+
+                              {/* Summary Card */}
+                              <div className="max-w-md mx-auto p-4 rounded-2xl bg-white/[0.05] border border-white/10 text-left text-xs font-body space-y-2">
+                                <div className="flex justify-between border-b border-white/10 pb-1.5">
+                                  <span className="text-slate-400">Asal Kampus:</span>
+                                  <span className="font-bold text-white text-right">{presensiTransitForm.campus}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-white/10 pb-1.5">
+                                  <span className="text-slate-400">Delegasi 1:</span>
+                                  <span className="font-bold text-white text-right">{presensiTransitForm.name1}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-white/10 pb-1.5">
+                                  <span className="text-slate-400">Delegasi 2:</span>
+                                  <span className="font-bold text-white text-right">{presensiTransitForm.name2}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-white/10 pb-1.5">
+                                  <span className="text-slate-400">Tempat Transit:</span>
+                                  <span className="font-bold text-amber-300 text-right">{presensiTransitForm.tempatTransit}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-white/10 pb-1.5">
+                                  <span className="text-slate-400">Jam Tiba:</span>
+                                  <span className="font-bold text-white text-right">{presensiTransitForm.jamTiba}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-400">Kontak WhatsApp:</span>
+                                  <span className="font-bold text-sky-300 text-right">{presensiTransitForm.nowa}</span>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPresensiTransitSubmitted(false);
+                                  setPresensiTransitForm({
+                                    name1: '',
+                                    name2: '',
+                                    campus: '',
+                                    nowa: '',
+                                    jamTiba: '',
+                                    tempatTransit: 'Pesma KH Mas Mansur UMS',
+                                    catatan: ''
+                                  });
+                                }}
+                                className="mt-4 px-6 py-2.5 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition border border-neutral-700 cursor-pointer"
+                              >
+                                Isi Presensi Transit Lain
+                              </button>
+                            </div>
+                          ) : (
+                            <form onSubmit={handlePresensiTransitSubmit} className="space-y-5 text-left">
+                              {/* Alert Ketentuan */}
+                              <div className="p-4 bg-sky-500/15 backdrop-blur-md rounded-2xl border border-sky-400/30 text-xs md:text-sm text-sky-100 font-medium flex items-start gap-3">
+                                <Info className="w-5 h-5 text-sky-300 shrink-0 mt-0.5" />
+                                <div className="space-y-1">
+                                  <p className="font-bold text-white">Formulir Presensi & Kedatangan Transit Delegasi</p>
+                                  <p className="text-xs text-sky-100 leading-relaxed">
+                                    Formulir ini diisi oleh <strong>1 (satu) orang perwakilan</strong> untuk mendata <strong>2 (dua) orang delegasi</strong> dari kampus Anda yang telah tiba dan transit di tempat yang telah disediakan (Pesma KH Mas Mansur UMS atau BBGTK Karanganyar).
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Nama Delegasi 1 *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: Ahmad Fauzan (Presma)"
+                                    value={presensiTransitForm.name1}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, name1: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Nama Delegasi 2 *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: Budi Prasetyo (Wapresma)"
+                                    value={presensiTransitForm.name2}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, name2: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Nama Univ / Asal Kampus *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    list="silatnas-campus-datalist"
+                                    placeholder="Ketik atau pilih nama kampus PTMAI Anda"
+                                    value={presensiTransitForm.campus}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, campus: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Jam Tiba / Waktu Kedatangan *
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    required
+                                    placeholder="Contoh: 14:30 WIB / 09:00"
+                                    value={presensiTransitForm.jamTiba}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, jamTiba: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Pilih Tempat Transit *
+                                  </label>
+                                  <select 
+                                    value={presensiTransitForm.tempatTransit}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, tempatTransit: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 transition"
+                                  >
+                                    <option value="Pesma KH Mas Mansur UMS" className="bg-slate-900 text-white">Pesma KH Mas Mansur UMS</option>
+                                    <option value="BBGTK Karanganyar" className="bg-slate-900 text-white">BBGTK Karanganyar</option>
+                                  </select>
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Nomor WhatsApp Aktif Perwakilan *
+                                  </label>
+                                  <input 
+                                    type="tel"
+                                    required
+                                    placeholder="Contoh: 081234567890"
+                                    value={presensiTransitForm.nowa}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, nowa: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
+                                  />
+                                </div>
+
+                                <div className="space-y-1.5 md:col-span-2">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                                    Catatan / Keterangan Tambahan (Opsional)
+                                  </label>
+                                  <input 
+                                    type="text"
+                                    placeholder="Contoh: Tiba bersama rombongan 2 orang, naik kereta api"
+                                    value={presensiTransitForm.catatan}
+                                    onChange={e => setPresensiTransitForm({ ...presensiTransitForm, catatan: e.target.value })}
+                                    className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="pt-2">
+                                <button
+                                  type="submit"
+                                  disabled={presensiTransitLoading}
+                                  className="w-full bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-heading font-extrabold uppercase tracking-widest text-xs md:text-sm py-4 rounded-xl transition duration-300 shadow-[0_0_25px_rgba(14,165,233,0.4)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                  {presensiTransitLoading ? (
+                                    <>
+                                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                      Menyimpan Presensi Transit...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Send className="w-4 h-4" /> Kirim Presensi Transit Delegasi
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </form>
+                          )}
                         </div>
                       )}
 

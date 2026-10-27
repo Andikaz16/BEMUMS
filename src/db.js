@@ -192,9 +192,18 @@ const DEFAULT_DATA = {
       desc: "Pengisian formulir resmi delegasi perwakilan kampus PTMAI se-Indonesia, pemilihan official merchandise kaos, dan verifikasi bukti pembayaran SWO & SWP.",
       isOpen: true
     },
+    stageTransit: {
+      id: "stageTransit",
+      phaseNumber: "02",
+      phaseLabel: "PRESENSI TRANSIT",
+      title: "Presensi Transit Delegasi",
+      subTitle: "Kedatangan Pesma / BBGTK Karanganyar",
+      desc: "Presensi kedatangan awal dan pendataan transit delegasi di Pesma KH Mas Mansur UMS atau BBGTK Karanganyar.",
+      isOpen: true
+    },
     stage2: {
       id: "stage2",
-      phaseNumber: "02",
+      phaseNumber: "03",
       phaseLabel: "HARI PERTAMA",
       title: "Presensi Grand Opening & Seminar",
       subTitle: "Opening Ceremony & Seminar Nasional",
@@ -203,7 +212,7 @@ const DEFAULT_DATA = {
     },
     stage3: {
       id: "stage3",
-      phaseNumber: "03",
+      phaseNumber: "04",
       phaseLabel: "HARI KEDUA",
       title: "Presensi Persidangan Nasional",
       subTitle: "Sidang Pleno & Sidang Komisi",
@@ -212,7 +221,7 @@ const DEFAULT_DATA = {
     },
     stage4: {
       id: "stage4",
-      phaseNumber: "04",
+      phaseNumber: "05",
       phaseLabel: "HARI KETIGA",
       title: "Presensi Penutupan & Resolusi",
       subTitle: "Closing Ceremony & Malam Keakraban",
@@ -220,6 +229,7 @@ const DEFAULT_DATA = {
       isOpen: false
     }
   },
+  silatnasPresensiTransit: [],
   silatnasPresensiHari1: [],
   silatnasPresensiHari2: [],
   silatnasPresensiHari3: [],
@@ -427,7 +437,11 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
         combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
         combinedData.silatnasShuttle = kData.silatnasShuttle || [];
         combinedData.silatnasGroupWaLink = kData.silatnasGroupWaLink || '';
-        combinedData.silatnasStages = kData.silatnasStages || DEFAULT_DATA.silatnasStages;
+        combinedData.silatnasStages = {
+          ...DEFAULT_DATA.silatnasStages,
+          ...(kData.silatnasStages || {})
+        };
+        combinedData.silatnasPresensiTransit = kData.silatnasPresensiTransit || [];
         combinedData.silatnasPresensiHari1 = kData.silatnasPresensiHari1 || [];
         combinedData.silatnasPresensiHari2 = kData.silatnasPresensiHari2 || [];
         combinedData.silatnasPresensiHari3 = kData.silatnasPresensiHari3 || [];
@@ -539,6 +553,7 @@ export const saveDB = async (data) => {
       silatnasShuttle: silatnasShuttle || [],
       silatnasGroupWaLink: data.silatnasGroupWaLink || '',
       silatnasStages: data.silatnasStages || DEFAULT_DATA.silatnasStages,
+      silatnasPresensiTransit: data.silatnasPresensiTransit || [],
       silatnasPresensiHari1: data.silatnasPresensiHari1 || [],
       silatnasPresensiHari2: data.silatnasPresensiHari2 || [],
       silatnasPresensiHari3: data.silatnasPresensiHari3 || [],
@@ -653,9 +668,53 @@ export const updateSilatnasGroupWaLink = async (link) => {
   await updateDoc(DOC_REF, { silatnasGroupWaLink: link });
 };
 
+export const addSilatnasPresensiTransit = async (transitData) => {
+  const DOC_REF = doc(firestore, "cms", "kegiatan");
+  await runTransaction(firestore, async (transaction) => {
+    const docSnap = await transaction.get(DOC_REF);
+    if (!docSnap.exists()) throw new Error("Database kosong!");
+    const data = docSnap.data();
+    const currentList = data.silatnasPresensiTransit || [];
+
+    const normPhone = String(transitData.nowa || transitData.phone || '').replace(/[^0-9]/g, '');
+    const normCampus = String(transitData.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const normName1 = String(transitData.name1 || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+    const existingIdx = currentList.findIndex(item => {
+      const itemPhone = String(item.nowa || item.phone || '').replace(/[^0-9]/g, '');
+      const itemCampus = String(item.campus || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const itemName1 = String(item.name1 || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+      const phoneMatch = normPhone && itemPhone && normPhone === itemPhone;
+      const campusMatch = normCampus && itemCampus && normCampus === itemCampus;
+      const nameMatch = normName1 && itemName1 && normName1 === itemName1;
+
+      return (phoneMatch && campusMatch) || (nameMatch && campusMatch);
+    });
+
+    const newEntry = { 
+      ...transitData, 
+      id: Date.now(), 
+      submittedAt: new Date().toISOString() 
+    };
+
+    let updatedList;
+    if (existingIdx !== -1) {
+      updatedList = [...currentList];
+      updatedList[existingIdx] = newEntry; // Perbarui data kedatangan transit terbaru
+    } else {
+      updatedList = [...currentList, newEntry];
+    }
+
+    transaction.update(DOC_REF, { silatnasPresensiTransit: updatedList });
+  });
+};
+
 export const addSilatnasPresensi = async (dayNumber, presensiData) => {
   const DOC_REF = doc(firestore, "cms", "kegiatan");
-  const fieldKey = `silatnasPresensiHari${dayNumber}`;
+  const fieldKey = (dayNumber === 'transit' || dayNumber === 'Transit') 
+    ? 'silatnasPresensiTransit' 
+    : `silatnasPresensiHari${dayNumber}`;
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
     if (!docSnap.exists()) throw new Error("Database kosong!");
