@@ -2821,7 +2821,20 @@ export default function AdminCMS({ db, onUpdateDB }) {
                       {stageItems.map(item => (
                         <div 
                           key={item.key} 
-                          className="bg-black/50 border border-white/10 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-white/20 transition"
+                          onClick={() => {
+                            if (item.key === 'stageTransit') setAdminPresensiTab('transit');
+                            else if (item.key === 'stage2') setAdminPresensiTab('hari1');
+                            else if (item.key === 'stage3') setAdminPresensiTab('hari2');
+                            else if (item.key === 'stage4') setAdminPresensiTab('hari3');
+                          }}
+                          className={`bg-black/50 border rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-white/30 transition cursor-pointer ${
+                            (item.key === 'stageTransit' && adminPresensiTab === 'transit') ||
+                            (item.key === 'stage2' && adminPresensiTab === 'hari1') ||
+                            (item.key === 'stage3' && adminPresensiTab === 'hari2') ||
+                            (item.key === 'stage4' && adminPresensiTab === 'hari3')
+                              ? 'border-primary ring-1 ring-primary bg-primary/10'
+                              : 'border-white/10'
+                          }`}
                         >
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
@@ -2883,8 +2896,9 @@ export default function AdminCMS({ db, onUpdateDB }) {
                   </div>
 
                   {/* Sub-tab Presensi Selector */}
-                  <div className="flex items-center gap-1.5 bg-black/60 p-1.5 rounded-xl border border-white/10 self-start sm:self-auto">
+                  <div className="flex items-center gap-1.5 bg-black/60 p-1.5 rounded-xl border border-white/10 self-start sm:self-auto flex-wrap">
                     {[
+                      { id: 'transit', label: 'Transit (Pesma/BBGTK)', dayNumber: 'transit', list: db.silatnasPresensiTransit || [] },
                       { id: 'hari1', label: 'Hari 1 (Opening)', dayNumber: 1, list: db.silatnasPresensiHari1 || [] },
                       { id: 'hari2', label: 'Hari 2 (Sidang)', dayNumber: 2, list: db.silatnasPresensiHari2 || [] },
                       { id: 'hari3', label: 'Hari 3 (Closing)', dayNumber: 3, list: db.silatnasPresensiHari3 || [] }
@@ -2911,6 +2925,12 @@ export default function AdminCMS({ db, onUpdateDB }) {
                 {/* Sub-tab Content */}
                 {(() => {
                   const dayMap = {
+                    transit: {
+                      title: "Presensi Transit Delegasi (Pesma KH Mas Mansur UMS / BBGTK Karanganyar)",
+                      dayNumber: 'transit',
+                      filename: "rekap_presensi_transit_delegasi.csv",
+                      data: db.silatnasPresensiTransit || []
+                    },
                     hari1: {
                       title: "Presensi Hari Pertama (Grand Opening & Seminar)",
                       dayNumber: 1,
@@ -2976,23 +2996,48 @@ export default function AdminCMS({ db, onUpdateDB }) {
                                     <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary font-bold text-[10px] uppercase border border-primary/30 shrink-0">
                                       {att.campus || 'Tanpa Kampus'}
                                     </span>
-                                    <span className="text-white font-bold text-xs md:text-sm truncate">
-                                      {att.name}
-                                    </span>
-                                    {att.nim && (
-                                      <span className="text-neutral-400 text-xs shrink-0 font-mono">
-                                        ({att.nim})
-                                      </span>
-                                    )}
-                                    {att.komisi && (
-                                      <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-bold text-[10px] uppercase border border-indigo-500/30 shrink-0">
-                                        {att.komisi.split(':')[0]}
-                                      </span>
-                                    )}
-                                    {att.sesi && (
-                                      <span className="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold text-[10px] uppercase border border-sky-500/30 shrink-0">
-                                        {att.sesi}
-                                      </span>
+                                    {att.name1 ? (
+                                      <>
+                                        <span className="text-white font-bold text-xs md:text-sm">
+                                          {att.name1} & {att.name2 || 'Delegasi 2'}
+                                        </span>
+                                        {att.jamTiba && (
+                                          <span className="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold text-[10px] uppercase border border-sky-500/30 shrink-0">
+                                            ⏰ Tiba: {att.jamTiba}
+                                          </span>
+                                        )}
+                                        {att.tempatTransit && (
+                                          <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold text-[10px] uppercase border border-amber-500/30 shrink-0">
+                                            📍 {att.tempatTransit}
+                                          </span>
+                                        )}
+                                        {att.catatan && (
+                                          <span className="text-neutral-400 text-xs italic hidden md:inline truncate max-w-[200px]">
+                                            ({att.catatan})
+                                          </span>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span className="text-white font-bold text-xs md:text-sm truncate">
+                                          {att.name}
+                                        </span>
+                                        {att.nim && (
+                                          <span className="text-neutral-400 text-xs shrink-0 font-mono">
+                                            ({att.nim})
+                                          </span>
+                                        )}
+                                        {att.komisi && (
+                                          <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-bold text-[10px] uppercase border border-indigo-500/30 shrink-0">
+                                            {att.komisi.split(':')[0]}
+                                          </span>
+                                        )}
+                                        {att.sesi && (
+                                          <span className="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold text-[10px] uppercase border border-sky-500/30 shrink-0">
+                                            {att.sesi}
+                                          </span>
+                                        )}
+                                      </>
                                     )}
                                     {att.nowa && (
                                       <span className="text-neutral-400 font-mono text-[11px] hidden sm:inline shrink-0">
