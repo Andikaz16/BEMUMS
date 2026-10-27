@@ -1870,8 +1870,7 @@ export default function Silatnas({ db }) {
                                   <input 
                                     type="text"
                                     required
-                                    list="silatnas-campus-datalist"
-                                    placeholder="Ketik atau pilih nama kampus PTMAI Anda"
+                                    placeholder="Contoh: Universitas Muhammadiyah Surakarta"
                                     value={presensiTransitForm.campus}
                                     onChange={e => setPresensiTransitForm({ ...presensiTransitForm, campus: e.target.value })}
                                     className="w-full bg-black/40 backdrop-blur-md border border-white/20 text-white placeholder-slate-400 px-4 py-3 rounded-xl text-xs font-body focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition"
