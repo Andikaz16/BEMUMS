@@ -8,6 +8,19 @@ export default function BeritaWidget({ setActivePage }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 1. Cek LocalStorage Cache (Agar tidak membebani Vercel CPU sama sekali)
+    const cached = localStorage.getItem('bem_news_cache_widget');
+    if (cached) {
+      try {
+        const { timestamp, data } = JSON.parse(cached);
+        if (Date.now() - timestamp < 3600 * 1000 && Array.isArray(data) && data.length > 0) {
+          setArticles(data);
+          setLoading(false);
+          return;
+        }
+      } catch (e) {}
+    }
+
     const fetchNews = async () => {
       try {
         const res = await fetch('/api/news');
@@ -19,7 +32,9 @@ export default function BeritaWidget({ setActivePage }) {
             loaded = [...loaded, ...UMS_FALLBACK_ARTICLES];
             loaded.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
           }
-          setArticles(loaded.slice(0, 6));
+          const sliced = loaded.slice(0, 6);
+          setArticles(sliced);
+          localStorage.setItem('bem_news_cache_widget', JSON.stringify({ timestamp: Date.now(), data: sliced }));
         } else if (Array.isArray(UMS_FALLBACK_ARTICLES)) {
           setArticles(UMS_FALLBACK_ARTICLES.slice(0, 6));
         }

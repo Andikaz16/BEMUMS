@@ -1,10 +1,20 @@
 import { UMS_FALLBACK_ARTICLES } from '../src/data/umsFallbackNews.js';
 
+// Global In-Memory Cache to drastically reduce Vercel CPU execution time
+let cachedResponse = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour cache
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
+
+  // Serve from in-memory cache instantly without CPU overhead
+  if (cachedResponse && (Date.now() - lastCacheTime < CACHE_TTL_MS)) {
+    return res.status(200).json(cachedResponse);
+  }
 
   const RSS_SOURCES = [
     { id: 'cnn', name: 'CNN Indonesia', color: '#CC0000', url: 'https://www.cnnindonesia.com/nasional/rss' },
@@ -61,11 +71,14 @@ export default async function handler(req, res) {
 
     allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-    return res.status(200).json({ 
+    cachedResponse = { 
       status: 'ok', 
       count: allArticles.length, 
       articles: allArticles 
-    });
+    };
+    lastCacheTime = Date.now();
+
+    return res.status(200).json(cachedResponse);
   } catch (err) {
     return res.status(500).json({ status: 'error', message: err.message });
   }
