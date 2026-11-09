@@ -256,7 +256,7 @@ export default function Hero({ db, setActivePage }) {
             
             {/* Lapor Pres Widget */}
             <div 
-              onClick={() => window.open('https://portal-layanan-bem-ums.vercel.app/', '_blank')}
+              onClick={() => window.open('https://portal-layanan-bem-ums-ten.vercel.app/', '_blank')}
               className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px] isolate"
             >
               {/* Decorative Background Glow */}
