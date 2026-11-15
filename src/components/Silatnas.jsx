@@ -1147,22 +1147,6 @@ export default function Silatnas({ db }) {
               </div>
             </div>
           </motion.div>
-
-          {/* Scroll Downward Prompter */}
-          <div 
-            onClick={() => document.getElementById('portal-utama-silatnas')?.scrollIntoView({ behavior: 'smooth' })}
-            className="pt-6 inline-flex flex-col items-center gap-2 cursor-pointer group select-none transition-transform hover:scale-105"
-          >
-            <span className="text-xs sm:text-sm font-heading font-black text-white group-hover:text-[#38BDF8] transition uppercase tracking-wider drop-shadow-md">
-              Scroll ke Bawah untuk Masuk ke Halaman Silatnas
-            </span>
-            <span className="text-[11px] text-[#BAE6FD]/80 font-body">
-              Jelajahi portal utama, maskot, tema, peta sebaran 7 zona, timeline & dokumen arsip ↓
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/25 border border-[#38BDF8]/50 flex items-center justify-center text-[#38BDF8] group-hover:bg-[#38BDF8] group-hover:text-black transition-all duration-300 animate-bounce shadow-[0_0_20px_rgba(56,189,248,0.35)] mt-1">
-              <ChevronDown className="w-5 h-5" />
-            </div>
-          </div>
         </section>
 
         {/* ========================================================================= */}
