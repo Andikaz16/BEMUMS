@@ -1085,13 +1085,19 @@ export default function Silatnas({ db }) {
 
       <div className="max-w-7xl mx-auto space-y-24 relative z-10">
         
-        {/* 1. HERO SECTION (FULL SCREEN FOLD) - UCAPAN TERIMA KASIH & APRESIASI RESMI */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center min-h-[calc(100vh-7rem)] pb-12">
+        {/* ========================================================================= */}
+        {/* SCREEN 1: UCAPAN TERIMA KASIH & APRESIASI RESMI (FULL-SCREEN OPENING)     */}
+        {/* ========================================================================= */}
+        <section className="min-h-[calc(100vh-8rem)] flex flex-col justify-between items-center text-center relative z-20 pt-4 sm:pt-6 pb-12 max-w-5xl mx-auto">
+          {/* Ambient Glow Behind Screen */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[360px] bg-gradient-to-tr from-sky-400/20 via-amber-400/10 to-transparent blur-3xl -z-10 rounded-full pointer-events-none" />
+
+          {/* Main Appreciation Card / Presentation */}
           <motion.div 
-            initial={{ opacity: 0, x: -35 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-7 space-y-6"
+            className="space-y-6 flex flex-col items-center my-auto w-full px-2"
           >
             {/* Status Badge */}
             <div className="inline-flex items-center gap-2">
@@ -1101,7 +1107,7 @@ export default function Silatnas({ db }) {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-black uppercase tracking-tight text-white drop-shadow-xl leading-[1.12]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-black uppercase tracking-tight text-white drop-shadow-2xl leading-[1.15]">
               TERIMA KASIH <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-sky-300 to-amber-300 drop-shadow-[0_0_25px_rgba(56,189,248,0.5)]">
                 DELEGASI SE-NUSANTARA!
@@ -1109,95 +1115,136 @@ export default function Silatnas({ db }) {
             </h1>
 
             {/* Appreciation Letter */}
-            <p className="font-body text-[#E0F2FE] mt-4 max-w-2xl text-sm sm:text-base md:text-lg leading-relaxed font-medium">
+            <p className="font-body text-[#E0F2FE] max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed font-medium mx-auto px-2">
               Silaturahmi Nasional BEM Perguruan Tinggi Muhammadiyah & 'Aisyiyah se-Indonesia (<strong>SILATNAS BEM PTMAI 2026</strong>) yang bertuan rumah di Universitas Muhammadiyah Surakarta telah resmi berakhir dengan penuh khidmat, kebersamaan, dan sukses raya.
               <br/><br/>
               Apresiasi dan terima kasih setinggi-tingginya kami sampaikan kepada seluruh <strong>Presiden Mahasiswa</strong>, jajaran delegasi <strong>164+ kampus</strong> dari Zona 1 hingga Zona 7 (Sabang sampai Merauke), panitia pelaksana, serta seluruh pihak yang telah bersama-sama merawat persyarikatan dan mengukir sejarah persatuan mahasiswa untuk Indonesia Raya.
             </p>
-            
+
             {/* Key Milestone Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 max-w-2xl">
-              <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-3.5 rounded-2xl flex items-center gap-3 shadow-xl hover:border-amber-400/40 transition">
-                <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-                  <Award className="w-5 h-5" />
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <div className="bg-black/40 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                <Award className="w-4 h-4 text-amber-300" />
+                <span className="text-xs font-heading font-bold text-white">Sukses Terlaksana</span>
+              </div>
+              
+              <div className="bg-black/40 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                <MapPin className="w-4 h-4 text-[#38BDF8]" />
+                <span className="text-xs font-heading font-bold text-white">Surakarta (BEM UMS)</span>
+              </div>
+
+              <div className="bg-black/40 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                <GraduationCap className="w-4 h-4 text-[#38BDF8]" />
+                <span className="text-xs font-heading font-bold text-white">164+ PTMA & Mitra</span>
+              </div>
+
+              <div className="bg-black/50 backdrop-blur-xl border border-amber-400/40 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span className="text-xs font-heading font-black uppercase tracking-wider text-amber-300">
+                  Kabinet Kolektiva • Untuk Indonesia Raya
+                </span>
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Scroll Downward Prompter */}
+          <div 
+            onClick={() => document.getElementById('portal-utama-silatnas')?.scrollIntoView({ behavior: 'smooth' })}
+            className="pt-6 inline-flex flex-col items-center gap-2 cursor-pointer group select-none transition-transform hover:scale-105"
+          >
+            <span className="text-xs sm:text-sm font-heading font-black text-white group-hover:text-[#38BDF8] transition uppercase tracking-wider drop-shadow-md">
+              Scroll ke Bawah untuk Masuk ke Halaman Silatnas
+            </span>
+            <span className="text-[11px] text-[#BAE6FD]/80 font-body">
+              Jelajahi portal utama, maskot, tema, peta sebaran 7 zona, timeline & dokumen arsip ↓
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/25 border border-[#38BDF8]/50 flex items-center justify-center text-[#38BDF8] group-hover:bg-[#38BDF8] group-hover:text-black transition-all duration-300 animate-bounce shadow-[0_0_20px_rgba(56,189,248,0.35)] mt-1">
+              <ChevronDown className="w-5 h-5" />
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* SCREEN 2 & SETERUSNYA: HALAMAN WEB SILATNAS AWAL (TETEP WEB TADI)           */}
+        {/* ========================================================================= */}
+        
+        {/* 1. ORIGINAL HERO SECTION (PORTAL UTAMA SILATNAS BEM PTMAI) */}
+        <div id="portal-utama-silatnas" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[calc(100vh-7rem)] pb-12 pt-16 border-t border-white/15">
+          <motion.div 
+            initial={{ opacity: 0, x: -35 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="lg:col-span-7 space-y-6"
+          >
+            <div className="inline-flex items-center gap-2">
+              <span className="flex items-center gap-2 text-xs font-bold font-body text-white drop-shadow-md uppercase tracking-widest bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                <Globe className="w-4 h-4 animate-spin-slow" /> Silaturahmi Nasional 2026
+              </span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-heading font-extrabold uppercase tracking-tighter text-white drop-shadow-lg leading-tight">
+              PORTAL UTAMA <br/>
+              <span className="text-[#38BDF8] drop-shadow-md">SILATNAS BEM PTMAI</span>
+            </h2>
+            <p className="font-body text-[#E0F2FE] mt-4 max-w-2xl text-base md:text-lg leading-relaxed font-medium">
+              Selamat datang di portal informasi dan pendaftaran Silaturahmi Nasional BEM PTMAI se-Indonesia. Wadah resmi konsolidasi ide, kolaborasi strategis, dan persatuan ukhuwah gerakan mahasiswa nasional.
+            </p>
+            
+            {/* Core Info Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 max-w-2xl">
+              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
+                <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
+                  <Calendar className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[9px] uppercase tracking-widest text-amber-200 font-bold">Status Acara</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">Sukses Terlaksana</div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Waktu Kegiatan</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">29 - 31 Oktober 2026</div>
                 </div>
               </div>
               
-              <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-3.5 rounded-2xl flex items-center gap-3 shadow-xl hover:border-[#38BDF8]/40 transition">
+              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
                 <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Kota Tuan Rumah</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">Surakarta (BEM UMS)</div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Lokasi Utama</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">Kampus UMS, di Kota Surakarta</div>
                 </div>
               </div>
 
-              <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-3.5 rounded-2xl flex items-center gap-3 shadow-xl hover:border-[#38BDF8]/40 transition">
+              <div className="bg-black/35 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center gap-3.5 shadow-xl">
                 <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 flex items-center justify-center text-[#38BDF8] shrink-0">
-                  <GraduationCap className="w-5 h-5" />
+                  <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Konsolidasi Kampus</div>
-                  <div className="text-xs font-heading font-bold text-white mt-0.5">164+ PTMA & Mitra</div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#BAE6FD] font-bold">Total Kampus</div>
+                  <div className="text-xs font-heading font-bold text-white mt-0.5">164 Kampus</div>
                 </div>
-              </div>
-            </div>
-
-            {/* Scroll Indicator Prompter */}
-            <div 
-              onClick={() => document.getElementById('silatnas-archive-content')?.scrollIntoView({ behavior: 'smooth' })}
-              className="pt-4 inline-flex items-center gap-3 cursor-pointer group select-none"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[#0EA5E9]/25 border border-[#38BDF8]/50 flex items-center justify-center text-[#38BDF8] group-hover:bg-[#38BDF8] group-hover:text-black transition-all duration-300 animate-bounce shadow-[0_0_20px_rgba(56,189,248,0.35)]">
-                <ChevronDown className="w-5 h-5" />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-heading font-black text-white group-hover:text-[#38BDF8] transition uppercase tracking-wide">
-                  Jelajahi Kilas Balik & Arsip Agenda Silatnas
-                </span>
-                <span className="text-[10px] text-[#BAE6FD]/80 font-mono">
-                  Scroll ke bawah untuk melihat maskot, tema besar, peta sebaran & dokumentasi ↓
-                </span>
               </div>
             </div>
           </motion.div>
 
-          {/* Hero Image / Animated Silatnas Logo & Closing Ribbon */}
+          {/* Hero Image / Animated Silatnas Logo */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, x: 35 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-5 flex flex-col items-center justify-center relative"
+            className="lg:col-span-5 flex justify-center"
           >
-            {/* Ambient Background Glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-sky-400/25 via-amber-400/10 to-transparent blur-3xl -z-10 rounded-full scale-110 pointer-events-none" />
-
             <motion.img 
               src="/assets/logo_silatnas.png" 
               alt="Logo Silatnas" 
-              className="w-72 h-72 sm:w-80 sm:h-80 md:w-[420px] md:h-[420px] object-contain relative drop-shadow-[0_10px_40px_rgba(56,189,248,0.45)]"
+              className="w-80 h-80 md:w-[420px] md:h-[420px] object-contain relative"
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
-
-            {/* Gold Appreciation Ribbon Tag */}
-            <div className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/60 border border-amber-400/50 backdrop-blur-xl shadow-lg">
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-              <span className="text-xs font-heading font-black uppercase tracking-widest text-amber-300">
-                Kabinet Kolektiva • Untuk Indonesia Raya
-              </span>
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-            </div>
           </motion.div>
         </div>
 
-        {/* MASCOT SECTION (START OF SCROLLABLE ARCHIVE CONTENT) */}
-        <div id="silatnas-archive-content" className="flex flex-col items-center justify-center text-center space-y-3 pt-12 border-t border-white/10">
+        {/* MASCOT SECTION */}
+        <div className="flex flex-col items-center justify-center text-center space-y-3 pt-12">
           {/* STATIC MASCOT TITLE: ARJUNA (TIDAK BERGERAK) */}
           <div className="text-center select-none">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display uppercase tracking-widest text-white drop-shadow-[0_4px_20px_rgba(56,189,248,0.5)]">
