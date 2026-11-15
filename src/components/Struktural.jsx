@@ -146,12 +146,17 @@ export default function Struktural({ db }) {
                     />
                   </div>
                   <div className="w-full">
-                    <h3 className="font-heading font-black text-[9px] sm:text-xs md:text-base text-primary uppercase tracking-tight leading-tight">
+                    <h3 className="font-heading font-black text-[9px] sm:text-xs md:text-base text-primary uppercase tracking-tight leading-tight mb-1 sm:mb-1.5">
                       SEKRETARIS KABINET
                     </h3>
-                    <p className="text-[8px] sm:text-xs text-neutral-600 font-body font-medium mt-0.5 truncate max-w-full px-0.5">
-                      {sekkab?.members?.[0]?.name || 'Figur Ahmad B.'}
-                    </p>
+                    <div className="flex flex-col gap-0.5 sm:gap-1">
+                      <p className="text-[8px] sm:text-xs text-neutral-700 font-body font-semibold truncate max-w-full px-0.5 leading-tight">
+                        {sekkab?.members?.[0]?.name || 'Figur Ahmad Brilian'}
+                      </p>
+                      <p className="text-[7.5px] sm:text-[11px] text-neutral-500 font-body font-medium truncate max-w-full px-0.5 leading-tight">
+                        {sekkab?.members?.[1]?.name || 'Khalda Syifa Nida'}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
