@@ -1269,8 +1269,6 @@ export default function Silatnas({ db }) {
 
               {/* ================= 7 DYNAMIC ZONE PINS & ZONE BADGES ================= */}
               {silatnasZones.map((z) => {
-                const isSelected = selectedZone === 'Semua' || selectedZone === z.id;
-                const isHovered = hoveredZone && hoveredZone.id === z.id;
                 const isHost = z.isHost;
 
                 // Smart positioning to prevent overlap
@@ -1286,14 +1284,10 @@ export default function Silatnas({ db }) {
                   <div
                     key={z.id}
                     style={{ left: `${z.x}%`, top: `${z.y}%` }}
-                    className={`absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
-                      isSelected ? 'opacity-100 scale-100 z-20' : 'opacity-25 scale-75 z-0 pointer-events-none'
-                    }`}
-                    onMouseEnter={() => setHoveredZone(z)}
-                    onClick={() => { setSelectedZone(z.id); setHoveredZone(z); }}
+                    className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300 opacity-100 scale-100 z-20 pointer-events-none select-none"
                   >
                     {/* Zone Pin Marker with Radar Ring */}
-                    <div className="relative group cursor-pointer flex items-center justify-center">
+                    <div className="relative group flex items-center justify-center">
                       
                       {/* Pulsing Radar Ring */}
                       <span className={`absolute -inset-2.5 rounded-full animate-ping opacity-75 ${
@@ -1301,7 +1295,7 @@ export default function Silatnas({ db }) {
                       }`} />
 
                       {/* Pin Center Dot (Bigger & Prominent for Zones) */}
-                      <div className={`w-5 h-5 rounded-full border-2 border-white shadow-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-125 ${
+                      <div className={`w-5 h-5 rounded-full border-2 border-white shadow-xl flex items-center justify-center transition-transform duration-300 ${
                         isHost ? 'bg-amber-400 ring-4 ring-amber-300/60' : 'bg-[#0284C7] ring-2 ring-sky-300/60'
                       }`}>
                         {isHost ? (
@@ -1315,9 +1309,7 @@ export default function Silatnas({ db }) {
                       <div className={`absolute ${badgePositionClass} px-2 py-0.5 rounded-lg text-[9px] md:text-[11px] font-heading font-black tracking-tight whitespace-nowrap shadow-lg border transition-all ${
                         isHost 
                           ? 'bg-amber-400 text-black border-amber-200 ring-2 ring-amber-400/60 scale-110 font-black z-30 shadow-[0_0_15px_rgba(251,191,36,0.6)]' 
-                          : isHovered || (selectedZone === z.id)
-                            ? 'bg-[#38BDF8] text-black border-white scale-110 z-30 shadow-[0_0_15px_rgba(56,189,248,0.6)]'
-                            : 'bg-black/90 text-[#BAE6FD] border-white/20 backdrop-blur-sm group-hover:border-[#38BDF8] group-hover:text-white'
+                          : 'bg-black/90 text-[#BAE6FD] border-white/20 backdrop-blur-sm'
                       }`}>
                         {isHost ? (
                           <span className="flex items-center gap-1">
@@ -1332,41 +1324,6 @@ export default function Silatnas({ db }) {
                   </div>
                 );
               })}
-
-              {/* Floating Tooltip Detail Card on Hover / Selection */}
-              {hoveredZone && (
-                <div 
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 bg-black/95 backdrop-blur-2xl border border-[#38BDF8]/70 p-4 md:p-5 rounded-2xl shadow-[0_0_35px_rgba(14,165,233,0.5)] max-w-md w-[92%] flex items-start justify-between gap-3 animate-in fade-in zoom-in-95 duration-200"
-                >
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono font-bold uppercase text-[#38BDF8] bg-sky-950/80 px-2.5 py-0.5 rounded-md border border-sky-700">
-                        {hoveredZone.zoneNumber}
-                      </span>
-                      <span className={`text-[9px] font-bold uppercase px-2.5 py-0.5 rounded-md ${
-                        hoveredZone.isHost ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      }`}>
-                        {hoveredZone.status}
-                      </span>
-                    </div>
-                    <h4 className="text-sm md:text-base font-heading font-extrabold text-white uppercase leading-tight pt-0.5">
-                      {hoveredZone.title}
-                    </h4>
-                    <p className="text-xs text-neutral-300 font-body leading-relaxed">
-                      <span className="text-[#38BDF8] font-bold">Cakupan Wilayah:</span> {hoveredZone.scope}
-                    </p>
-                    <div className="pt-1 text-[11px] text-[#BAE6FD] font-mono font-bold flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5 text-[#38BDF8]" /> {hoveredZone.target}
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => { setHoveredZone(null); setSelectedZone('Semua'); }}
-                    className="text-neutral-400 hover:text-white p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
