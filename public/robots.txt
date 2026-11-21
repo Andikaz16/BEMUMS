@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bem.ums.ac.id/sitemap.xml
+Sitemap: https://www.bemums.id/sitemap.xml
