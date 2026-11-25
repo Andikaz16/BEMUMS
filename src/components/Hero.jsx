@@ -61,6 +61,7 @@ export default function Hero({ db, setActivePage }) {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl uppercase leading-[0.9] tracking-tight text-white mb-6"
           >
+            <span className="sr-only">BEM UMS — Badan Eksekutif Mahasiswa Universitas Muhammadiyah Surakarta </span>
             KABINET <span className="text-primary">KOLEKTIVA</span>
           </motion.h1>
 
