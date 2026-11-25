@@ -18,16 +18,16 @@ export default function Hero({ db, setActivePage }) {
   const marqueeItems = [...galeriPergerakan, ...galeriPergerakan, ...galeriPergerakan];
 
   const statCards = [
-    { id: 1, val: "", title: "Presiden", sub: "BEM UMS 2026", img: "/assets/foto_presiden.jpg" },
-    { id: 2, val: "", title: "Wakil presiden", sub: "BEM UMS 2026", img: "/assets/foto_wakil.jpg" },
-    { id: 3, val: "2", title: "Seketaris Kabinet", sub: "BEM UMS 2026", img: "/assets/Seketaris.png" },
-    { id: 4, val: "1", title: "Bendahara Kabinet", sub: "BEM UMS 2026", img: "/assets/Bendahara.png" },
-    { id: 5, val: "7", title: "Kementerian", sub: "Advokasi & Kesejahteraan Mahasiswa", img: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.png" },
-    { id: 6, val: "7", title: "Kementerian", sub: "Dalam Negeri", img: "/assets/Kementerian dalam negeri.png" },
-    { id: 7, val: "7", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.png" },
-    { id: 8, val: "8", title: "Kementerian", sub: "Pengembangan Organisasi & Profesionalisme", img: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.png" },
-    { id: 9, val: "6", title: "Kementerian", sub: "Luar Negeri", img: "/assets/Menteri luar neger.png" },
-    { id: 10, val: "6", title: "Kementerian", sub: "Media & Informasi", img: "/assets/medinfo.png" },
+    { id: 1, val: "", title: "Presiden", sub: "BEM UMS 2026", img: "/assets/foto_presiden.webp" },
+    { id: 2, val: "", title: "Wakil presiden", sub: "BEM UMS 2026", img: "/assets/foto_wakil.webp" },
+    { id: 3, val: "2", title: "Seketaris Kabinet", sub: "BEM UMS 2026", img: "/assets/Seketaris.webp" },
+    { id: 4, val: "1", title: "Bendahara Kabinet", sub: "BEM UMS 2026", img: "/assets/Bendahara.webp" },
+    { id: 5, val: "7", title: "Kementerian", sub: "Advokasi & Kesejahteraan Mahasiswa", img: "/assets/Kementerian Advokasi & Kesejahteraan Mahasiswa.webp" },
+    { id: 6, val: "7", title: "Kementerian", sub: "Dalam Negeri", img: "/assets/Kementerian dalam negeri.webp" },
+    { id: 7, val: "7", title: "Kementerian", sub: "Pergerakan", img: "/assets/Kementerian Pergerakan.webp" },
+    { id: 8, val: "8", title: "Kementerian", sub: "Pengembangan Organisasi & Profesionalisme", img: "/assets/Kementerian Pengembangan Organisasi & Profesionalisme.webp" },
+    { id: 9, val: "6", title: "Kementerian", sub: "Luar Negeri", img: "/assets/Menteri luar neger.webp" },
+    { id: 10, val: "6", title: "Kementerian", sub: "Media & Informasi", img: "/assets/medinfo.webp" },
   ];
 
   return (
@@ -35,18 +35,27 @@ export default function Hero({ db, setActivePage }) {
       
       {/* 1. HERO MAIN SECTION */}
       <section className="relative w-full min-h-[800px] md:min-h-screen flex items-center justify-center pt-48 pb-32 overflow-hidden">
-        {/* Background Image with CSS Mask to fade out the bottom smoothly */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center z-0" 
-          style={{ 
-            backgroundImage: "url('/assets/background.png')",
-            WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
-            maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)"
-          }}
-        ></div>
+        {/* Responsive LCP Background Image with CSS Mask to fade out the bottom smoothly */}
+        <picture className="absolute inset-0 z-0 pointer-events-none">
+          <source media="(max-width: 767px)" srcSet="/assets/background-mobile.webp" type="image/webp" />
+          <source media="(min-width: 768px)" srcSet="/assets/background.webp" type="image/webp" />
+          <img 
+            src="/assets/background.webp" 
+            alt="BEM UMS Kabinet Kolektiva Background" 
+            fetchPriority="high"
+            decoding="async"
+            width="1920"
+            height="1080"
+            className="w-full h-full object-cover object-center"
+            style={{ 
+              WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+              maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)"
+            }}
+          />
+        </picture>
         
         {/* Soft Radial Gradient for text readability without covering the whole image */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.6)_0%,_rgba(0,0,0,0)_60%)] z-0"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.6)_0%,_rgba(0,0,0,0)_60%)] z-0 pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto space-y-6 md:space-y-8">
           <div className="inline-flex items-center gap-3">
@@ -124,8 +133,12 @@ export default function Hero({ db, setActivePage }) {
 
               {/* Background Logo / Image */}
               <img 
-                src={stat.img || "/assets/maskot_bem.png"} 
-                alt="Maskot Background" 
+                src={stat.img || "/assets/maskot_bem.webp"} 
+                alt={`${stat.title} ${stat.sub}`}
+                loading="lazy"
+                decoding="async"
+                width="300"
+                height="450"
                 className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 pointer-events-none z-10 relative"
               />
               {/* Gradient Overlay for text readability */}
@@ -257,7 +270,11 @@ export default function Hero({ db, setActivePage }) {
             
             {/* Lapor Pres Widget */}
             <div 
+              role="button"
+              tabIndex={0}
+              aria-label="Buka aplikasi kanal advokasi Lapor Pres"
               onClick={() => window.open('https://lapor.bemums.id/', '_blank')}
+              onKeyDown={(e) => e.key === 'Enter' && window.open('https://lapor.bemums.id/', '_blank')}
               className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px] isolate"
             >
               {/* Decorative Background Glow */}
@@ -279,7 +296,11 @@ export default function Hero({ db, setActivePage }) {
 
             {/* Volunteer Widget */}
             <div 
+              role="button"
+              tabIndex={0}
+              aria-label="Daftarkan diri berkontribusi sebagai Volunteer BEM UMS"
               onClick={() => setActivePage('volunteer')}
+              onKeyDown={(e) => e.key === 'Enter' && setActivePage('volunteer')}
               className="group relative p-8 rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-xl hover:bg-black overflow-hidden transition-all duration-500 cursor-pointer shadow-xl hover:shadow-[0_0_50px_rgba(220,20,20,0.4)] hover:border-primary/50 hover:-translate-y-2 flex flex-col justify-between min-h-[280px] isolate"
             >
               {/* Decorative Background Glow */}

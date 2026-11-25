@@ -1,8 +1,13 @@
-const CACHE_NAME = 'bem-ums-v2';
+const CACHE_NAME = 'bem-ums-v3';
 const STATIC_ASSETS = [
+  '/assets/logo_bem_baru.webp',
   '/assets/logo_bem_baru.png',
+  '/assets/kolektiva_app_icon_192.webp',
   '/assets/kolektiva_app_icon_192.png',
-  '/assets/kolektiva_app_icon_512.png'
+  '/assets/kolektiva_app_icon_512.webp',
+  '/assets/kolektiva_app_icon_512.png',
+  '/assets/background-mobile.webp',
+  '/assets/background.webp'
 ];
 
 // Install: Cache critical static assets only (NEVER index.html or root to prevent stale SPA bundles)

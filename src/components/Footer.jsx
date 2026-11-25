@@ -32,14 +32,18 @@ export default function Footer({ setActivePage }) {
           {/* Col 1: Logo & Address */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <img 
-              src="/assets/logo-bem.png" 
-              alt="BEM UMS Logo" 
+              src="/assets/logo-bem.webp" 
+              alt="Logo BEM UMS" 
+              width="160"
+              height="96"
+              loading="lazy"
+              decoding="async"
               className="h-24 w-auto object-contain mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] cursor-pointer hover:scale-105 transition-transform"
               onClick={() => setActivePage('beranda')}
             />
             <h3 className="font-display text-xl uppercase mb-2">Sekretariat BEM UMS</h3>
             <p className="text-neutral-400 font-body text-sm leading-relaxed flex items-start justify-center md:justify-start gap-2">
-              <MapPin size={16} className="mt-1 shrink-0 text-primary" />
+              <MapPin size={16} className="mt-1 shrink-0 text-primary" aria-hidden="true" />
               Gedung Griya Mahasiswa Lt. 2, Kampus 1 Universitas Muhammadiyah Surakarta.
             </p>
           </div>
@@ -48,10 +52,10 @@ export default function Footer({ setActivePage }) {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="font-display text-lg uppercase mb-6 text-white/80">Tautan Cepat</h4>
             <div className="flex flex-col gap-3 font-body text-sm text-neutral-400 text-center md:text-left">
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('visimisi')}>Visi & Misi</span>
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('struktural')}>Struktural Kabinet</span>
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('artikel')}>Artikel & Opini</span>
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('dokumentasi')}>Dokumentasi Kegiatan</span>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('visimisi')}>Visi & Misi</button>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('struktural')}>Struktural Kabinet</button>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('artikel')}>Artikel & Opini</button>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('dokumentasi')}>Dokumentasi Kegiatan</button>
             </div>
           </div>
 
@@ -59,10 +63,10 @@ export default function Footer({ setActivePage }) {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="font-display text-lg uppercase mb-6 text-white/80">Layanan Mahasiswa</h4>
             <div className="flex flex-col gap-3 font-body text-sm text-neutral-400 text-center md:text-left">
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => window.open('https://lapor.bemums.id/', '_blank')}>Lapor Pres!</span>
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('volunteer')}>Pendaftaran Volunteer</span>
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('oprec')}>Open Recruitment</span>
-              <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('hubungi')}>Hubungi Kami</span>
+              <a href="https://lapor.bemums.id/" target="_blank" rel="noopener noreferrer" className="hover:text-primary cursor-pointer transition-colors">Lapor Pres!</a>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('volunteer')}>Pendaftaran Volunteer</button>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('oprec')}>Open Recruitment</button>
+              <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('hubungi')}>Hubungi Kami</button>
             </div>
           </div>
 
@@ -70,20 +74,50 @@ export default function Footer({ setActivePage }) {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="font-display text-lg uppercase mb-6 text-white/80">Ikuti Kami</h4>
             <div className="flex gap-4">
-              <a href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
-                <Instagram size={18} />
+              <a 
+                href="https://www.instagram.com/bemums_official/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="Instagram Resmi BEM UMS" 
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white"
+              >
+                <Instagram size={18} aria-hidden="true" />
               </a>
-              <a href="https://www.threads.com/@bem.ums" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" title="Threads">
-                <AtSign size={18} />
+              <a 
+                href="https://www.threads.com/@bem.ums" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="Threads Resmi BEM UMS" 
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" 
+                title="Threads"
+              >
+                <AtSign size={18} aria-hidden="true" />
               </a>
-              <a href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" title="Facebook">
-                <Facebook size={18} />
+              <a 
+                href="https://www.facebook.com/bem.ums" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="Facebook Resmi BEM UMS" 
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white" 
+                title="Facebook"
+              >
+                <Facebook size={18} aria-hidden="true" />
               </a>
-              <a href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
-                <Youtube size={18} />
+              <a 
+                href="https://www.youtube.com/@bemums" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="YouTube Resmi BEM UMS" 
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white"
+              >
+                <Youtube size={18} aria-hidden="true" />
               </a>
-              <a href="mailto:bem@ums.ac.id" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white">
-                <Mail size={18} />
+              <a 
+                href="mailto:bem@ums.ac.id" 
+                aria-label="Kirim Email ke BEM UMS" 
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all text-neutral-400 hover:text-white"
+              >
+                <Mail size={18} aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -99,7 +133,8 @@ export default function Footer({ setActivePage }) {
               <a 
                 href="https://wa.me/6285747273409?text=Halo%20Andika,%20saya%20menghubungi%20melalui%20Website%20BEM%20UMS" 
                 target="_blank" 
-                rel="noopener noreferrer"
+                rel="noopener noreferrer" 
+                aria-label="Hubungi WhatsApp Pengembang Website Andika"
                 className="text-neutral-500 hover:text-neutral-300 transition-colors"
                 title="Hubungi Andika / L200240229 via WhatsApp (085747273409)"
               >
@@ -108,7 +143,7 @@ export default function Footer({ setActivePage }) {
             </div>
           </div>
           <div className="font-display text-xs uppercase text-primary tracking-wider flex items-center gap-4">
-            <span className="cursor-pointer hover:text-white transition-colors" onClick={() => setActivePage('admin')}>JAJARAN KABINET 2026</span>
+            <button type="button" className="cursor-pointer hover:text-white transition-colors" onClick={() => setActivePage('admin')}>JAJARAN KABINET 2026</button>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 // Database Mock using LocalStorage for Dynamic CMS Architecture
 
-const DEFAULT_DATA = {
+export const DEFAULT_DATA = {
   // 1. Struktural
   periods: ["2026", "2025"],
   currentPeriod: "2026",
@@ -364,6 +364,23 @@ export const sortItemsByDateDesc = (items = []) => {
   return [...items].sort((a, b) => {
     return (Number(b?.id) || 0) - (Number(a?.id) || 0);
   });
+};
+
+export const getCachedOrInitialDB = () => {
+  if (typeof window !== 'undefined') {
+    try {
+      const local = localStorage.getItem("bem_ums_db");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed.articles) parsed.articles = sortItemsByDateDesc(parsed.articles);
+        if (parsed.albums) parsed.albums = sortItemsByDateDesc(parsed.albums);
+        return parsed;
+      }
+    } catch (e) {
+      console.warn("Error reading cached DB, fallback to default", e);
+    }
+  }
+  return DEFAULT_DATA;
 };
 
 export const initDB = (setDb, setIsFirebaseLoaded) => {

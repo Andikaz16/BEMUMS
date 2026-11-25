@@ -67,6 +67,29 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss(), localApiProxy()],
   build: {
-    chunkSizeWarningLimit: 1600,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') && (id.includes('react/') || id.includes('react-dom/'))) {
+              return 'vendor-react';
+            }
+            if (id.includes('framer-motion')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('firebase')) {
+              return 'vendor-firebase';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('heic-to') || id.includes('xlsx') || id.includes('react-quill')) {
+              return 'vendor-heavy-admin';
+            }
+          }
+        }
+      }
+    }
   }
 })

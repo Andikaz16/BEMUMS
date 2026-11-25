@@ -2450,7 +2450,7 @@ export default function AdminCMS({ db, onUpdateDB }) {
                             <td className="p-3 border-r border-white/10">{a.choice1}</td>
                             <td className="p-3 border-r border-white/10">{a.choice2}</td>
                             <td className="p-3 truncate max-w-[120px]">
-                              <a href={a.cvLink} target="_blank" rel="noreferrer" className="text-primary hover:underline">{a.cvLink}</a>
+                              <a href={a.cvLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{a.cvLink}</a>
                             </td>
                           </tr>
                         ))

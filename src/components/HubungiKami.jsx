@@ -70,7 +70,7 @@ export default function HubungiKami({ db }) {
               <a 
                 href={contact.whatsapp} 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 className="relative z-10 flex items-center justify-center gap-2 w-full bg-emerald-600/10 hover:bg-emerald-600 text-emerald-500 hover:text-white border border-emerald-600/30 hover:border-transparent font-bold uppercase tracking-widest text-xs py-3 rounded-xl transition-all duration-300"
               >
                 Kirim Pesan <ExternalLink size={14} />
@@ -110,9 +110,10 @@ export default function HubungiKami({ db }) {
 
                 <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-48 shrink-0">
                   <a 
-                    href="https://www.instagram.com/bem.ums?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
+                    href="https://www.instagram.com/bemums_official/" 
                     target="_blank" 
-                    rel="noreferrer" 
+                    rel="noopener noreferrer" 
+                    aria-label="Instagram Resmi BEM UMS"
                     className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600 hover:to-pink-600 text-pink-400 hover:text-white border border-pink-500/30 hover:border-transparent font-bold uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all duration-300"
                   >
                     Instagram <ExternalLink size={14} />
@@ -120,7 +121,8 @@ export default function HubungiKami({ db }) {
                   <a 
                     href="https://www.threads.com/@bem.ums" 
                     target="_blank" 
-                    rel="noreferrer" 
+                    rel="noopener noreferrer" 
+                    aria-label="Threads BEM UMS"
                     className="flex items-center justify-center gap-2 w-full bg-neutral-800/50 hover:bg-neutral-100 text-neutral-300 hover:text-black border border-neutral-700 hover:border-transparent font-bold uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all duration-300"
                   >
                     Threads <ExternalLink size={14} />
@@ -162,7 +164,8 @@ export default function HubungiKami({ db }) {
                 <a 
                   href="https://www.google.com/maps/search/Griya+Mahasiswa+UMS" 
                   target="_blank" 
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
+                  aria-label="Buka lokasi di Google Maps"
                   className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 backdrop-blur-sm transition-all duration-300 z-10"
                 >
                   <span className="bg-primary text-white font-bold uppercase tracking-widest text-xs px-6 py-3 rounded-full flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">

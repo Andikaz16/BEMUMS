@@ -57,13 +57,21 @@ export default function Navbar({ db, activePage, setActivePage }) {
     }`}>
       <div className="h-14 md:h-16 w-full px-6 md:px-10 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActivePage('beranda')}>
+        <button 
+          type="button"
+          aria-label="Kembali ke Beranda BEM UMS"
+          className="flex items-center gap-3 cursor-pointer bg-transparent border-0 p-0 text-left" 
+          onClick={() => setActivePage('beranda')}
+        >
           <img 
-            src="/assets/logo_bem_baru.png" 
+            src="/assets/logo_bem_baru.webp" 
             alt="BEM UMS Logo" 
+            width="180"
+            height="64"
+            decoding="async"
             className="h-16 md:h-24 w-auto object-contain scale-110 md:scale-125 origin-left z-10"
           />
-        </div>
+        </button>
 
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
@@ -87,6 +95,8 @@ export default function Navbar({ db, activePage, setActivePage }) {
           >
             <button 
               type="button"
+              aria-haspopup="true"
+              aria-expanded={tentangDropdownOpen}
               onClick={() => setTentangDropdownOpen(!tentangDropdownOpen)}
               className="font-body text-xs font-bold uppercase tracking-wider text-neutral-300 hover:text-white flex items-center gap-1 cursor-pointer border-b-2 border-transparent py-1"
             >
@@ -124,6 +134,8 @@ export default function Navbar({ db, activePage, setActivePage }) {
           >
             <button 
               type="button"
+              aria-haspopup="true"
+              aria-expanded={dropdownOpen}
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="font-body text-xs font-bold uppercase tracking-wider text-neutral-300 hover:text-white flex items-center gap-1 cursor-pointer border-b-2 border-transparent py-1"
             >
@@ -181,11 +193,13 @@ export default function Navbar({ db, activePage, setActivePage }) {
 
           {/* Hamburger Menu Icon */}
           <button 
+            type="button"
             onClick={() => setIsOpen(!isOpen)} 
             className="lg:hidden flex flex-col gap-1.5 p-2 border border-transparent hover:border-white rounded-full"
-            aria-label="Toggle menu"
+            aria-label={isOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
           </button>
         </div>
       </div>
