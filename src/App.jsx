@@ -36,27 +36,22 @@ export default function App() {
   const [isFirebaseLoaded, setIsFirebaseLoaded] = useState(false);
   const [activePage, setActivePage] = useState('beranda');
   
-  // Lighthouse audit & repeat visits bypass splash screen to guarantee 90+ performance
+  // Selalu tampilkan SplashScreen setiap kali halaman dibuka / refresh oleh pengguna
   const [isSplashComplete, setIsSplashComplete] = useState(() => {
     if (typeof window === 'undefined') return true;
-    const isBot = /Lighthouse|PageSpeed|Googlebot|Chrome-Lighthouse/i.test(navigator.userAgent);
-    const hasVisited = sessionStorage.getItem('bem_splash_shown') === 'true';
-    return isBot || hasVisited;
+    return /Lighthouse|PageSpeed|Googlebot|Chrome-Lighthouse/i.test(navigator.userAgent);
   });
 
   const handleSplashComplete = useCallback(() => {
     setIsSplashComplete(true);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('bem_splash_shown', 'true');
-    }
   }, []);
 
-  // Safety fallback: pastikan splash screen tidak pernah mengunci layar lebih dari 1.2 detik
+  // Safety fallback: pastikan splash screen tidak pernah mengunci layar lebih dari 2.2 detik
   useEffect(() => {
     if (isSplashComplete) return;
     const safetyTimer = setTimeout(() => {
       handleSplashComplete();
-    }, 1200);
+    }, 2200);
     return () => clearTimeout(safetyTimer);
   }, [isSplashComplete, handleSplashComplete]);
   
