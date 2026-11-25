@@ -107,9 +107,11 @@ export default function BeritaWidget({ setActivePage }) {
                 <div className="relative w-full h-40 overflow-hidden">
                   <img 
                     src={article.thumbnail} 
-                    alt=""
+                    alt={article.title || "Berita Nasional"}
                     loading="lazy"
                     decoding="async"
+                    width="400"
+                    height="160"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     onError={(e) => { e.target.parentElement.style.display = 'none'; }}
                   />
@@ -120,12 +122,12 @@ export default function BeritaWidget({ setActivePage }) {
               <div className="p-4 flex flex-col flex-1">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span 
-                    className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
-                    style={{ backgroundColor: article.sourceColor }}
+                    className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-black/80 text-white border border-white/15 inline-flex items-center gap-1.5"
                   >
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: article.sourceColor }} aria-hidden="true"></span>
                     {article.sourceName}
                   </span>
-                  <span className="text-[10px] text-neutral-600 font-body whitespace-nowrap">
+                  <span className="text-[11px] text-neutral-400 font-body whitespace-nowrap">
                     {formatDate(article.pubDate)}
                   </span>
                 </div>
@@ -134,7 +136,7 @@ export default function BeritaWidget({ setActivePage }) {
                   {article.title}
                 </h3>
 
-                <div className="mt-3 flex items-center gap-1 text-[10px] text-neutral-600 group-hover:text-primary transition-colors">
+                <div className="mt-3 flex items-center gap-1 text-[11px] text-neutral-400 group-hover:text-primary transition-colors">
                   <span className="font-bold uppercase tracking-wider">Baca Selengkapnya</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>

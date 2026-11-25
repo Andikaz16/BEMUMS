@@ -65,6 +65,8 @@ export default function KalenderWidget({ db, setActivePage }) {
     days.push(
       <button
         key={d}
+        type="button"
+        aria-label={`Tanggal ${d} ${monthNames[month]} ${year}${hasEvents ? `, ada ${dayEvents.length} kegiatan` : ''}`}
         onClick={() => setSelectedDate(dateStr)}
         className={`relative h-12 md:h-16 flex items-start justify-start p-2 border rounded-lg transition-all
           ${hasEvents ? 'bg-primary/20 hover:bg-primary/40' : 'bg-black/20 hover:bg-white/10'}
@@ -107,11 +109,21 @@ export default function KalenderWidget({ db, setActivePage }) {
               {monthNames[month]} <span className="text-primary">{year}</span>
             </h3>
             <div className="flex gap-2">
-              <button onClick={prevMonth} className="p-2 bg-white/5 hover:bg-primary/20 text-white rounded-lg transition-colors border border-white/10">
-                <ChevronLeft size={20} />
+              <button 
+                type="button" 
+                onClick={prevMonth} 
+                aria-label="Bulan sebelumnya" 
+                className="p-2 bg-white/5 hover:bg-primary/20 text-white rounded-lg transition-colors border border-white/10"
+              >
+                <ChevronLeft size={20} aria-hidden="true" />
               </button>
-              <button onClick={nextMonth} className="p-2 bg-white/5 hover:bg-primary/20 text-white rounded-lg transition-colors border border-white/10">
-                <ChevronRight size={20} />
+              <button 
+                type="button" 
+                onClick={nextMonth} 
+                aria-label="Bulan berikutnya" 
+                className="p-2 bg-white/5 hover:bg-primary/20 text-white rounded-lg transition-colors border border-white/10"
+              >
+                <ChevronRight size={20} aria-hidden="true" />
               </button>
             </div>
           </div>

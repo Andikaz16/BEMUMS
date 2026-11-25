@@ -41,7 +41,7 @@ export default function Footer({ setActivePage }) {
               className="h-24 w-auto object-contain mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] cursor-pointer hover:scale-105 transition-transform"
               onClick={() => setActivePage('beranda')}
             />
-            <h3 className="font-display text-xl uppercase mb-2">Sekretariat BEM UMS</h3>
+            <h2 className="font-display text-xl uppercase mb-2">Sekretariat BEM UMS</h2>
             <p className="text-neutral-400 font-body text-sm leading-relaxed flex items-start justify-center md:justify-start gap-2">
               <MapPin size={16} className="mt-1 shrink-0 text-primary" aria-hidden="true" />
               Gedung Griya Mahasiswa Lt. 2, Kampus 1 Universitas Muhammadiyah Surakarta.
@@ -50,7 +50,7 @@ export default function Footer({ setActivePage }) {
 
           {/* Col 2: Quick Links */}
           <div className="flex flex-col items-center md:items-start">
-            <h4 className="font-display text-lg uppercase mb-6 text-white/80">Tautan Cepat</h4>
+            <h2 className="font-display text-lg uppercase mb-6 text-white/90">Tautan Cepat</h2>
             <div className="flex flex-col gap-3 font-body text-sm text-neutral-400 text-center md:text-left">
               <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('visimisi')}>Visi & Misi</button>
               <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('struktural')}>Struktural Kabinet</button>
@@ -61,7 +61,7 @@ export default function Footer({ setActivePage }) {
 
           {/* Col 3: Layanan */}
           <div className="flex flex-col items-center md:items-start">
-            <h4 className="font-display text-lg uppercase mb-6 text-white/80">Layanan Mahasiswa</h4>
+            <h2 className="font-display text-lg uppercase mb-6 text-white/90">Layanan Mahasiswa</h2>
             <div className="flex flex-col gap-3 font-body text-sm text-neutral-400 text-center md:text-left">
               <a href="https://lapor.bemums.id/" target="_blank" rel="noopener noreferrer" className="hover:text-primary cursor-pointer transition-colors">Lapor Pres!</a>
               <button type="button" className="text-left hover:text-primary cursor-pointer transition-colors" onClick={() => setActivePage('volunteer')}>Pendaftaran Volunteer</button>
@@ -72,7 +72,7 @@ export default function Footer({ setActivePage }) {
 
           {/* Col 4: Socials */}
           <div className="flex flex-col items-center md:items-start">
-            <h4 className="font-display text-lg uppercase mb-6 text-white/80">Ikuti Kami</h4>
+            <h2 className="font-display text-lg uppercase mb-6 text-white/90">Ikuti Kami</h2>
             <div className="flex gap-4">
               <a 
                 href="https://www.instagram.com/bemums_official/" 
@@ -125,7 +125,7 @@ export default function Footer({ setActivePage }) {
         </motion.div>
         
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left pt-8 border-t border-white/10 text-neutral-500 font-body text-[10px] sm:text-xs uppercase tracking-widest">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left pt-8 border-t border-white/10 text-neutral-400 font-body text-[11px] sm:text-xs uppercase tracking-widest">
           <div className="flex flex-col items-center md:items-start gap-1.5">
             <div>© 2026 BEM UNIVERSITAS MUHAMMADIYAH SURAKARTA. ALL RIGHTS RESERVED.</div>
             <div>
@@ -135,14 +135,14 @@ export default function Footer({ setActivePage }) {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 aria-label="Hubungi WhatsApp Pengembang Website Andika"
-                className="text-neutral-500 hover:text-neutral-300 transition-colors"
+                className="text-neutral-400 hover:text-neutral-200 transition-colors"
                 title="Hubungi Andika / L200240229 via WhatsApp (085747273409)"
               >
                 ANDIKA / L200240229
               </a>
             </div>
           </div>
-          <div className="font-display text-xs uppercase text-primary tracking-wider flex items-center gap-4">
+          <div className="font-display text-xs uppercase text-red-400 tracking-wider flex items-center gap-4">
             <button type="button" className="cursor-pointer hover:text-white transition-colors" onClick={() => setActivePage('admin')}>JAJARAN KABINET 2026</button>
           </div>
         </div>

@@ -5,6 +5,13 @@ import KalenderWidget from './KalenderWidget.jsx';
 import BeritaWidget from './BeritaWidget.jsx';
 import { sortItemsByDateDesc } from '../db.js';
 
+const optimizeImgUrl = (url, suffix = 'l') => {
+  if (!url || typeof url !== 'string') return url;
+  const match = url.match(/^(https?:\/\/i\.imgur\.com\/[a-zA-Z0-9]{5,8})(\.(?:jpe?g|png))$/i);
+  if (match) return `${match[1]}${suffix}${match[2]}`;
+  return url;
+};
+
 export default function Hero({ db, setActivePage }) {
   const oprec = db.oprec || {};
   const currentPeriod = db.currentPeriod;
@@ -14,8 +21,11 @@ export default function Hero({ db, setActivePage }) {
   const presidentPhoto = president?.photo || '';
   const visiMisi = db.visiMisi || {};
   const galeriPergerakan = db.galeriPergerakan || [];
-  // Duplicate array 3 times to ensure the marquee has enough items to scroll smoothly
-  const marqueeItems = [...galeriPergerakan, ...galeriPergerakan, ...galeriPergerakan];
+  // Cap marquee gallery to max 8 items per track to prevent downloading 150+ eager images
+  const baseGallery = galeriPergerakan.slice(0, 8);
+  const marqueeItems = baseGallery.length > 0 && baseGallery.length < 6
+    ? [...baseGallery, ...baseGallery, ...baseGallery]
+    : baseGallery;
 
   const statCards = [
     { id: 1, val: "", title: "Presiden", sub: "BEM UMS 2026", img: "/assets/foto_presiden.webp" },
@@ -100,7 +110,7 @@ export default function Hero({ db, setActivePage }) {
           >
             <button 
               onClick={() => setActivePage('silatnas')}
-              className="bg-primary text-white border-2 border-black font-display text-xs md:text-sm px-8 py-3.5 uppercase hover:bg-primary-container shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform flex items-center gap-2"
+              className="bg-[#c80012] text-white border-2 border-black font-display text-xs md:text-sm px-8 py-3.5 uppercase hover:bg-primary-container shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform flex items-center gap-2"
             >
               SILATNAS PTMAI
             </button>
@@ -116,6 +126,7 @@ export default function Hero({ db, setActivePage }) {
 
       {/* 2. STATS CARDS (Carousel Layout) */}
       <section className="w-full relative z-20 pt-2 pb-16 max-w-full">
+        <h2 className="sr-only">Struktural Utama Kabinet Kolektiva</h2>
         {/* Carousel Container */}
         <div className="flex overflow-x-auto no-scrollbar gap-4 md:gap-6 snap-x snap-mandatory py-8 px-6 md:px-12 lg:px-20 items-center scroll-pl-6 md:scroll-pl-12 lg:scroll-pl-20">
           
@@ -197,21 +208,29 @@ export default function Hero({ db, setActivePage }) {
             >
               <div className="aspect-video md:aspect-[21/9] bg-neutral-900 relative overflow-hidden shrink-0">
                 {recentArticles[0].thumbnail ? (
-                  <img src={recentArticles[0].thumbnail} alt={recentArticles[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100" />
+                  <img 
+                    src={optimizeImgUrl(recentArticles[0].thumbnail, 'l')} 
+                    alt={recentArticles[0].title} 
+                    loading="lazy"
+                    decoding="async"
+                    width="800"
+                    height="450"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100" 
+                  />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center font-display text-sm text-neutral-600">NO IMAGES</div>
+                  <div className="w-full h-full flex items-center justify-center font-display text-sm text-neutral-400">NO IMAGES</div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
-                <span className="absolute top-6 left-6 bg-primary text-white px-4 py-1.5 text-xs font-display uppercase tracking-widest rounded-full shadow-lg backdrop-blur-md">
+                <span className="absolute top-6 left-6 bg-[#c80012] text-white px-4 py-1.5 text-xs font-display uppercase tracking-widest rounded-full shadow-lg backdrop-blur-md">
                   {recentArticles[0].category}
                 </span>
               </div>
               <div className="p-8 md:p-10 flex flex-col justify-center flex-grow">
-                <span className="text-xs text-primary/80 font-bold block mb-3 uppercase tracking-widest">{recentArticles[0].date}</span>
+                <span className="text-xs text-red-400 font-bold block mb-3 uppercase tracking-widest">{recentArticles[0].date}</span>
                 <h3 className="font-display text-3xl md:text-4xl uppercase leading-tight mb-4 text-white group-hover:text-primary transition-colors">{recentArticles[0].title}</h3>
                 <p className="text-sm md:text-base text-neutral-400 line-clamp-3 leading-relaxed mb-6">{recentArticles[0].desc}</p>
                 
-                <div className="mt-auto text-sm font-display text-neutral-400 flex items-center gap-2 group-hover:text-white transition-colors">
+                <div className="mt-auto text-sm font-display text-neutral-300 flex items-center gap-2 group-hover:text-white transition-colors">
                   BACA SELENGKAPNYA <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
@@ -228,15 +247,15 @@ export default function Hero({ db, setActivePage }) {
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    <span className="bg-white/10 text-white px-3 py-1.5 text-[10px] font-display uppercase tracking-widest rounded-full group-hover:bg-primary transition-colors">
+                    <span className="bg-white/10 text-white px-3 py-1.5 text-[10px] font-display uppercase tracking-widest rounded-full group-hover:bg-[#c80012] transition-colors">
                       {a.category}
                     </span>
-                    <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">{a.date}</span>
+                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">{a.date}</span>
                   </div>
                   <h3 className="font-display text-xl md:text-2xl uppercase leading-tight line-clamp-3 mb-3 text-white group-hover:text-primary transition-colors">{a.title}</h3>
                   <p className="text-xs md:text-sm text-neutral-400 line-clamp-2 md:line-clamp-3 leading-relaxed">{a.desc}</p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-white/10 text-xs font-display text-neutral-500 flex items-center gap-2 group-hover:text-white transition-colors">
+                <div className="mt-6 pt-4 border-t border-white/10 text-xs font-display text-neutral-400 flex items-center gap-2 group-hover:text-white transition-colors">
                   BACA KILAT <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </article>
@@ -344,7 +363,7 @@ export default function Hero({ db, setActivePage }) {
           </p>
           <button 
             onClick={() => setActivePage('visimisi')}
-            className="bg-primary text-white rounded-full font-display text-xs px-8 py-4 uppercase hover:bg-white hover:text-black transition-all shadow-[0_4px_20px_rgba(220,20,20,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-1"
+            className="bg-[#c80012] text-white rounded-full font-display text-xs px-8 py-4 uppercase hover:bg-white hover:text-black transition-all shadow-[0_4px_20px_rgba(220,20,20,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-1"
           >
             EKSPLORASI VISI MISI
           </button>
@@ -362,7 +381,7 @@ export default function Hero({ db, setActivePage }) {
                  0{idx + 1}
               </div>
               <div>
-                <h4 className="font-display uppercase text-2xl text-white mb-2">{p.title}</h4>
+                <h3 className="font-display uppercase text-2xl text-white mb-2">{p.title}</h3>
                 <p className="text-sm text-neutral-400 leading-relaxed">{p.desc}</p>
               </div>
             </div>
@@ -388,8 +407,12 @@ export default function Hero({ db, setActivePage }) {
             {marqueeItems.map((imgSrc, i) => (
               <div key={i} className="w-[280px] md:w-[400px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0 border border-white/10 relative group cursor-pointer">
                 <img 
-                  src={imgSrc} 
-                  alt={`Galeri ${i}`} 
+                  src={optimizeImgUrl(imgSrc, 'l')} 
+                  alt={`Dokumentasi Pergerakan BEM UMS ${i + 1}`} 
+                  loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="300"
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                 />
                 {/* Subtle dark overlay that lifts on hover */}
@@ -401,8 +424,12 @@ export default function Hero({ db, setActivePage }) {
             {marqueeItems.map((imgSrc, i) => (
               <div key={i + 9} className="w-[280px] md:w-[400px] aspect-[4/3] rounded-[2rem] overflow-hidden shrink-0 border border-white/10 relative group cursor-pointer">
                 <img 
-                  src={imgSrc} 
-                  alt={`Galeri ${i}`} 
+                  src={optimizeImgUrl(imgSrc, 'l')} 
+                  alt="" 
+                  loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="300"
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>

@@ -6,8 +6,8 @@ export const DEFAULT_DATA = {
   currentPeriod: "2026",
   pimpinan: {
     "2026": [
-      { id: 1, name: "Muh. Naufal Aulia Darojat", role: "Presiden Mahasiswa", photo: "/assets/foto_presiden.jpg", bio: "Memimpin dengan visi KOLEKTIVA untuk kemaslahatan mahasiswa UMS." },
-      { id: 2, name: "Muh. Faris Abid Muwaffaq", role: "Wakil Presiden Mahasiswa", photo: "/assets/foto_wakil.jpg", bio: "Sinergi aksi dan kolaborasi nyata untuk pelayanan terbaik mahasiswa UMS." }
+      { id: 1, name: "Muh. Naufal Aulia Darojat", role: "Presiden Mahasiswa", photo: "/assets/foto_presiden.webp", bio: "Memimpin dengan visi KOLEKTIVA untuk kemaslahatan mahasiswa UMS." },
+      { id: 2, name: "Muh. Faris Abid Muwaffaq", role: "Wakil Presiden Mahasiswa", photo: "/assets/foto_wakil.webp", bio: "Sinergi aksi dan kolaborasi nyata untuk pelayanan terbaik mahasiswa UMS." }
     ],
     "2025": [
       { id: 3, name: "Ahmad Dahlan", role: "Ketua Umum BEM UMS", photo: "", bio: "Membangun harmoni gerakan mahasiswa." },
@@ -166,9 +166,9 @@ export const DEFAULT_DATA = {
     ]
   },
   galeriPergerakan: [
-    "/assets/background.png",
-    "/assets/foto_presiden.jpg",
-    "/assets/foto_wakil.jpg"
+    "/assets/background-mobile.webp",
+    "/assets/foto_presiden.webp",
+    "/assets/foto_wakil.webp"
   ],
   silatnasCatalog: [
     {
@@ -418,8 +418,12 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
     setDb(DEFAULT_DATA);
   }
 
-  // STEP 2: Listen to Firestore for real-time sync
-  const unsubscribe = onSnapshot(collection(firestore, "cms"), (snapshot) => {
+  // STEP 2: Fast one-shot fetch from Firestore (closes HTTP stream cleanly without blocking network-idle)
+  let isCancelled = false;
+  (async () => {
+    try {
+      const snapshot = await getDocs(collection(firestore, "cms"));
+      if (isCancelled) return;
     let combinedData = { ...DEFAULT_DATA };
     let hasCore = false;
     let hasArticles = false;
@@ -521,13 +525,14 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
       setDb(dataToSeed);
       if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
     }
-  }, (error) => {
-    console.error("Firebase sync error: ", error);
-    // On error, keep using whatever data we already have (localStorage or defaults)
-    if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
-  });
+    } catch (error) {
+      console.error("Firebase sync error: ", error);
+      // On error, keep using whatever data we already have (localStorage or defaults)
+      if (setIsFirebaseLoaded) setIsFirebaseLoaded(true);
+    }
+  })();
 
-  return unsubscribe;
+  return () => { isCancelled = true; };
 };
 
 export const saveDB = async (data) => {

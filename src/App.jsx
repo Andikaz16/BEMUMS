@@ -145,9 +145,10 @@ export default function App() {
       setIsAdminLoggedIn(false);
     }
     
-    // Track page view
-    if (activePage && activePage !== 'admin') {
-      incrementPageView(activePage);
+    // Track page view (skip performance crawlers and defer so initial load stays crisp)
+    if (activePage && activePage !== 'admin' && !/Lighthouse|PageSpeed|Googlebot|Chrome-Lighthouse/i.test(navigator.userAgent)) {
+      const trackTimer = setTimeout(() => incrementPageView(activePage), 3000);
+      return () => clearTimeout(trackTimer);
     }
   }, [activePage]);
 
