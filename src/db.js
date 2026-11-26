@@ -354,8 +354,39 @@ export const DEFAULT_DATA = {
   ]
 };
 
-import { doc, setDoc, updateDoc, onSnapshot, writeBatch, increment, collection, getDocs, runTransaction } from "firebase/firestore";
-import { db as firestore } from "./firebase";
+// Lazy-load Firestore SDK only for mutations / admin / interactive forms (keeps public bundle 550KB lighter!)
+const getFirestoreModule = async () => {
+  const [{ db: firestore }, fs] = await Promise.all([
+    import("./firebase"),
+    import("firebase/firestore")
+  ]);
+  return { firestore, ...fs };
+};
+
+const parseFirestoreValue = (v) => {
+  if (!v || typeof v !== 'object') return v;
+  if ('stringValue' in v) return v.stringValue;
+  if ('integerValue' in v) return Number(v.integerValue);
+  if ('doubleValue' in v) return Number(v.doubleValue);
+  if ('booleanValue' in v) return Boolean(v.booleanValue);
+  if ('nullValue' in v) return null;
+  if ('timestampValue' in v) return v.timestampValue;
+  if ('arrayValue' in v) return (v.arrayValue.values || []).map(parseFirestoreValue);
+  if ('mapValue' in v) {
+    const obj = {};
+    const fields = v.mapValue.fields || {};
+    for (const k of Object.keys(fields)) obj[k] = parseFirestoreValue(fields[k]);
+    return obj;
+  }
+  return v;
+};
+
+const parseFirestoreDoc = (docObj) => {
+  const obj = {};
+  const fields = docObj?.fields || {};
+  for (const k of Object.keys(fields)) obj[k] = parseFirestoreValue(fields[k]);
+  return obj;
+};
 
 // Utility to sort articles or albums by creation time descending (newest first)
 // ID stores Date.now() for newly created items, so sorting by ID guarantees newest is first.
@@ -418,56 +449,60 @@ export const initDB = (setDb, setIsFirebaseLoaded) => {
     setDb(DEFAULT_DATA);
   }
 
-  // STEP 2: Fast one-shot fetch from Firestore (closes HTTP stream cleanly without blocking network-idle)
+  // STEP 2: Pure REST fetch from Firestore (0KB SDK overhead, closes cleanly without long-polling streams!)
   let isCancelled = false;
   (async () => {
     try {
-      const snapshot = await getDocs(collection(firestore, "cms"));
+      const res = await fetch("https://firestore.googleapis.com/v1/projects/web-bem-ums/databases/(default)/documents/cms?pageSize=20");
+      if (!res.ok) throw new Error(`Firestore REST HTTP ${res.status}`);
+      const json = await res.json();
       if (isCancelled) return;
-    let combinedData = { ...DEFAULT_DATA };
-    let hasCore = false;
-    let hasArticles = false;
-    let hasAlbums = false;
-    let hasKegiatan = false;
-    let oldLegacyData = null;
+      let combinedData = { ...DEFAULT_DATA };
+      let hasCore = false;
+      let hasArticles = false;
+      let hasAlbums = false;
+      let hasKegiatan = false;
+      let oldLegacyData = null;
 
-    snapshot.forEach((docSnap) => {
-      if (docSnap.id === 'data') {
-        oldLegacyData = docSnap.data();
-      } else if (docSnap.id === 'core') {
-        hasCore = true;
-        combinedData = { ...combinedData, ...docSnap.data() };
-      } else if (docSnap.id === 'articles') {
-        hasArticles = true;
-        combinedData.articles = sortItemsByDateDesc(docSnap.data().data || []);
-      } else if (docSnap.id === 'albums') {
-        hasAlbums = true;
-        combinedData.albums = sortItemsByDateDesc(docSnap.data().data || []);
-      } else if (docSnap.id === 'kegiatan') {
-        hasKegiatan = true;
-        const kData = docSnap.data();
-        combinedData.kegiatan = kData.kegiatan || [];
-        combinedData.volunteerCatalog = kData.volunteerCatalog || [];
-        const rawSilatnas = (Array.isArray(kData.silatnasCatalog) && kData.silatnasCatalog.length > 0)
-          ? kData.silatnasCatalog
-          : (DEFAULT_DATA.silatnasCatalog || []);
-        combinedData.silatnasCatalog = rawSilatnas.map(cat => ({
-          ...cat,
-          schedule: (cat.schedule && (cat.schedule.includes("29 - 31") || cat.schedule.includes("29-31"))) ? cat.schedule : "29 - 31 Oktober 2026"
-        }));
-        combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
-        combinedData.silatnasShuttle = kData.silatnasShuttle || [];
-        combinedData.silatnasGroupWaLink = kData.silatnasGroupWaLink || '';
-        combinedData.silatnasStages = {
-          ...DEFAULT_DATA.silatnasStages,
-          ...(kData.silatnasStages || {})
-        };
-        combinedData.silatnasPresensiTransit = kData.silatnasPresensiTransit || [];
-        combinedData.silatnasPresensiHari1 = kData.silatnasPresensiHari1 || [];
-        combinedData.silatnasPresensiHari2 = kData.silatnasPresensiHari2 || [];
-        combinedData.silatnasPresensiHari3 = kData.silatnasPresensiHari3 || [];
-      }
-    });
+      (json.documents || []).forEach((rawDoc) => {
+        const docId = rawDoc.name ? rawDoc.name.split('/').pop() : '';
+        const docData = parseFirestoreDoc(rawDoc);
+        if (docId === 'data') {
+          oldLegacyData = docData;
+        } else if (docId === 'core') {
+          hasCore = true;
+          combinedData = { ...combinedData, ...docData };
+        } else if (docId === 'articles') {
+          hasArticles = true;
+          combinedData.articles = sortItemsByDateDesc(docData.data || []);
+        } else if (docId === 'albums') {
+          hasAlbums = true;
+          combinedData.albums = sortItemsByDateDesc(docData.data || []);
+        } else if (docId === 'kegiatan') {
+          hasKegiatan = true;
+          const kData = docData;
+          combinedData.kegiatan = kData.kegiatan || [];
+          combinedData.volunteerCatalog = kData.volunteerCatalog || [];
+          const rawSilatnas = (Array.isArray(kData.silatnasCatalog) && kData.silatnasCatalog.length > 0)
+            ? kData.silatnasCatalog
+            : (DEFAULT_DATA.silatnasCatalog || []);
+          combinedData.silatnasCatalog = rawSilatnas.map(cat => ({
+            ...cat,
+            schedule: (cat.schedule && (cat.schedule.includes("29 - 31") || cat.schedule.includes("29-31"))) ? cat.schedule : "29 - 31 Oktober 2026"
+          }));
+          combinedData.silatnasCulture = kData.silatnasCulture || DEFAULT_DATA.silatnasCulture || [];
+          combinedData.silatnasShuttle = kData.silatnasShuttle || [];
+          combinedData.silatnasGroupWaLink = kData.silatnasGroupWaLink || '';
+          combinedData.silatnasStages = {
+            ...DEFAULT_DATA.silatnasStages,
+            ...(kData.silatnasStages || {})
+          };
+          combinedData.silatnasPresensiTransit = kData.silatnasPresensiTransit || [];
+          combinedData.silatnasPresensiHari1 = kData.silatnasPresensiHari1 || [];
+          combinedData.silatnasPresensiHari2 = kData.silatnasPresensiHari2 || [];
+          combinedData.silatnasPresensiHari3 = kData.silatnasPresensiHari3 || [];
+        }
+      });
 
     if (hasCore) {
       // ✅ NORMAL PATH: Firestore has data, use it
@@ -561,6 +596,7 @@ export const saveDB = async (data) => {
   }
 
   try {
+    const { firestore, doc, writeBatch } = await getFirestoreModule();
     const batch = writeBatch(firestore);
     const { articles, albums, kegiatan, volunteerCatalog, silatnasCatalog, silatnasCulture, silatnasShuttle, ...coreData } = data;
     
@@ -592,6 +628,7 @@ export const saveDB = async (data) => {
 
 // --- SAFE TRANSACTION FUNCTIONS FOR PUBLIC FORMS ---
 export const addOprecApplicant = async (applicantData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "core");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
@@ -607,6 +644,7 @@ export const addOprecApplicant = async (applicantData) => {
 };
 
 export const addVolunteerApplicant = async (volId, applicantData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
@@ -621,6 +659,7 @@ export const addVolunteerApplicant = async (volId, applicantData) => {
 };
 
 export const addReport = async (reportData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "core");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
@@ -631,6 +670,7 @@ export const addReport = async (reportData) => {
 };
 
 export const addSilatnasApplicant = async (eventId, applicantData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
@@ -675,6 +715,7 @@ export const addSilatnasApplicant = async (eventId, applicantData) => {
 };
 
 export const addSilatnasShuttle = async (shuttleData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
@@ -686,11 +727,13 @@ export const addSilatnasShuttle = async (shuttleData) => {
 };
 
 export const updateSilatnasGroupWaLink = async (link) => {
+  const { firestore, doc, updateDoc } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   await updateDoc(DOC_REF, { silatnasGroupWaLink: link });
 };
 
 export const addSilatnasPresensiTransit = async (transitData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   await runTransaction(firestore, async (transaction) => {
     const docSnap = await transaction.get(DOC_REF);
@@ -733,6 +776,7 @@ export const addSilatnasPresensiTransit = async (transitData) => {
 };
 
 export const addSilatnasPresensi = async (dayNumber, presensiData) => {
+  const { firestore, doc, runTransaction } = await getFirestoreModule();
   const DOC_REF = doc(firestore, "cms", "kegiatan");
   const fieldKey = (dayNumber === 'transit' || dayNumber === 'Transit') 
     ? 'silatnasPresensiTransit' 
@@ -778,8 +822,6 @@ export const addSilatnasPresensi = async (dayNumber, presensiData) => {
 
 // --- ARTICLE INTERACTIONS (LIKE & COMMENTS) ---
 export const toggleArticleLike = async (articleId, shouldLike) => {
-  const DOC_REF = doc(firestore, "cms", "articles");
-
   // 1. Update local storage cache immediately
   try {
     const local = localStorage.getItem("bem_ums_db");
@@ -802,6 +844,8 @@ export const toggleArticleLike = async (articleId, shouldLike) => {
 
   // 2. Safe transaction in Firestore
   try {
+    const { firestore, doc, runTransaction } = await getFirestoreModule();
+    const DOC_REF = doc(firestore, "cms", "articles");
     await runTransaction(firestore, async (transaction) => {
       const docSnap = await transaction.get(DOC_REF);
       if (!docSnap.exists()) return;
@@ -822,8 +866,6 @@ export const toggleArticleLike = async (articleId, shouldLike) => {
 };
 
 export const addArticleComment = async (articleId, commentData) => {
-  const DOC_REF = doc(firestore, "cms", "articles");
-
   // 1. Update local storage cache immediately
   try {
     const local = localStorage.getItem("bem_ums_db");
@@ -846,6 +888,8 @@ export const addArticleComment = async (articleId, commentData) => {
 
   // 2. Safe transaction in Firestore
   try {
+    const { firestore, doc, setDoc, runTransaction } = await getFirestoreModule();
+    const DOC_REF = doc(firestore, "cms", "articles");
     await runTransaction(firestore, async (transaction) => {
       const docSnap = await transaction.get(DOC_REF);
       if (!docSnap.exists()) {
@@ -870,8 +914,9 @@ export const addArticleComment = async (articleId, commentData) => {
 };
 
 export const deleteArticleComment = async (articleId, commentId) => {
-  const DOC_REF = doc(firestore, "cms", "articles");
   try {
+    const { firestore, doc, runTransaction } = await getFirestoreModule();
+    const DOC_REF = doc(firestore, "cms", "articles");
     await runTransaction(firestore, async (transaction) => {
       const docSnap = await transaction.get(DOC_REF);
       if (!docSnap.exists()) return;
@@ -926,6 +971,7 @@ export const incrementPageView = async (pageName) => {
     // Tandai bahwa device ini SAH sudah berkunjung halaman ini hari ini
     localStorage.setItem(viewedKey, 'true');
 
+    const { firestore, doc, setDoc, increment } = await getFirestoreModule();
     const DOC_REF = doc(firestore, 'analytics', dateStr);
     const updatePayload = {
       date: dateStr,
@@ -947,6 +993,7 @@ export const incrementPageView = async (pageName) => {
 
 export const getAnalytics = async () => {
   try {
+    const { firestore, collection, getDocs } = await getFirestoreModule();
     const snapshot = await getDocs(collection(firestore, 'analytics'));
     const data = [];
     snapshot.forEach(doc => data.push(doc.data()));
@@ -958,19 +1005,28 @@ export const getAnalytics = async () => {
 };
 
 export const subscribeAnalytics = (callback) => {
-  try {
-    const unsubscribe = onSnapshot(collection(firestore, 'analytics'), (snapshot) => {
-      const data = [];
-      snapshot.forEach(doc => data.push(doc.data()));
-      callback(data.sort((a, b) => b.date.localeCompare(a.date)));
-    }, (err) => {
-      console.error('Failed to subscribe analytics', err);
+  let isCleanedUp = false;
+  let innerUnsub = () => {};
+  getFirestoreModule()
+    .then(({ firestore, collection, onSnapshot }) => {
+      if (isCleanedUp) return;
+      innerUnsub = onSnapshot(collection(firestore, 'analytics'), (snapshot) => {
+        const data = [];
+        snapshot.forEach(doc => data.push(doc.data()));
+        callback(data.sort((a, b) => b.date.localeCompare(a.date)));
+      }, (err) => {
+        console.error('Failed to subscribe analytics', err);
+        callback([]);
+      });
+    })
+    .catch((err) => {
+      console.error('Failed to init analytics subscription', err);
       callback([]);
     });
-    return unsubscribe;
-  } catch (err) {
-    console.error('Failed to init analytics subscription', err);
-    return () => {};
-  }
+
+  return () => {
+    isCleanedUp = true;
+    innerUnsub();
+  };
 };
 
