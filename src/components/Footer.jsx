@@ -142,7 +142,7 @@ export default function Footer({ setActivePage }) {
               </a>
             </div>
           </div>
-          <div className="font-display text-xs uppercase text-red-400 tracking-wider flex items-center gap-4">
+          <div className="font-display text-xs uppercase text-primary tracking-wider flex items-center gap-4">
             <button type="button" className="cursor-pointer hover:text-white transition-colors" onClick={() => setActivePage('admin')}>JAJARAN KABINET 2026</button>
           </div>
         </div>

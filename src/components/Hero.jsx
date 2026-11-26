@@ -226,7 +226,7 @@ export default function Hero({ db, setActivePage }) {
                 </span>
               </div>
               <div className="p-8 md:p-10 flex flex-col justify-center flex-grow">
-                <span className="text-xs text-red-400 font-bold block mb-3 uppercase tracking-widest">{recentArticles[0].date}</span>
+                <span className="text-xs text-primary font-bold block mb-3 uppercase tracking-widest">{recentArticles[0].date}</span>
                 <h3 className="font-display text-3xl md:text-4xl uppercase leading-tight mb-4 text-white group-hover:text-primary transition-colors">{recentArticles[0].title}</h3>
                 <p className="text-sm md:text-base text-neutral-400 line-clamp-3 leading-relaxed mb-6">{recentArticles[0].desc}</p>
                 
